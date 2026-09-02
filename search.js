@@ -375,6 +375,7 @@
       '<a href="' + url + '" target="_blank" rel="noopener sponsored">' +
         (wkMode ? "Search this weekend live" : "Search these dates on Aviasales") + '</a>';
     head.parentNode.insertBefore(bar, head);
+    applyGate(bar);   // the bar sits outside the grid
   }
 
   function render() {
