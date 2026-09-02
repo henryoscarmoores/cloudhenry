@@ -320,45 +320,63 @@
 
   /* ---- any page: blocks that ask to be filled ------------------------ */
 
-  // Today's Deals and Best Deals are plain HTML cards in Ghost. Their
-  // rows carry a class and the block says what it wants, so this can
-  // fill them without knowing anything else about the page.
+  // Today's Deals and Best Deals are plain HTML cards in Ghost. Marking
+  // each row is enough for this to fill them, with no wrapper and no
+  // knowledge of the rest of the page:
   //
-  //   <div data-ch-live="oneway|return|mixed"
+  //   <div class="ch-lv-row" data-ch-live="oneway|return|mixed"
   //        data-ch-origin="MAN"      (optional, one airport only)
   //        data-ch-within="60">      (optional, days ahead)
   //
-  // and each row inside is .ch-lv-row with .ch-lv-route, .ch-lv-meta,
-  // .ch-lv-price and .ch-lv-avg.
+  // holding .ch-lv-route, .ch-lv-meta, .ch-lv-price and .ch-lv-avg. The
+  // attributes may sit on an ancestor instead, if a page groups its rows.
   function paintBlocks(fares) {
-    var blocks = document.querySelectorAll("[data-ch-live]");
-    if (!blocks.length) return false;
+    var found = document.querySelectorAll(".ch-lv-row");
+    if (!found.length) return false;
 
-    // Do not repeat a route between the blocks on one page: the one-way
-    // and return columns on Best Deals sat side by side showing Dublin
-    // five times over.
+    function attr(el, key) {
+      var node = el;
+      while (node && node.getAttribute) {
+        var v = node.getAttribute(key);
+        if (v) return v;
+        node = node.parentElement;
+      }
+      return "";
+    }
+
+    // Group the rows by what they asked for, keeping page order.
+    var order = [], groups = {};
+    for (var g = 0; g < found.length; g++) {
+      var key = (attr(found[g], "data-ch-live") || "mixed") + "|" +
+                (attr(found[g], "data-ch-origin") || "") + "|" +
+                (attr(found[g], "data-ch-within") || "");
+      if (!groups[key]) { groups[key] = []; order.push(key); }
+      groups[key].push(found[g]);
+    }
+
+    // Do not repeat a route between groups on one page: the one-way and
+    // return columns on Best Deals sat side by side showing Dublin five
+    // times over.
     var seen = {};
     var any = false;
 
-    for (var b = 0; b < blocks.length; b++) {
-      var block = blocks[b];
-      var rows  = block.querySelectorAll(".ch-lv-row");
-      if (!rows.length) continue;
-
-      var kind   = block.getAttribute("data-ch-live");
-      var within = parseInt(block.getAttribute("data-ch-within"), 10) || 75;
-      var origin = block.getAttribute("data-ch-origin") || "";
+    for (var b = 0; b < order.length; b++) {
+      var parts  = order[b].split("|");
+      var rows   = groups[order[b]];
+      var kind   = parts[0];
+      var origin = parts[1];
+      var within = parseInt(parts[2], 10) || 75;
 
       var opts = { within: within, origin: origin };
       if (kind === "oneway") opts.returns = false;
       if (kind === "return") opts.returns = true;
 
       var pool = bestPerDestination(candidates(fares, opts)).filter(function (r) {
-        return !seen[r.origin + r.dest];
+        return !seen[r.dest];
       });
       var picks = spread(pool, rows.length);
       if (picks.length < 2) continue;
-      picks.forEach(function (r) { seen[r.origin + r.dest] = true; });
+      picks.forEach(function (r) { seen[r.dest] = true; });
 
       for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
