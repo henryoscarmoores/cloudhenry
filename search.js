@@ -208,6 +208,21 @@
 
   // Out on Friday or Saturday, home on Sunday. The most requested thing
   // Henry gets asked for, and the commonest pattern in the fare data.
+  var XMAS = {
+    PRG:1, BER:1, VIE:1, BUD:1, KRK:1, CPH:1, HAM:1, CGN:1, DUS:1, FRA:1,
+    AMS:1, BRU:1, GDN:1, WAW:1, RIX:1, VNO:1, HEL:1, OSL:1, GVA:1, MIL:1,
+    VCE:1, ROM:1, NYC:1, BOS:1, YTO:1, TLL:1
+  };
+  var XMAS_FROM = "2026-11-15", XMAS_TO = "2026-12-24";
+
+  function isXmasMarket(r) {
+    if (!XMAS[r.dest] || !r.ret) return false;
+    var dep = String(r.dep).slice(0, 10);
+    if (dep < XMAS_FROM || dep > XMAS_TO) return false;
+    var nights = dayDiff(r.ret, r.dep);
+    return nights >= 2 && nights <= 5;
+  }
+
   function isWeekendBreak(r) {
     if (!r.ret) return false;
     var out = dow(r.dep), back = dow(r.ret);
@@ -273,6 +288,7 @@
     if (state.trip === "one") rows = rows.filter(function (r) { return !r.ret; });
     if (state.trip === "ret") rows = rows.filter(function (r) { return !!r.ret; });
     if (state.trip === "weekend") rows = rows.filter(isWeekendBreak);
+    if (state.trip === "xmas") rows = rows.filter(isXmasMarket);
     if (state.direct) rows = rows.filter(function (r) { return r.stops === 0; });
     if (state.budget < 600) rows = rows.filter(function (r) { return r.price <= state.budget; });
     // Exact dates, with a tolerance either side. Someone asking for the
@@ -745,6 +761,7 @@
     $("chfsOne").setAttribute("aria-pressed", v === "one" ? "true" : "false");
     $("chfsRet").setAttribute("aria-pressed", v === "ret" ? "true" : "false");
     $("chfsWknd").setAttribute("aria-pressed", v === "weekend" ? "true" : "false");
+    if ($("chfsXmas")) $("chfsXmas").setAttribute("aria-pressed", v === "xmas" ? "true" : "false");
     var retField = $("fRet");
     if (retField) {
       var monthMode = $("fMonth") && !$("fMonth").hidden;
@@ -755,9 +772,12 @@
 
     var note = $("chfsWkndNote");
     if (note) {
-      note.hidden = (v !== "weekend");
-      note.innerHTML = "<b>Weekend getaways.</b> Out on a Friday or Saturday, home on the Sunday. " +
-                       "Nothing here needs a day off work.";
+      note.hidden = (v !== "weekend" && v !== "xmas");
+      note.innerHTML = (v === "xmas")
+        ? "<b>Christmas markets.</b> Long weekends between 15 November and 24 December, " +
+          "to the cities that actually hold them. Prague, Berlin, Krakow, Vienna, Cologne and more, plus New York."
+        : "<b>Weekend getaways.</b> Out on a Friday or Saturday, home on the Sunday. " +
+          "Nothing here needs a day off work.";
     }
     render();
   }
@@ -765,6 +785,7 @@
   $("chfsOne").addEventListener("click", function () { setTrip("one"); });
   $("chfsRet").addEventListener("click", function () { setTrip("ret"); });
   $("chfsWknd").addEventListener("click", function () { setTrip("weekend"); });
+  if ($("chfsXmas")) $("chfsXmas").addEventListener("click", function () { setTrip("xmas"); });
 
   $("chfsSort").addEventListener("click", function () {
     state.sort = state.sort === "price" ? "date" : (state.sort === "date" ? "name" : "price");
