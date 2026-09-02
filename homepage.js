@@ -49,7 +49,7 @@
 
   var CSS =
     ".ch-hp-proof{display:block;font-weight:800;font-size:13.5px;color:#FFE071;letter-spacing:.01em}" +
-    ".ch-hp-deal{margin:0 0 10px;width:100%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);" +
+    ".ch-hp-deal{position:relative;z-index:3;margin:0 0 10px;width:100%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);" +
       "border-radius:12px;padding:10px 14px;color:#fff;font-size:13.5px;line-height:1.4;text-align:left;" +
       "font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}" +
     ".ch-hp-deal b{color:#FFE071;font-weight:800}" +
