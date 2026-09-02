@@ -498,6 +498,7 @@
   }
   $("chfsModeDates").addEventListener("click", function () { setDateMode("dates"); });
   $("chfsModeMonth").addEventListener("click", function () { setDateMode("month"); });
+  setDateMode("month");
 
   // A date box should open a calendar when tapped, not wait for someone
   // to find the little icon or type the digits by hand.

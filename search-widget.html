@@ -133,15 +133,15 @@ img.chfs-flag{display:block;width:38px;height:28px;object-fit:cover;border-radiu
         <label class="chfs-lab" for="chfsTo">Going to</label>
         <input id="chfsTo" class="chfs-ctl" type="search" placeholder="Everywhere &ndash; or type a city" autocomplete="off">
       </div>
-      <div class="chfs-f" id="fDep">
+      <div class="chfs-f" id="fDep" hidden>
         <label class="chfs-lab" for="chfsFrom2">Departing</label>
         <input id="chfsFrom2" class="chfs-ctl" type="date">
       </div>
-      <div class="chfs-f" id="fRet">
+      <div class="chfs-f" id="fRet" hidden>
         <label class="chfs-lab" for="chfsTo2">Returning</label>
         <input id="chfsTo2" class="chfs-ctl" type="date">
       </div>
-      <div class="chfs-f" id="fMonth" hidden>
+      <div class="chfs-f" id="fMonth">
         <label class="chfs-lab" for="chfsMonth">Whole month</label>
         <select id="chfsMonth" class="chfs-ctl"></select>
       </div>
@@ -157,8 +157,8 @@ img.chfs-flag{display:block;width:38px;height:28px;object-fit:cover;border-radiu
         <input id="chfsBudget" class="chfs-range" type="range" min="20" max="600" step="10" value="600">
       </div>
       <div class="chfs-datemode" role="group" aria-label="How to choose dates">
-        <button type="button" id="chfsModeDates" aria-pressed="true">Specific dates</button>
-        <button type="button" id="chfsModeMonth" aria-pressed="false">Whole month</button>
+        <button type="button" id="chfsModeMonth" aria-pressed="true">Whole month</button>
+        <button type="button" id="chfsModeDates" aria-pressed="false">Specific dates</button>
       </div>
       <div class="chfs-quick" role="group" aria-label="Quick dates">
         <button type="button" data-days="3">Next 3 days</button>
