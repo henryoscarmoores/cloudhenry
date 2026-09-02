@@ -244,8 +244,27 @@
     }
     paint(cols[0], ow, false);
     paint(cols[1], rt, true);
+    rt.forEach(function (r) { taken[r.dest] = true; });
+    paintLocked(fares, taken);
     stampDate();
     return true;
+  }
+
+  // The blurred rows behind the paywall are the "what you are missing"
+  // tease. They keep their £?? because that is the whole point, but the
+  // routes were typed out in June and should be real ones from today.
+  function paintLocked(fares, taken) {
+    var rows = document.querySelectorAll(".ch-lockwrap .ch-d");
+    if (!rows.length) return;
+    var pool = bestPerDestination(candidates(fares, { within: 45 }))
+                 .filter(function (r) { return !taken[r.dest]; });
+    var picks = spread(pool, rows.length);
+    for (var i = 0; i < rows.length && i < picks.length; i++) {
+      var r = picks[i];
+      var p = places() ? places()[r.dest] : null;
+      var routeEl = rows[i].querySelector(".ch-dr");
+      if (routeEl) routeEl.textContent = (ORIGIN_NAME[r.origin] || r.origin) + " → " + (p ? p[0] : r.dest);
+    }
   }
 
   // "Prices correct as of ..." sits under the block with no class of its
