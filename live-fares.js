@@ -57,6 +57,8 @@
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var SUBDIVISION = { "Scotland":"gb-sct", "England":"gb-eng", "Wales":"gb-wls", "N. Ireland":"gb-nir" };
 
+  var GENERATED = "";   // when the feed was built, for the "prices correct as of" line
+
   function places() { return window.CH_PLACES || null; }
 
   function fmt(iso) {
@@ -233,7 +235,30 @@
     }
     paint(cols[0], ow, false);
     paint(cols[1], rt, true);
+    stampDate();
     return true;
+  }
+
+  // "Prices correct as of ..." sits under the block with no class of its
+  // own. It said 1 September while the prices above it were from 30
+  // August, which is worse than saying nothing.
+  function stampDate() {
+    if (!GENERATED) return;
+    var box = document.querySelector(".ch-dbox");
+    if (!box) return;
+    var els = box.querySelectorAll("div, p, span, small");
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (el.children.length) continue;
+      if (el.textContent.indexOf("Prices correct as of") !== 0) continue;
+      var d = new Date(GENERATED);
+      if (isNaN(d)) return;
+      var months = ["January","February","March","April","May","June","July",
+                    "August","September","October","November","December"];
+      var text = "Prices correct as of " + d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+      if (el.textContent !== text) el.textContent = text;
+      return;
+    }
   }
 
   /* ---- join pages ---------------------------------------------------- */
@@ -293,13 +318,85 @@
     return true;
   }
 
+  /* ---- any page: blocks that ask to be filled ------------------------ */
+
+  // Today's Deals and Best Deals are plain HTML cards in Ghost. Their
+  // rows carry a class and the block says what it wants, so this can
+  // fill them without knowing anything else about the page.
+  //
+  //   <div data-ch-live="oneway|return|mixed"
+  //        data-ch-origin="MAN"      (optional, one airport only)
+  //        data-ch-within="60">      (optional, days ahead)
+  //
+  // and each row inside is .ch-lv-row with .ch-lv-route, .ch-lv-meta,
+  // .ch-lv-price and .ch-lv-avg.
+  function paintBlocks(fares) {
+    var blocks = document.querySelectorAll("[data-ch-live]");
+    if (!blocks.length) return false;
+
+    // Do not repeat a route between the blocks on one page: the one-way
+    // and return columns on Best Deals sat side by side showing Dublin
+    // five times over.
+    var seen = {};
+    var any = false;
+
+    for (var b = 0; b < blocks.length; b++) {
+      var block = blocks[b];
+      var rows  = block.querySelectorAll(".ch-lv-row");
+      if (!rows.length) continue;
+
+      var kind   = block.getAttribute("data-ch-live");
+      var within = parseInt(block.getAttribute("data-ch-within"), 10) || 75;
+      var origin = block.getAttribute("data-ch-origin") || "";
+
+      var opts = { within: within, origin: origin };
+      if (kind === "oneway") opts.returns = false;
+      if (kind === "return") opts.returns = true;
+
+      var pool = bestPerDestination(candidates(fares, opts)).filter(function (r) {
+        return !seen[r.origin + r.dest];
+      });
+      var picks = spread(pool, rows.length);
+      if (picks.length < 2) continue;
+      picks.forEach(function (r) { seen[r.origin + r.dest] = true; });
+
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        if (i >= picks.length) { row.style.display = "none"; continue; }
+        row.style.display = "";
+        var r = picks[i];
+        var p = places() ? places()[r.dest] : null;
+        var routeEl = row.querySelector(".ch-lv-route");
+        var metaEl  = row.querySelector(".ch-lv-meta");
+        var priceEl = row.querySelector(".ch-lv-price");
+        var avgEl   = row.querySelector(".ch-lv-avg");
+        if (routeEl) {
+          routeEl.textContent = (ORIGIN_NAME[r.origin] || r.origin) + " → " + (p ? p[0] : r.dest);
+        }
+        if (metaEl) {
+          metaEl.textContent = (r.ret ? "return · " : "one-way · ") +
+                               fmt(r.dep) + (r.ret ? " – " + fmt(r.ret) : "");
+        }
+        if (priceEl) priceEl.textContent = "£" + r.price;
+        if (avgEl) {
+          var a = avgText(r);
+          avgEl.textContent = a ? "avg " + a : "";
+          avgEl.style.display = a ? "" : "none";
+        }
+      }
+      any = true;
+    }
+    return any;
+  }
+
   /* ---- run ----------------------------------------------------------- */
 
   var path = location.pathname.replace(/\/+$/, "").toLowerCase();
   var isHome = (path === "" || path === "/");
   var joinMatch = path.match(/^\/join-(.+)$/);
   var origin = joinMatch ? JOIN_ORIGIN[joinMatch[1]] : null;
-  if (!isHome && !origin) return;
+  var hasBlocks = !!document.querySelector("[data-ch-live]");
+  if (!isHome && !origin && !hasBlocks) return;
 
   function needPlaces(next) {
     if (places()) { next(); return; }
@@ -318,7 +415,9 @@
       busy = true;
       runs++;
       try {
-        if (isHome) paintHomepage(fares); else paintJoin(fares, origin);
+        if (isHome) paintHomepage(fares);
+        else if (origin) paintJoin(fares, origin);
+        paintBlocks(fares);
       } catch (e) { /* never take the page down over a teaser */ }
       busy = false;
     }
@@ -350,6 +449,7 @@
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (j) {
       if (!j || !j.fares || !j.fares.length) return;
+      GENERATED = j.generated || "";
       needPlaces(function () { start(j.fares); });
     })
     .catch(function () { /* leave whatever Ghost rendered */ });
