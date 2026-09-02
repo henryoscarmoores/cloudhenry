@@ -300,3 +300,12 @@
   /* Hover lifts are meaningless on touch and cause sticky states */
   .ch-d2:hover, .ch-why-tile:hover, .ch-scard:hover { transform: none; }
 }
+
+/* ---------------------------------------------------------------
+   10. SEARCH IS LIVE
+   The "Coming soon" label under the Search nav item was correct until
+   2 Sep 2026, when the Everywhere search went live on /search/. Hidden
+   here rather than removed from code injection, because that field sits
+   within ~100 characters of Ghost's 65,535 limit.
+   --------------------------------------------------------------- */
+.ch-nav-soon { display: none !important; }
