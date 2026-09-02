@@ -286,22 +286,36 @@
   }
 
   function start(fares) {
-    var paint = isHome
-      ? function () { return paintHomepage(fares); }
-      : function () { return paintJoin(fares, origin); };
+    var busy = false, runs = 0;
+
+    function paint() {
+      if (busy || runs > 40) return;      // a runaway repaint would hang the tab
+      busy = true;
+      runs++;
+      try {
+        if (isHome) paintHomepage(fares); else paintJoin(fares, origin);
+      } catch (e) { /* never take the page down over a teaser */ }
+      busy = false;
+    }
 
     paint();
 
     // Ghost's own script rebuilds the homepage rows at 400ms, 1200ms and
     // 2500ms after load, which would put the old prices back. Repaint
-    // whenever it does. Painting only writes text into rows that already
-    // exist, so it cannot retrigger the observer watching for new ones.
-    var box = document.querySelector(".ch-dbox") || document.body;
+    // whenever it does.
+    //
+    // Watch only the direct children of the box. That is where the whole
+    // block is swapped out, and it is the one level painting does not
+    // touch: writing textContent into a row replaces a text node, which
+    // a subtree watcher would read as a change and repaint forever.
+    var box = document.querySelector(".ch-dbox");
     var mo = null;
-    try {
-      mo = new MutationObserver(function () { paint(); });
-      mo.observe(box, { childList: true, subtree: true });
-    } catch (e) { /* older browser, the timers below still cover it */ }
+    if (box && window.MutationObserver) {
+      try {
+        mo = new MutationObserver(paint);
+        mo.observe(box, { childList: true });
+      } catch (e) { /* older browser, the timers below still cover it */ }
+    }
 
     [300, 800, 1500, 2800, 4000].forEach(function (t) { setTimeout(paint, t); });
     setTimeout(function () { if (mo) mo.disconnect(); }, 15000);
