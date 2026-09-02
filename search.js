@@ -379,7 +379,6 @@
 
   function render() {
     renderLiveBar();
-    applyGate(document);
     var rows = build();
     var grid = $("chfsGrid");
     var fromCity = "";
@@ -421,6 +420,7 @@
       } else {
         grid.innerHTML = '<div class="chfs-empty"><strong>No flights match</strong>Try another airport, raise the price, or widen your dates.</div>';
       }
+      applyGate(grid);
       return;
     }
 
@@ -448,6 +448,8 @@
       b.addEventListener("click", function () { openSheet(r); });
       grid.appendChild(b);
     });
+
+    applyGate(grid);
   }
 
   var lastFocus = null;
