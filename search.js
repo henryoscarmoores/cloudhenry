@@ -88,6 +88,17 @@
   function $(id) { return document.getElementById(id); }
   function place(code) { return PLACES[code] || [code, "", "✈️"]; }
 
+  // Windows has never shipped flag emoji, so a regional-indicator pair
+  // renders as bare letters there. Draw a country badge instead: it is
+  // legible on every platform and looks deliberate rather than broken.
+  function badgeCode(flag) {
+    if (!flag || flag.length < 4) return "";
+    var a = flag.codePointAt(0), b = flag.codePointAt(2);
+    if (a < 0x1F1E6 || a > 0x1F1FF) return "";
+    return String.fromCharCode(65 + (a - 0x1F1E6)) + String.fromCharCode(65 + (b - 0x1F1E6));
+  }
+
+
   if (!$("chfsGrid")) { return; }   // widget not on this page
 
   var FARES = [], state = { from:"MAN", q:"", when:"any", trip:"any", sort:"price", direct:false, budget:600 };
@@ -205,7 +216,7 @@
     ORIGINS.forEach(function (o) { if (o[0] === state.from) fromCity = o[1]; });
 
     $("chfsTitle").textContent = state.q ? "Flights from " + fromCity : "Everywhere from " + fromCity;
-    $("chfsCount").textContent = rows.length ? rows.length + (rows.length === 1 ? " flight" : " flights") : "";
+    $("chfsCount").textContent = rows.length ? (rows.length > 120 ? "showing 120 of " + rows.length + " flights" : rows.length + (rows.length === 1 ? " flight" : " flights")) : "";
 
     grid.innerHTML = "";
     if (!rows.length) {
@@ -223,7 +234,7 @@
       var stops = r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops");
 
       b.innerHTML =
-        '<span class="chfs-flag" aria-hidden="true">' + p[2] + '</span>' +
+        '<span class="chfs-flag" aria-hidden="true">' + (badgeCode(p[2]) || "â") + '</span>' +
         '<span style="min-width:0">' +
           '<span class="chfs-city">' + p[0] + '</span>' +
           '<span class="chfs-meta">' + when + " · " + trip + " · " + stops + '</span>' +
@@ -247,7 +258,7 @@
     var fromCity = "";
     ORIGINS.forEach(function (o) { if (o[0] === state.from) fromCity = o[1]; });
 
-    $("chfsCity").textContent = p[2] + " " + p[0];
+    $("chfsCity").textContent = p[0];
     $("chfsRoute").textContent = fromCity + " → " + p[0] + (p[1] ? ", " + p[1] : "");
 
     var v = $("chfsVerdict");
