@@ -1,0 +1,6 @@
+# Ghost code-injection exports contain the Travelpayouts API token
+# and must never reach this public repo.
+footer-backup.txt
+header-backup.txt
+*backup*.txt
+*.secret
