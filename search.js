@@ -40,7 +40,7 @@
       a.removeAttribute("target");
       a.removeAttribute("rel");
       a.classList.add("chfs-locked");
-      a.textContent = a.id === "chfsMain" ? "Subscribe to book â Â£2.99/month" : "Unlock";
+      a.textContent = a.id === "chfsMain" ? "Subscribe to book 2014 00A32.99/month" : "Unlock";
     });
   }
 
