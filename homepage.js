@@ -55,7 +55,8 @@
     ".ch-hp-deal b{color:#FFE071;font-weight:800}" +
     ".ch-hp-badge{display:inline-block;background:#F5C242;color:#16324A;font-size:9px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;padding:2px 8px;border-radius:999px;margin-bottom:5px}" +
     ".ch-hp-deal .ch-hp-was{text-decoration:line-through;opacity:.75;font-weight:600}" +
-    ".ch-hp-deal .ch-hp-sub{display:block;margin-top:3px;font-size:12px;opacity:.82}";
+    ".ch-hp-deal .ch-hp-sub{display:block;margin-top:3px;font-size:12px;opacity:.82}" +
+    "@media(min-width:860px){.ch-airportpick{margin-left:0 !important;margin-right:auto !important}}";
 
   var st = document.createElement("style");
   st.textContent = CSS;
@@ -141,7 +142,8 @@
           best.f.price + "</b>, usually <span class=\"ch-hp-was\">&pound;" + best.f.typical + "</span>. " +
           "That is " + pct + "% under." +
           "<span class=\"ch-hp-sub\">Members get every fare like it for &pound;2.99 a month, less than a pint.</span>";
-        host.insertBefore(el, host.firstChild);
+        if (window.innerWidth < 860) host.appendChild(el);
+        else host.insertBefore(el, host.firstChild);
       })
       .catch(function () {});
   }
