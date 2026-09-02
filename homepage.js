@@ -116,14 +116,31 @@
       .then(function (j) {
         if (!j || !j.fares) return;
 
+        // The headline price is rarely the cheapest one available: the
+        // dated options underneath it usually are. Checking only the
+        // headline produced a "best deal" of 10% sitting directly above a
+        // fare in the page's own list at 82%, which reads as nonsense.
         var best = null;
         j.fares.forEach(function (f) {
-          if (f.origin !== origin) return;
-          if (!f.typical || !f.price || f.price >= f.typical) return;
-          var saving = (f.typical - f.price) / f.typical;
-          if (!best || saving > best.saving) best = { f: f, saving: saving };
+          if (f.origin !== origin || !f.typical) return;
+
+          var price = f.price || Infinity;
+          var dep = f.departure, ret = f.ret;
+          if (f.options && f.options.length) {
+            f.options.forEach(function (o) {
+              if (o.p && o.p < price) { price = o.p; dep = o.d; ret = o.r; }
+            });
+          }
+          if (!isFinite(price) || price >= f.typical) return;
+
+          var saving = (f.typical - price) / f.typical;
+          if (!best || saving > best.saving) {
+            best = { f: f, price: price, dep: dep, ret: ret, saving: saving };
+          }
         });
-        if (!best) return;
+
+        // Never show a weak number next to the page's own stronger ones.
+        if (!best || best.saving < 0.2) return;
 
         var pct = Math.round(best.saving * 100);
         var el = document.createElement("div");
@@ -131,7 +148,7 @@
         el.innerHTML =
           '<span class="ch-jd-badge">Best deal right now</span>' +
           '<p class="ch-jd-route">' + name(best.f.origin) + " to " + name(best.f.destination) +
-            ' <span class="ch-jd-price">&pound;' + best.f.price + '</span> ' +
+            ' <span class="ch-jd-price">&pound;' + best.price + '</span> ' +
             '<span class="ch-jd-was">&pound;' + best.f.typical + '</span></p>' +
           '<p class="ch-jd-sub"><b>' + pct + '% below the usual price.</b> ' +
             'This is the sort of fare members get every week from ' + name(best.f.origin) + '.</p>';
