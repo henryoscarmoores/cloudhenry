@@ -4,3 +4,7 @@ footer-backup.txt
 header-backup.txt
 *backup*.txt
 *.secret
+
+# Travelpayouts API token - never commit
+.token
+fetch-fares.log
