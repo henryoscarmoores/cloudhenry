@@ -250,6 +250,7 @@
   function build() {
     var rows = flatten();
     var q = state.q.trim().toLowerCase();
+    if (q === "everywhere" || q === "anywhere" || q === "any") q = "";
 
     if (q) {
       rows = rows.filter(function (r) {
@@ -271,7 +272,7 @@
     if (state.from2) {
       rows = rows.filter(function (r) { return Math.abs(dayDiff(r.dep, state.from2)) <= state.flex; });
     }
-    if (state.to2) {
+    if (state.to2 && state.trip !== "one") {
       rows = rows.filter(function (r) {
         return r.ret && Math.abs(dayDiff(r.ret, state.to2)) <= state.flex;
       });
@@ -319,8 +320,9 @@
         if (PLACES[code][0].toLowerCase() === q || code.toLowerCase() === q) { destCode = code; break; }
       }
     }
+    var back = (state.trip === "one" || !state.to2) ? "" : ddmm(state.to2);
     return "https://www.aviasales.com/search/" + state.from + ddmm(state.from2) +
-           destCode + (state.to2 ? ddmm(state.to2) : "") + "1?marker=" + MARKER;
+           destCode + back + "1?marker=" + MARKER;
   }
 
   function renderLiveBar() {
@@ -535,6 +537,13 @@
     $("chfsOne").setAttribute("aria-pressed", v === "one" ? "true" : "false");
     $("chfsRet").setAttribute("aria-pressed", v === "ret" ? "true" : "false");
     $("chfsWknd").setAttribute("aria-pressed", v === "weekend" ? "true" : "false");
+    var retField = $("chfsTo2") ? $("chfsTo2").closest(".chfs-f") : null;
+    if (retField) {
+      var hide = (v === "one");
+      retField.style.display = hide ? "none" : "";
+      if (hide) { state.to2 = ""; $("chfsTo2").value = ""; }
+    }
+
     var note = $("chfsWkndNote");
     if (note) {
       note.hidden = (v !== "weekend");
