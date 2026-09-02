@@ -1,0 +1,87 @@
+<!-- "What £2.99 actually buys" block for the join-{city} pages.
+     {{CITY}} is replaced per page. Namespaced .chjv- so it cannot
+     affect anything else on the site. -->
+<style>
+.chjv{--chjv-sky:#0E6FB6;--chjv-ink:#0E3550;--chjv-soft:#46607A;--chjv-faint:#7A90A5;--chjv-sun:#F5C242;--chjv-line:rgba(14,53,80,.12);--chjv-good:#1B7F53;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--chjv-ink);max-width:760px;margin:34px auto 0;text-align:left}
+.chjv *,.chjv *::before,.chjv *::after{box-sizing:border-box}
+.chjv-kicker{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--chjv-sun);text-align:center;margin:0 0 8px}
+.chjv-h{font-size:clamp(23px,5.4vw,32px);font-weight:800;letter-spacing:-.028em;line-height:1.08;text-align:center;color:#fff;margin:0 0 6px;text-wrap:balance}
+.chjv-lede{text-align:center;color:#DCEBF8;font-size:15px;margin:0 auto 22px;max-width:40ch}
+.chjv-grid{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:600px){.chjv-grid{grid-template-columns:1fr 1fr}}
+.chjv-card{display:grid;grid-template-columns:52px 1fr;align-items:center;gap:14px;background:#fff;border:1px solid var(--chjv-line);border-radius:16px;padding:14px 16px;box-shadow:0 1px 2px rgba(14,53,80,.06),0 6px 18px rgba(14,53,80,.08)}
+.chjv-emoji{font-size:31px;line-height:1;text-align:center;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.chjv-item{display:block;font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+.chjv-cost{display:block;font-size:12.5px;color:var(--chjv-faint);font-variant-numeric:tabular-nums}
+.chjv-eq{display:block;margin-top:5px;font-size:13px;font-weight:700;color:var(--chjv-good)}
+.chjv-punch{margin:22px auto 0;background:var(--chjv-sun);color:#16324A;border-radius:18px;padding:18px 20px;text-align:center}
+.chjv-punch b{display:block;font-size:clamp(18px,4.4vw,23px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.chjv-punch span{display:block;margin-top:5px;font-size:13.5px;font-weight:600;opacity:.82}
+.chjv-get{margin-top:22px;background:rgba(255,255,255,.96);border:1px solid var(--chjv-line);border-radius:18px;padding:20px 22px}
+.chjv-get h4{margin:0 0 12px;font-size:16px;font-weight:800;letter-spacing:-.015em}
+.chjv-get ul{margin:0;padding:0;list-style:none;display:grid;gap:9px}
+.chjv-get li{display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start;font-size:14.5px;line-height:1.45}
+.chjv-tick{width:19px;height:19px;border-radius:50%;background:rgba(27,127,83,.14);color:var(--chjv-good);display:grid;place-items:center;font-size:11px;font-weight:900;margin-top:2px}
+.chjv-get li b{font-weight:700}
+.chjv-no{color:var(--chjv-soft)}
+.chjv-fine{text-align:center;font-size:12px;color:#C9E2F5;margin:14px 0 0}
+</style>
+
+<div class="chjv">
+  <p class="chjv-kicker">What you get for £2.99</p>
+  <h3 class="chjv-h">Less than a pint. Every month.</h3>
+  <p class="chjv-lede">Here is what &pound;2.99 buys everywhere else, and what it buys here.</p>
+
+  <div class="chjv-grid">
+    <div class="chjv-card">
+      <span class="chjv-emoji">🍺</span>
+      <span>
+        <span class="chjv-item">One pint down the pub</span>
+        <span class="chjv-cost">about &pound;5.20</span>
+        <span class="chjv-eq">= nearly two months of CloudHenry</span>
+      </span>
+    </div>
+    <div class="chjv-card">
+      <span class="chjv-emoji">☕</span>
+      <span>
+        <span class="chjv-item">One flat white</span>
+        <span class="chjv-cost">about &pound;3.60</span>
+        <span class="chjv-eq">= a full month, with change</span>
+      </span>
+    </div>
+    <div class="chjv-card">
+      <span class="chjv-emoji">🍬</span>
+      <span>
+        <span class="chjv-item">Two Wham bars</span>
+        <span class="chjv-cost">about &pound;0.70</span>
+        <span class="chjv-eq">= a week of deals in your inbox</span>
+      </span>
+    </div>
+    <div class="chjv-card">
+      <span class="chjv-emoji">🥪</span>
+      <span>
+        <span class="chjv-item">A meal deal</span>
+        <span class="chjv-cost">about &pound;3.90</span>
+        <span class="chjv-eq">= a month, and you still save money</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="chjv-punch">
+    <b>One good fare pays for the whole year.</b>
+    <span>Members regularly save &pound;40 or more on a single flight. The year costs &pound;29.</span>
+  </div>
+
+  <div class="chjv-get">
+    <h4>What lands in your inbox</h4>
+    <ul>
+      <li><span class="chjv-tick">✓</span><span><b>A weekly email of the cheapest fares from {{CITY}}</b> — not every airport, just yours.</span></li>
+      <li><span class="chjv-tick">✓</span><span><b>Fares checked by hand.</b> I scan thousands a week and send only the ones worth booking.</span></li>
+      <li><span class="chjv-tick">✓</span><span><b>The full Everywhere search.</b> Every route, every date, booked straight from the site.</span></li>
+      <li><span class="chjv-tick">✓</span><span><b>A deal score on every fare</b> — we tell you whether it is genuinely cheap or just cheap-looking.</span></li>
+      <li><span class="chjv-tick">✓</span><span><b>Cancel any time.</b> No contract, no phone call, two clicks.</span></li>
+    </ul>
+  </div>
+
+  <p class="chjv-fine">&pound;2.99 a month, or &pound;29 for the year. Prices of everyday items are rough UK averages, for scale.</p>
+</div>
