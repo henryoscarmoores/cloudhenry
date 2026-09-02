@@ -47,7 +47,7 @@ try {
 
   # --- 1. one-way fares and dated options ------------------------------
   Log "step 1: fetching fares"
-  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "fetch-fares.ps1") -DryRun -AllRoutes -MonthsAhead 2 -SkipReturns
+  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "fetch-fares.ps1") -DryRun -AllRoutes -MonthsAhead 4 -SkipReturns
   if ($LASTEXITCODE -ne 0) { throw "fetch-fares.ps1 exited $LASTEXITCODE" }
 
   # --- 2. round trips ---------------------------------------------------

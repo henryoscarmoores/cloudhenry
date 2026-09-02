@@ -147,7 +147,7 @@
 
   if (!$("chfsGrid")) { return; }   // widget not on this page
 
-  var FARES = [], state = { from:"MAN", q:"", when:"any", trip:"any", sort:"price", direct:false, budget:600 };
+  var FARES = [], state = { from:"MAN", q:"", from2:"", to2:"", trip:"any", sort:"price", direct:false, budget:600 };
 
   ORIGINS.forEach(function (o) {
     var opt = document.createElement("option");
@@ -224,7 +224,15 @@
     if (state.trip === "ret") rows = rows.filter(function (r) { return !!r.ret; });
     if (state.direct) rows = rows.filter(function (r) { return r.stops === 0; });
     if (state.budget < 600) rows = rows.filter(function (r) { return r.price <= state.budget; });
-    if (state.when !== "any") rows = rows.filter(function (r) { return monthKey(r.dep) === state.when; });
+    // A window rather than a month: "leaving on or after" and "back by"
+    // covers both a loose search and an exact trip, which is how people
+    // actually think about dates.
+    if (state.from2) rows = rows.filter(function (r) { return r.dep >= state.from2; });
+    if (state.to2) {
+      rows = rows.filter(function (r) {
+        return r.ret ? (r.ret <= state.to2) : (r.dep <= state.to2);
+      });
+    }
 
     rows.sort(function (a, b) {
       if (state.sort === "price") return a.price - b.price;
@@ -243,25 +251,6 @@
       if (!seen[k]) { seen[k] = 1; unique.push(r); }
     });
     return unique;
-  }
-
-  function buildMonths() {
-    var sel = $("chfsWhen");
-    var months = {};
-    flatten().forEach(function (r) { if (r.dep) months[monthKey(r.dep)] = 1; });
-    var keys = Object.keys(months).sort();
-    sel.innerHTML = "";
-    var any = document.createElement("option");
-    any.value = "any"; any.textContent = "Any date";
-    sel.appendChild(any);
-    keys.forEach(function (k) {
-      var p = k.split("-");
-      var o = document.createElement("option");
-      o.value = k; o.textContent = MON[parseInt(p[1], 10) - 1] + " " + p[0];
-      sel.appendChild(o);
-    });
-    sel.value = (keys.indexOf(state.when) > -1) ? state.when : "any";
-    state.when = sel.value;
   }
 
   function tag(r) {
@@ -284,7 +273,18 @@
 
     grid.innerHTML = "";
     if (!rows.length) {
-      grid.innerHTML = '<div class="chfs-empty"><strong>No flights match</strong>Clear the destination, raise the price, or choose Any date.</div>';
+      if (state.from2) {
+        var dest = state.q.trim() ? state.q.trim().toUpperCase().slice(0, 3) : "";
+        var url = "https://www.aviasales.com/search/" + state.from + ddmm(state.from2) +
+                  dest + (state.to2 ? ddmm(state.to2) : "") + "1?marker=" + MARKER;
+        grid.innerHTML =
+          '<div class="chfs-nodata"><strong>No cached fare for those dates yet</strong>' +
+          'We refresh fares daily, and these dates are not in this run. ' +
+          'You can still search them live.' +
+          '<a href="' + url + '" target="_blank" rel="noopener sponsored">Search these dates on Aviasales</a></div>';
+      } else {
+        grid.innerHTML = '<div class="chfs-empty"><strong>No flights match</strong>Clear the destination, raise the price, or widen your dates.</div>';
+      }
       return;
     }
 
@@ -364,9 +364,30 @@
   $("chfsBg").addEventListener("click", function (e) { if (e.target === $("chfsBg")) closeSheet(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("chfsBg").hidden) closeSheet(); });
 
-  $("chfsFrom").addEventListener("change", function () { state.from = this.value; buildMonths(); render(); });
+  $("chfsFrom").addEventListener("change", function () { state.from = this.value; render(); });
   $("chfsTo").addEventListener("input", function () { state.q = this.value; render(); });
-  $("chfsWhen").addEventListener("change", function () { state.when = this.value; render(); });
+  function isoToday() { return new Date().toISOString().slice(0, 10); }
+
+  $("chfsFrom2").addEventListener("change", function () { state.from2 = this.value; render(); });
+  $("chfsTo2").addEventListener("change", function () { state.to2 = this.value; render(); });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".chfs-quick button"), function (b) {
+    b.addEventListener("click", function () {
+      var days = parseInt(b.dataset.days, 10);
+      if (!days) {
+        state.from2 = ""; state.to2 = "";
+        $("chfsFrom2").value = ""; $("chfsTo2").value = "";
+      } else {
+        var start = new Date();
+        var end = new Date(Date.now() + days * 86400000);
+        state.from2 = start.toISOString().slice(0, 10);
+        state.to2 = end.toISOString().slice(0, 10);
+        $("chfsFrom2").value = state.from2;
+        $("chfsTo2").value = state.to2;
+      }
+      render();
+    });
+  });
   $("chfsGo").addEventListener("click", render);
   $("chfsBudget").addEventListener("input", function () {
     state.budget = parseInt(this.value, 10);
@@ -415,7 +436,9 @@
         $("chfsStamp").textContent = " Last updated " + fmt(j.generated) + ", " +
           ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ".";
       }
-      buildMonths();
+      var today = isoToday();
+      $("chfsFrom2").min = today;
+      $("chfsTo2").min = today;
       render();
       checkMember().then(function (paid) {
         PAID = paid;
