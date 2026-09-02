@@ -34,7 +34,7 @@
   // point is to show what they are missing, not to hide it.
   function applyGate(root) {
     if (PAID) return;
-    var links = (root || document).querySelectorAll(".chfs-book, #chfsMain");
+    var links = (root || document).querySelectorAll(".chfs-book, #chfsMain, .chfs-live a");
     Array.prototype.forEach.call(links, function (a) {
       a.setAttribute("href", "#/portal/signup");
       a.removeAttribute("target");
@@ -199,7 +199,11 @@
   function isWeekendBreak(r) {
     if (!r.ret) return false;
     var out = dow(r.dep), back = dow(r.ret);
-    return (out === 5 || out === 6) && back === 0;
+    if (!((out === 5 || out === 6) && back === 0)) return false;
+    // Friday to Sunday sixteen nights later is not a weekend. Only a
+    // genuine short break counts: one or two nights away.
+    var nights = dayDiff(r.ret, r.dep);
+    return nights >= 1 && nights <= 2;
   }
 
   // Aviasales deep link. Format: ORIGIN + DDMM + DEST + [DDMM return] + pax
@@ -223,6 +227,7 @@
     FARES.forEach(function (f) {
       if (f.origin !== state.from) return;
       var opts = f.options && f.options.length ? f.options : null;
+      if (!PLACES[f.destination]) return;   // unnamed code, looks broken
       if (opts) {
         // A return costs more than a one-way, so they need separate
         // baselines. Comparing a return against the one-way average was
@@ -333,6 +338,7 @@
 
   function render() {
     renderLiveBar();
+    applyGate(document);
     var rows = build();
     var grid = $("chfsGrid");
     var fromCity = "";
@@ -348,10 +354,12 @@
         var url = "https://www.aviasales.com/search/" + state.from + ddmm(state.from2) +
                   dest + (state.to2 ? ddmm(state.to2) : "") + "1?marker=" + MARKER;
         grid.innerHTML =
-          '<div class="chfs-nodata"><strong>No cached fare for those dates yet</strong>' +
-          'We refresh fares daily, and these dates are not in this run. ' +
-          'You can still search them live.' +
-          '<a href="' + url + '" target="_blank" rel="noopener sponsored">Search these dates on Aviasales</a></div>';
+          '<div class="chfs-nodata">' +
+            '<strong>No cached fare for those dates yet</strong>' +
+            '<p>We refresh fares daily and these dates are not in this run. ' +
+            'You can still search them live.</p>' +
+            '<a href="' + url + '" target="_blank" rel="noopener sponsored">Search these dates on Aviasales</a>' +
+          '</div>';
       } else {
         grid.innerHTML = '<div class="chfs-empty"><strong>No flights match</strong>Clear the destination, raise the price, or widen your dates.</div>';
       }
