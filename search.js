@@ -11,6 +11,40 @@
   var DATA_URL = "https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/fares.json";
   var MARKER   = "764584";
 
+  // Everyone sees every fare. Only paying members can act on one:
+  // /members/api/member/ answers 200 with the member when signed in and
+  // 204 when not, so it is a reliable client-side check.
+  var PAID = false;
+
+  function checkMember() {
+    return fetch("/members/api/member/", { credentials: "include" })
+      .then(function (r) { return r.status === 200 ? r.json() : null; })
+      .then(function (m) {
+        if (!m) return false;
+        if (m.status === "paid" || m.status === "comped") return true;
+        return !!(m.subscriptions && m.subscriptions.some(function (s) {
+          return s.status === "active" || s.status === "trialing";
+        }));
+      })
+      .catch(function () { return false; });
+  }
+
+  // Swap every booking link for a subscribe prompt when the reader has
+  // not paid. The fare, the date and the saving all stay visible: the
+  // point is to show what they are missing, not to hide it.
+  function applyGate(root) {
+    if (PAID) return;
+    var links = (root || document).querySelectorAll(".chfs-book, #chfsMain");
+    Array.prototype.forEach.call(links, function (a) {
+      a.setAttribute("href", "#/portal/signup");
+      a.removeAttribute("target");
+      a.removeAttribute("rel");
+      a.classList.add("chfs-locked");
+      a.textContent = a.id === "chfsMain" ? "Subscribe to book â Â£2.99/month" : "Unlock";
+    });
+  }
+
+
   var ORIGINS = [
     ["MAN","Manchester"], ["BHX","Birmingham"], ["LBA","Leeds Bradford"],
     ["STN","London Stansted"], ["LTN","London Luton"], ["BRS","Bristol"],
@@ -301,6 +335,7 @@
     });
 
     $("chfsMain").href = bookUrl(state.from, r.dest, r.dep, r.ret);
+    applyGate(document.getElementById("chfsBg"));
     $("chfsBg").hidden = false;
     $("chfsClose").focus();
   }
@@ -364,6 +399,21 @@
       }
       buildMonths();
       render();
+      checkMember().then(function (paid) {
+        PAID = paid;
+        if (!paid) {
+          var note = document.querySelector(".chfs-note");
+          if (note && !document.getElementById("chfsTease")) {
+            var t = document.createElement("div");
+            t.id = "chfsTease";
+            t.className = "chfs-tease";
+            t.innerHTML = "<strong>These fares are real, and they go fast.</strong>" +
+              "<span>Browse every route for free. Members book them for &pound;2.99 a month.</span>" +
+              "<a class=\"chfs-tease-cta\" href=\"#/portal/signup\">Become a member</a>";
+            note.parentNode.insertBefore(t, note);
+          }
+        }
+      });
     })
     .catch(function (err) {
       $("chfsTitle").textContent = "Fares unavailable";
