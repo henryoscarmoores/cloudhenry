@@ -311,7 +311,25 @@
     return "";
   }
 
+  // The next Friday, and the Sunday after it.
+  function nextWeekend() {
+    var d = new Date();
+    d.setHours(12, 0, 0, 0);
+    var add = (5 - d.getDay() + 7) % 7;
+    if (add === 0) add = 7;                 // today is Friday: use next one
+    var fri = new Date(d.getTime() + add * 86400000);
+    var sun = new Date(fri.getTime() + 2 * 86400000);
+    return [fri.toISOString().slice(0, 10), sun.toISOString().slice(0, 10)];
+  }
+
   function liveSearchUrl() {
+    // Weekend mode always offers a live search, because the cache holds
+    // only a handful of weekend-dated fares and a thin list should not
+    // be the end of the road.
+    if (!state.from2 && state.trip === "weekend") {
+      var wk = nextWeekend();
+      return "https://www.aviasales.com/search/" + state.from + ddmm(wk[0]) + ddmm(wk[1]) + "1?marker=" + MARKER;
+    }
     if (!state.from2) return null;
     var destCode = "";
     var q = state.q.trim().toLowerCase();
@@ -335,9 +353,15 @@
     var bar = document.createElement("div");
     bar.id = "chfsLive";
     bar.className = "chfs-live";
+    var wkMode = (state.trip === "weekend" && !state.from2);
+    var wk = wkMode ? nextWeekend() : null;
     bar.innerHTML =
-      "<span>Want these exact dates checked live, including any we have not cached?</span>" +
-      '<a href="' + url + '" target="_blank" rel="noopener sponsored">Search these dates on Aviasales</a>';
+      "<span>" + (wkMode
+        ? "We hold a handful of weekend fares. Check this coming weekend live, " +
+          fmt(wk[0]) + " to " + fmt(wk[1]) + "."
+        : "Want these exact dates checked live, including any we have not cached?") + "</span>" +
+      '<a href="' + url + '" target="_blank" rel="noopener sponsored">' +
+        (wkMode ? "Search this weekend live" : "Search these dates on Aviasales") + '</a>';
     head.parentNode.insertBefore(bar, head);
   }
 
