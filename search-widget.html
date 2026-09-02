@@ -78,12 +78,14 @@ img.chfs-flag{display:block;width:38px;height:28px;object-fit:cover;border-radiu
 .chfs-opt .d{font-weight:700;font-variant-numeric:tabular-nums}
 .chfs-opt .s{display:block;color:var(--chfs-soft);font-size:12px}
 .chfs-opt .p{font-weight:800;color:var(--chfs-sky);font-variant-numeric:tabular-nums;font-size:15px;text-align:right}
-.chfs-book{display:inline-block;margin-top:5px;padding:6px 14px;border-radius:999px;background:var(--chfs-sun);color:#16324A;font-weight:800;font-size:12px;text-decoration:none;white-space:nowrap}
+.chfs-book{display:inline-block;padding:5px 12px;border-radius:999px;background:var(--chfs-sun);color:#16324A;font-weight:800;font-size:11.5px;line-height:1.35;text-decoration:none;white-space:nowrap}
+.chfs-opt>span:last-child{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+@media(max-width:430px){.chfs-opt{padding:9px 10px;gap:8px}.chfs-opt .p{font-size:14px}.chfs-book{padding:4px 10px;font-size:11px}}
 .chfs-cta{display:block;width:100%;margin-top:18px;border-radius:14px;background:var(--chfs-sun);color:#16324A;font-weight:800;font-size:15.5px;padding:14px;text-align:center;text-decoration:none;transition:transform .2s var(--chfs-ease)}
 .chfs-cta:hover{transform:translateY(-2px)}
 .chfs-fine{text-align:center;font-size:11.5px;color:var(--chfs-faint);margin:10px 0 0}
 .chfs-locked{background:var(--chfs-ink)!important;color:#fff!important;position:relative}
-.chfs-locked::before{content:"\1F512";margin-right:5px;font-size:11px}
+.chfs-locked::before{content:"\1F512";margin-right:4px;font-size:10px;vertical-align:1px}
 #chfsMain.chfs-locked{font-size:15px}
 .chfs-tease{margin-top:26px;border-radius:16px;padding:18px 20px;background:linear-gradient(135deg,var(--chfs-sky) 0%,#0B558C 100%);color:#fff;display:grid;gap:6px;justify-items:start}
 .chfs-tease strong{font-size:17px;letter-spacing:-.015em}
