@@ -147,7 +147,7 @@
 
   if (!$("chfsGrid")) { return; }   // widget not on this page
 
-  var FARES = [], state = { from:"MAN", q:"", from2:"", to2:"", trip:"any", sort:"price", direct:false, budget:600 };
+  var FARES = [], state = { from:"MAN", q:"", from2:"", to2:"", flex:3, trip:"any", sort:"price", direct:false, budget:600 };
 
   ORIGINS.forEach(function (o) {
     var opt = document.createElement("option");
@@ -169,6 +169,18 @@
     return p[2] + p[1];
   }
   function monthKey(iso) { return String(iso).slice(0, 7); }
+
+  // Whole days between two ISO dates, computed at midday UTC so a
+  // daylight saving change cannot shift the answer by one.
+  function toDays(iso) {
+    var p = String(iso).slice(0, 10).split("-");
+    if (p.length !== 3) return null;
+    return Date.UTC(+p[0], +p[1] - 1, +p[2], 12) / 86400000;
+  }
+  function dayDiff(a, b) {
+    var x = toDays(a), y = toDays(b);
+    return (x === null || y === null) ? 9999 : Math.round(x - y);
+  }
 
   // Day of week from the ISO string directly. Parsing these with Date
   // invites timezone shifts that can move a Friday flight to Thursday.
@@ -245,17 +257,24 @@
     if (state.trip === "weekend") rows = rows.filter(isWeekendBreak);
     if (state.direct) rows = rows.filter(function (r) { return r.stops === 0; });
     if (state.budget < 600) rows = rows.filter(function (r) { return r.price <= state.budget; });
-    // A window rather than a month: "leaving on or after" and "back by"
-    // covers both a loose search and an exact trip, which is how people
-    // actually think about dates.
-    if (state.from2) rows = rows.filter(function (r) { return r.dep >= state.from2; });
+    // Exact dates, with a tolerance either side. Someone asking for the
+    // 12th does not want an empty page because the cache holds the 13th,
+    // but they do want the 12th first. Set flex to 0 for exact only.
+    if (state.from2) {
+      rows = rows.filter(function (r) { return Math.abs(dayDiff(r.dep, state.from2)) <= state.flex; });
+    }
     if (state.to2) {
       rows = rows.filter(function (r) {
-        return r.ret ? (r.ret <= state.to2) : (r.dep <= state.to2);
+        return r.ret && Math.abs(dayDiff(r.ret, state.to2)) <= state.flex;
       });
     }
 
     rows.sort(function (a, b) {
+      if (state.from2) {
+        var da = Math.abs(dayDiff(a.dep, state.from2));
+        var db = Math.abs(dayDiff(b.dep, state.from2));
+        if (da !== db) return da - db;   // closest to the chosen day first
+      }
       if (state.sort === "price") return a.price - b.price;
       if (state.sort === "date") return String(a.dep).localeCompare(String(b.dep));
       return place(a.dest)[0].localeCompare(place(b.dest)[0]);
@@ -283,7 +302,37 @@
     return "";
   }
 
+  function liveSearchUrl() {
+    if (!state.from2) return null;
+    var destCode = "";
+    var q = state.q.trim().toLowerCase();
+    if (q) {
+      for (var code in PLACES) {
+        if (PLACES[code][0].toLowerCase() === q || code.toLowerCase() === q) { destCode = code; break; }
+      }
+    }
+    return "https://www.aviasales.com/search/" + state.from + ddmm(state.from2) +
+           destCode + (state.to2 ? ddmm(state.to2) : "") + "1?marker=" + MARKER;
+  }
+
+  function renderLiveBar() {
+    var old = document.getElementById("chfsLive");
+    if (old) old.remove();
+    var url = liveSearchUrl();
+    if (!url) return;
+    var head = document.querySelector(".chfs-head");
+    if (!head) return;
+    var bar = document.createElement("div");
+    bar.id = "chfsLive";
+    bar.className = "chfs-live";
+    bar.innerHTML =
+      "<span>Want these exact dates checked live, including any we have not cached?</span>" +
+      '<a href="' + url + '" target="_blank" rel="noopener sponsored">Search these dates on Aviasales</a>';
+    head.parentNode.insertBefore(bar, head);
+  }
+
   function render() {
+    renderLiveBar();
     var rows = build();
     var grid = $("chfsGrid");
     var fromCity = "";
@@ -392,7 +441,17 @@
   $("chfsFrom2").addEventListener("change", function () { state.from2 = this.value; render(); });
   $("chfsTo2").addEventListener("change", function () { state.to2 = this.value; render(); });
 
-  Array.prototype.forEach.call(document.querySelectorAll(".chfs-quick button"), function (b) {
+  var flexBtn = $("chfsFlex");
+  if (flexBtn) {
+    flexBtn.addEventListener("click", function () {
+      state.flex = state.flex ? 0 : 3;
+      flexBtn.textContent = state.flex ? "Exact dates only" : "Allow 3 days either side";
+      flexBtn.setAttribute("aria-pressed", state.flex ? "false" : "true");
+      render();
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll(".chfs-quick button:not(#chfsFlex)"), function (b) {
     b.addEventListener("click", function () {
       var days = parseInt(b.dataset.days, 10);
       if (!days) {
