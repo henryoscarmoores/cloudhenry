@@ -186,7 +186,14 @@
     if (cols.length < 2) return false;
 
     var ow = spread(bestPerDestination(candidates(fares, { returns:false, within:60 })), 6);
-    var rt = spread(bestPerDestination(candidates(fares, { returns:true,  within:75 })), 6);
+
+    // Keep the two columns showing twelve different cities. The same
+    // place once as a one-way and again as a return wastes a row.
+    var taken = {};
+    ow.forEach(function (r) { taken[r.dest] = true; });
+    var rtPool = bestPerDestination(candidates(fares, { returns:true, within:75 }))
+                   .filter(function (r) { return !taken[r.dest]; });
+    var rt = spread(rtPool, 6);
     if (ow.length < 3 || rt.length < 3) return false;   // do not gut the page
 
     function paint(col, rows, isReturn) {
