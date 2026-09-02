@@ -150,6 +150,12 @@
       });
       cap++;
     }
+    // Top up in price order. Without this a page showing one airport
+    // could never fill more than four rows, because the cap only ever
+    // reaches four and every row shares an origin.
+    rows.forEach(function (r) {
+      if (out.length < want && out.indexOf(r) === -1) out.push(r);
+    });
     return out.sort(function (a, b) { return a.price - b.price; });
   }
 
