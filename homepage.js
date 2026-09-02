@@ -132,8 +132,13 @@
         // headline produced a "best deal" of 10% sitting directly above a
         // fare in the page's own list at 82%, which reads as nonsense.
         var best = null;
+        // A domestic hop undersells a flight deals site: Glasgow to
+        // Birmingham was leading the Glasgow page. Show somewhere abroad.
+        var UK = { MAN:1,BHX:1,LBA:1,STN:1,LTN:1,BRS:1,NCL:1,GLA:1,EDI:1,LGW:1,LPL:1,BFS:1,LON:1,CWL:1,ILY:1,KOI:1 };
+
         j.fares.forEach(function (f) {
           if (f.origin !== origin || !f.typical) return;
+          if (UK[f.destination]) return;
 
           var price = f.price || Infinity;
           var dep = f.departure, ret = f.ret;
