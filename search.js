@@ -478,6 +478,40 @@
     state.month = sel.value;
   }
 
+  // Skyscanner splits this into specific dates and flexible dates.
+  // Same idea: two ways of answering "when", one at a time, rather than
+  // both controls competing in the same bar.
+  function setDateMode(mode) {
+    var dates = (mode === "dates");
+    $("chfsModeDates").setAttribute("aria-pressed", dates ? "true" : "false");
+    $("chfsModeMonth").setAttribute("aria-pressed", dates ? "false" : "true");
+    $("fDep").hidden = !dates;
+    $("fRet").hidden = !dates || state.trip === "one";
+    $("fMonth").hidden = dates;
+    if (dates) {
+      state.month = ""; $("chfsMonth").value = "";
+    } else {
+      state.from2 = ""; state.to2 = "";
+      $("chfsFrom2").value = ""; $("chfsTo2").value = "";
+    }
+    render();
+  }
+  $("chfsModeDates").addEventListener("click", function () { setDateMode("dates"); });
+  $("chfsModeMonth").addEventListener("click", function () { setDateMode("month"); });
+
+  // A date box should open a calendar when tapped, not wait for someone
+  // to find the little icon or type the digits by hand.
+  ["chfsFrom2", "chfsTo2"].forEach(function (id) {
+    var el = $(id);
+    if (!el) return;
+    el.addEventListener("focus", function () {
+      if (typeof el.showPicker === "function") { try { el.showPicker(); } catch (e) {} }
+    });
+    el.addEventListener("click", function () {
+      if (typeof el.showPicker === "function") { try { el.showPicker(); } catch (e) {} }
+    });
+  });
+
   $("chfsMonth").addEventListener("change", function () {
     state.month = this.value;
     if (state.month) {                    // a whole month and exact dates
@@ -537,10 +571,11 @@
     $("chfsOne").setAttribute("aria-pressed", v === "one" ? "true" : "false");
     $("chfsRet").setAttribute("aria-pressed", v === "ret" ? "true" : "false");
     $("chfsWknd").setAttribute("aria-pressed", v === "weekend" ? "true" : "false");
-    var retField = $("chfsTo2") ? $("chfsTo2").closest(".chfs-f") : null;
+    var retField = $("fRet");
     if (retField) {
-      var hide = (v === "one");
-      retField.style.display = hide ? "none" : "";
+      var monthMode = $("fMonth") && !$("fMonth").hidden;
+      var hide = (v === "one") || monthMode;
+      retField.hidden = hide;
       if (hide) { state.to2 = ""; $("chfsTo2").value = ""; }
     }
 
