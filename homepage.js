@@ -77,12 +77,7 @@
 
     // Their own script re-disables it whenever the select is empty, so
     // keep re-enabling rather than fighting it once at load.
-    if (sel) {
-      sel.addEventListener("change", enable);
-      new MutationObserver(function () {
-        if (btn.hasAttribute("disabled")) enable();
-      }).observe(btn, { attributes: true, attributeFilter: ["disabled"] });
-    }
+    if (sel) sel.addEventListener("change", enable);
 
     // With no airport picked, send them to the list instead of nowhere.
     btn.addEventListener("click", function (e) {
@@ -110,6 +105,12 @@
   // --- 2. Show a real fare, not an adjective ----------------------------
   function showDeal() {
     if (document.querySelector(".ch-hp-deal")) return;
+
+    // Wait for the hero to finish building itself. Inserting a sibling
+    // mid-build stopped the fares card from rendering at all, which cost
+    // far more than this card gains.
+    if (!document.querySelector(".ch-dbox")) return;
+
     var sub = document.querySelector(".ch-sub") || document.querySelector(".ch-h1");
     if (!sub) return;
 
@@ -149,6 +150,6 @@
     fixCta();
     liftProof();
     showDeal();
-    if (tries > 25) clearInterval(timer);
-  }, 200);
+    if (tries > 60 || document.querySelector(".ch-hp-deal")) clearInterval(timer);
+  }, 250);
 })();
