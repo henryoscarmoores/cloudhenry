@@ -9,6 +9,17 @@
   "use strict";
 
   var DATA_URL = "https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/fares.json";
+
+  // jsDelivr tells browsers to cache for seven days, so a daily refresh
+  // would take a week to reach anyone who had already visited. A date
+  // stamp on the query makes it a new URL each morning; jsDelivr ignores
+  // the parameter and still serves from its edge.
+  function dataUrl() {
+    var d = new Date();
+    return DATA_URL + "?v=" + d.getUTCFullYear() +
+           ("0" + (d.getUTCMonth() + 1)).slice(-2) +
+           ("0" + d.getUTCDate()).slice(-2);
+  }
   var MARKER   = "764584";
 
   // Everyone sees every fare. Only paying members can act on one:
@@ -743,7 +754,7 @@
     g.appendChild(s);
   }
 
-  fetch(DATA_URL, { cache: "default" })
+  fetch(dataUrl(), { cache: "default" })
     .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
     .then(function (j) {
       FARES = j.fares || [];
