@@ -456,7 +456,19 @@
     }
 
     // Other dates for the same destination, so people can shift a few days.
-    var alts = build().filter(function (x) { return x.dest === r.dest; }).slice(0, 6);
+    var alts = flatten()
+      .filter(function (x) { return x.dest === r.dest; })
+      .filter(function (x) {
+        if (state.trip === "one") return !x.ret;
+        if (state.trip === "ret") return !!x.ret;
+        if (state.trip === "weekend") return isWeekendBreak(x);
+        return true;
+      })
+      .sort(function (a, b) { return a.price - b.price; })
+      .filter(function (x, i, arr) {          // one row per date pair
+        return arr.findIndex(function (y) { return y.dep === x.dep && y.ret === x.ret; }) === i;
+      })
+      .slice(0, 6);
     var o = $("chfsOpts");
     o.innerHTML = "";
     alts.forEach(function (a) {
