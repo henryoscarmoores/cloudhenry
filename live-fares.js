@@ -30,10 +30,13 @@
            ("0" + d.getUTCDate()).slice(-2);
   }
 
+  // Short enough for the homepage teaser, which is one line at 12px.
+  // The three London airports are named individually: "London" three
+  // times over would tell a Gatwick reader nothing.
   var ORIGIN_NAME = {
-    MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"London",
-    LTN:"London", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
-    EDI:"Edinburgh", LGW:"London", LPL:"Liverpool", BFS:"Belfast"
+    MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
+    LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
+    EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast"
   };
 
   var JOIN_ORIGIN = {
@@ -242,7 +245,16 @@
     var picks = spread(bestPerDestination(candidates(fares, { origin: origin, within: 90 })), rows.length);
     if (picks.length < 2) return false;
 
+    // Take the airport's name off the page rather than deciding it here,
+    // so "Leeds Bradford" stays "Leeds Bradford" and each join page keeps
+    // the wording it was written with.
     var from = ORIGIN_NAME[origin] || origin;
+    var firstRoute = rows[0].querySelector("div");
+    if (firstRoute && firstRoute.textContent.indexOf("→") > -1) {
+      var existing = firstRoute.textContent.split("→")[0].trim();
+      if (existing) from = existing;
+    }
+
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
       if (i >= picks.length) { row.style.display = "none"; continue; }
