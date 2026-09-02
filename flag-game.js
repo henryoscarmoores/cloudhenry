@@ -58,10 +58,33 @@
   var wrap = document.createElement("div");
   wrap.className = "chfg";
 
-  // Sit after the "why join" tiles if they exist, else before the footer.
-  var after = document.querySelector(".ch-why") || document.querySelector(".ch-sec");
-  if (after && after.parentNode) after.parentNode.insertBefore(wrap, after.nextSibling);
-  else document.body.appendChild(wrap);
+  // The homepage sections are themselves built by other injected scripts,
+  // some of which run after this one. Poll briefly for the anchor rather
+  // than falling through and appending below the site footer.
+  function mount() {
+    var after = document.querySelector(".ch-why") || document.querySelector(".ch-sec");
+    if (after && after.parentNode) {
+      after.parentNode.insertBefore(wrap, after.nextSibling);
+      return true;
+    }
+    return false;
+  }
+
+  if (!mount()) {
+    var tries = 0;
+    var timer = setInterval(function () {
+      tries++;
+      if (mount() || tries > 20) {
+        clearInterval(timer);
+        if (!wrap.parentNode) {
+          // Last resort: above the site footer, never below it.
+          var foot = document.querySelector("footer, .gh-foot, .gh-footer");
+          if (foot && foot.parentNode) foot.parentNode.insertBefore(wrap, foot);
+          else document.body.appendChild(wrap);
+        }
+      }
+    }, 120);
+  }
 
   var round = 0, score = 0;
 
