@@ -53,6 +53,7 @@
       "border-radius:14px;padding:11px 14px;color:#fff;font-size:14px;line-height:1.45;text-align:center;" +
       "font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}" +
     ".ch-hp-deal b{color:#FFE071;font-weight:800}" +
+    ".ch-hp-badge{display:inline-block;background:#F5C242;color:#16324A;font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-bottom:7px}" +
     ".ch-hp-deal .ch-hp-was{text-decoration:line-through;opacity:.75;font-weight:600}" +
     ".ch-hp-deal .ch-hp-sub{display:block;margin-top:3px;font-size:12px;opacity:.82}";
 
@@ -132,7 +133,8 @@
         var el = document.createElement("div");
         el.className = "ch-hp-deal";
         el.innerHTML =
-          "Found this week: <b>" + name(best.f.origin) + " to " + name(best.f.destination) + "</b> for <b>&pound;" +
+          "<span class=\"ch-hp-badge\">Deal of the month</span><br>" +
+          "<b>" + name(best.f.origin) + " to " + name(best.f.destination) + "</b> for <b>&pound;" +
           best.f.price + "</b>, usually <span class=\"ch-hp-was\">&pound;" + best.f.typical + "</span>. " +
           "That is " + pct + "% under." +
           "<span class=\"ch-hp-sub\">Members get every fare like it for &pound;2.99 a month, less than a pint.</span>";
