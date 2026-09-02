@@ -37,8 +37,12 @@ jobs:
           if (-not $env:TP_TOKEN) {
             throw "TRAVELPAYOUTS_TOKEN secret is not set. Add it under Settings, Secrets and variables, Actions."
           }
-          Set-Content -Path ".token" -Value $env:TP_TOKEN -NoNewline -Encoding ascii
-          Write-Host "token written, $($env:TP_TOKEN.Length) characters"
+          # Trim it. The first cloud run failed every call with a 401
+          # because the stored secret carried one character more than the
+          # key, and a stray space is invisible in the Actions UI.
+          $tok = $env:TP_TOKEN.Trim()
+          Set-Content -Path ".token" -Value $tok -NoNewline -Encoding ascii
+          Write-Host "token written, $($tok.Length) characters"
 
       - name: Fetch fares
         shell: powershell
@@ -67,6 +71,18 @@ jobs:
           # Refuse to publish a thin file rather than empty the site.
           if ($count -lt 100) { throw "only $count routes, refusing to publish" }
           if ($size -lt 100000) { throw "file is only $size bytes, refusing to publish" }
+
+          # A destination with no entry in places.js has no city name and
+          # no flag, so the site hides it. Two codes disappeared that way
+          # once. Say so rather than losing the routes quietly.
+          $names = Get-Content "places.js" -Raw
+          $missing = @($j.fares | ForEach-Object { $_.destination } | Sort-Object -Unique |
+                       Where-Object { $names -notmatch ("(?m)\b" + [regex]::Escape($_) + ":\[") })
+          if ($missing.Count -gt 0) {
+            Write-Host "::warning::No city name for: $($missing -join ', '). Add them to places.js."
+          } else {
+            Write-Host "every destination has a name"
+          }
 
       - name: Commit and push
         shell: pwsh
