@@ -401,8 +401,25 @@
             'You can still search them live.</p>' +
             '<a href="' + url + '" target="_blank" rel="noopener sponsored">Search these dates on Aviasales</a>' +
           '</div>';
+      } else if (state.trip === "weekend") {
+        // Weekend inventory is heavily London weighted: Gatwick, Stansted
+        // and Luton hold 459 of 520 breaks and Leeds Bradford holds none.
+        // Telling a Leeds visitor to clear the destination is simply wrong.
+        var wk = nextWeekend();
+        var wkUrl = "https://www.aviasales.com/search/" + state.from + ddmm(wk[0]) + ddmm(wk[1]) + "1?marker=" + MARKER;
+        var fromCity = "";
+        ORIGINS.forEach(function (o) { if (o[0] === state.from) fromCity = o[1]; });
+        grid.innerHTML =
+          '<div class="chfs-nodata">' +
+            '<strong>No weekend breaks cached from ' + fromCity + ' yet</strong>' +
+            '<p>Our weekend fares are strongest from the London airports right now. ' +
+            'Try another airport above, or check this coming weekend live.</p>' +
+            '<a href="' + wkUrl + '" target="_blank" rel="noopener sponsored">Search ' +
+            fmt(wk[0]) + ' to ' + fmt(wk[1]) + ' live</a>' +
+          '</div>';
+        applyGate(grid);
       } else {
-        grid.innerHTML = '<div class="chfs-empty"><strong>No flights match</strong>Clear the destination, raise the price, or widen your dates.</div>';
+        grid.innerHTML = '<div class="chfs-empty"><strong>No flights match</strong>Try another airport, raise the price, or widen your dates.</div>';
       }
       return;
     }

@@ -8,3 +8,6 @@ header-backup.txt
 # Travelpayouts API token - never commit
 .token
 fetch-fares.log
+fares.json.prev
+fares-slim.json
+daily-refresh.log
