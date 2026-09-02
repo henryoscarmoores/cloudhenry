@@ -219,6 +219,15 @@
         var metaEl  = c.querySelector(".ch-d2-meta");
         var priceEl = c.querySelector(".ch-d2-price");
         var avgEl   = c.querySelector(".ch-d2-avg");
+
+        // Ghost only wrote an "avg" span for rows that happened to have
+        // one when the block was typed out. A live fare with a genuine
+        // saving would have had nowhere to show it.
+        if (!avgEl && priceEl && priceEl.parentElement) {
+          avgEl = document.createElement("span");
+          avgEl.className = "ch-d2-avg";
+          priceEl.parentElement.appendChild(avgEl);
+        }
         var label = (ORIGIN_NAME[r.origin] || r.origin) + " → " + (p ? p[0] : r.dest);
         if (routeEl) routeEl.textContent = label;
         if (metaEl) {
