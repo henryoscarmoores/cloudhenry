@@ -1,4 +1,4 @@
-/* CH_REVAMP_2026_09 — CloudHenry restyle
+﻿/* CH_REVAMP_2026_09 â€” CloudHenry restyle
    Additive polish layer. Appended last to codeinjection_foot so it wins
    on equal specificity. Remove this whole marked block to revert.
    Principles: keep the sky/pixel brand character, raise the craft.
@@ -27,8 +27,8 @@
 }
 
 /* ---------------------------------------------------------------
-   1. NUMERALS — prices in a column must align.
-   Tabular figures stop the £14/£28/£140 ragged-edge effect.
+   1. NUMERALS â€” prices in a column must align.
+   Tabular figures stop the Â£14/Â£28/Â£140 ragged-edge effect.
    --------------------------------------------------------------- */
 .ch-d2-price, .ch-d2-avg, .ch-price, .ch-amt, .ch-dp, .ch-yr,
 .ch-d2-meta, .ch-prize-title {
@@ -37,7 +37,7 @@
 }
 
 /* ---------------------------------------------------------------
-   2. FARE ROWS — the worst legibility offenders on the page.
+   2. FARE ROWS â€” the worst legibility offenders on the page.
    9px -> 11px, 12px -> 13px, price 14.5px -> 16px.
    --------------------------------------------------------------- */
 .ch-d2 {
@@ -74,7 +74,7 @@
 .ch-d2-price  { font-size: 16px;   letter-spacing: -.02em; line-height: 1.15; }
 .ch-d2-avg    { font-size: 11px;   color: #8296A8; text-decoration-thickness: 1px; line-height: 1.3; }
 
-/* The destination is the product — never ellipsis it.
+/* The destination is the product â€” never ellipsis it.
    "Edinburgh -> Copenhagen" was truncating to "Edinburgh -> Copen...".
    Two-element selectors here to beat the existing theme rule. */
 .ch-d2 .ch-d2-l     { flex: 1 1 auto; min-width: 0; }
@@ -95,7 +95,7 @@
 }
 
 /* ---------------------------------------------------------------
-   3. CARDS & TILES — consistent radius, real depth, hover lift
+   3. CARDS & TILES â€” consistent radius, real depth, hover lift
    --------------------------------------------------------------- */
 .ch-why-tile, .ch-scard, .ch-dbox, .ch-prize {
   border-radius: var(--ch-r-md);
@@ -118,7 +118,7 @@
 .ch-why-emoji { display: block; margin-bottom: 10px; line-height: 1; }
 
 /* ---------------------------------------------------------------
-   4. TYPE — tighter optical tracking at display sizes
+   4. TYPE â€” tighter optical tracking at display sizes
    --------------------------------------------------------------- */
 .ch-h1 {
   letter-spacing: -.028em;
@@ -137,7 +137,7 @@
 }
 
 /* ---------------------------------------------------------------
-   5. BUTTONS — transition, press feedback, visible focus
+   5. BUTTONS â€” transition, press feedback, visible focus
    --------------------------------------------------------------- */
 .ch-cta, .ch-cta2, .ch-ap-btn, .ch-ec-btn {
   transition: transform .18s var(--ch-ease),
@@ -145,7 +145,7 @@
               filter var(--ch-dur) var(--ch-ease);
   box-shadow: 0 2px 6px rgba(14,53,80,.12);
 }
-/* :not([disabled]) matters — "Find my deals" is deliberately disabled at
+/* :not([disabled]) matters â€” "Find my deals" is deliberately disabled at
    55% opacity until an airport is picked. Don't make it look clickable. */
 .ch-cta:hover, .ch-cta2:hover, .ch-ec-btn:hover, .ch-ap-btn:not([disabled]):hover {
   transform: translateY(-2px);
@@ -175,7 +175,7 @@
 .ch-ap-select:hover, .ch-ec-input:hover { box-shadow: var(--ch-sh-1); }
 
 /* ---------------------------------------------------------------
-   6. NAVIGATION — true centring for the middle-logo layout,
+   6. NAVIGATION â€” true centring for the middle-logo layout,
    plus an underline that grows in rather than snapping on.
    --------------------------------------------------------------- */
 .gh-navigation.is-middle-logo .gh-navigation-inner {
@@ -205,7 +205,7 @@
 }
 .gh-navigation-menu .nav a:hover::after { transform: scaleX(1); }
 
-/* "Coming soon" tag under Search — make it a proper pill, not stray text */
+/* "Coming soon" tag under Search â€” make it a proper pill, not stray text */
 .ch-nav-soon {
   display: inline-block;
   padding: 1px 7px;
@@ -217,7 +217,7 @@
 }
 
 /* ---------------------------------------------------------------
-   7. MOTION — stagger the existing reveal, and float the sky.
+   7. MOTION â€” stagger the existing reveal, and float the sky.
    Everything here is opt-out via prefers-reduced-motion (section 8).
    --------------------------------------------------------------- */
 .ch-reveal {
@@ -264,7 +264,7 @@
 .ch-mg-flag:active { transform: translateY(0) scale(.98); }
 
 /* ---------------------------------------------------------------
-   8. REDUCED MOTION — honour the OS setting. Non-negotiable.
+   8. REDUCED MOTION â€” honour the OS setting. Non-negotiable.
    --------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .chsky-cloud1, .chsky-cloud2, .chsky-sun, .ch-veil::after {
@@ -281,14 +281,17 @@
 }
 
 /* ---------------------------------------------------------------
-   9. MOBILE — the small screens need the size lift most
+   9. MOBILE â€” the small screens need the size lift most
    --------------------------------------------------------------- */
 /* Measured mobile values before this block: route 10.5px, meta 8.5px,
    avg 8px, price 13px. Sub-9px struck-through prices were the single
    worst legibility problem on the site, and mobile is where the
    Instagram traffic lands. */
 @media (max-width: 640px) {
-  .ch-d2         { padding: 9px 11px; min-height: 54px; }
+  /* Mobile puts the fares in two columns, leaving only ~95px for the
+     route, so longer names wrap to two lines. 66px is the two-line
+     height: it keeps every row identical instead of 65/54 ragged. */
+  .ch-d2         { padding: 9px 11px; min-height: 66px; }
   .ch-d2-route   { font-size: 11.5px; }
   .ch-d2-meta    { font-size: 10px; }
   .ch-d2-price   { font-size: 15px; }
