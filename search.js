@@ -232,11 +232,14 @@
       return place(a.dest)[0].localeCompare(place(b.dest)[0]);
     });
 
-    // One row per destination+date so the grid does not fill with the
-    // same city over and over.
+    // Browsing "Everywhere" is a question about places, not dates, so
+    // show the best fare per destination. Sorting by price alone put
+    // twelve consecutive Paris cards on screen and buried every other
+    // city. Once a destination is named, every date for it is listed.
     var seen = {}, unique = [];
+    var perDestination = !state.q.trim();
     rows.forEach(function (r) {
-      var k = r.dest + "|" + r.dep + "|" + r.ret;
+      var k = perDestination ? r.dest : (r.dest + "|" + r.dep + "|" + r.ret);
       if (!seen[k]) { seen[k] = 1; unique.push(r); }
     });
     return unique;
