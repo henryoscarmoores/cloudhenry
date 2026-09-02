@@ -179,17 +179,32 @@
 
   // Flatten each route into its individual dated departures, so the list
   // shows bookable flights rather than one summary row per destination.
+  function mean(a) {
+    if (!a.length) return null;
+    var t = 0, i;
+    for (i = 0; i < a.length; i++) t += a[i];
+    return Math.round(t / a.length);
+  }
+
   function flatten() {
     var out = [];
     FARES.forEach(function (f) {
       if (f.origin !== state.from) return;
       var opts = f.options && f.options.length ? f.options : null;
       if (opts) {
+        // A return costs more than a one-way, so they need separate
+        // baselines. Comparing a return against the one-way average was
+        // making every round trip look "above usual" against a cheaper
+        // struck-through figure, which is simply wrong.
+        var ow = [], rt = [];
+        opts.forEach(function (o) { (o.r ? rt : ow).push(o.p); });
+        var owAvg = mean(ow), rtAvg = mean(rt);
         opts.forEach(function (o) {
-          out.push({ dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0, typical:f.typical || null });
+          out.push({ dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0,
+                     typical: o.r ? rtAvg : owAvg });
         });
       } else {
-        out.push({ dest:f.destination, price:f.price, dep:f.departure, ret:f.ret || "", stops:f.transfers || 0, typical:f.typical || null });
+        out.push({ dest:f.destination, price:f.price, dep:f.departure, ret:f.ret || "", stops:f.transfers || 0, typical: f.ret ? null : (f.typical || null) });
       }
     });
     return out;
@@ -288,7 +303,7 @@
         '</span>' +
         '<span>' +
           '<span class="chfs-price">£' + r.price + '</span>' +
-          (r.typical ? '<span class="chfs-was">£' + r.typical + '</span>' : '') +
+          (r.typical && r.typical > r.price ? '<span class="chfs-was">£' + r.typical + '</span>' : '') +
         '</span>';
 
       b.addEventListener("click", function () { openSheet(r); });
