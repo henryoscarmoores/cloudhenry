@@ -98,6 +98,18 @@
     return String.fromCharCode(65 + (a - 0x1F1E6)) + String.fromCharCode(65 + (b - 0x1F1E6));
   }
 
+  // Real flag images. Emoji flags are not an option here: Windows ships
+  // no glyphs for them. flagcdn serves plain PNGs, and the UK nations
+  // need subdivision codes rather than the union flag.
+  var SUBDIVISION = { "Scotland":"gb-sct", "England":"gb-eng", "Wales":"gb-wls", "N. Ireland":"gb-nir" };
+
+  function flagImg(p) {
+    var code = SUBDIVISION[p[1]] || badgeCode(p[2]).toLowerCase();
+    if (!code) return '<span class="chfs-flag chfs-flag-x" aria-hidden="true">&#9992;</span>';
+    return '<img class="chfs-flag" alt="" loading="lazy" decoding="async" src="https://flagcdn.com/w40/' +
+           code + '.png" srcset="https://flagcdn.com/w80/' + code + '.png 2x">';
+  }
+
 
   if (!$("chfsGrid")) { return; }   // widget not on this page
 
@@ -234,7 +246,7 @@
       var stops = r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops");
 
       b.innerHTML =
-        '<span class="chfs-flag" aria-hidden="true">' + (badgeCode(p[2]) || "â") + '</span>' +
+        flagImg(p) +
         '<span style="min-width:0">' +
           '<span class="chfs-city">' + p[0] + '</span>' +
           '<span class="chfs-meta">' + when + " · " + trip + " · " + stops + '</span>' +
@@ -258,7 +270,7 @@
     var fromCity = "";
     ORIGINS.forEach(function (o) { if (o[0] === state.from) fromCity = o[1]; });
 
-    $("chfsCity").textContent = p[0];
+    $("chfsCity").innerHTML = flagImg(p) + " " + p[0];
     $("chfsRoute").textContent = fromCity + " → " + p[0] + (p[1] ? ", " + p[1] : "");
 
     var v = $("chfsVerdict");
