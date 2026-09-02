@@ -1,0 +1,156 @@
+<!-- CloudHenry Everywhere search.
+     Everything is namespaced .chfs- so it cannot affect the rest of the
+     site, and no CSS framework is loaded: a framework reset would wipe
+     out the existing theme styling.
+     Fare data comes from the CDN file the daily fetch task refreshes. -->
+<style>
+.chfs{--chfs-sky:#0E6FB6;--chfs-sky-l:#3E9BDD;--chfs-ink:#0E3550;--chfs-soft:#46607A;--chfs-faint:#7A90A5;--chfs-sun:#F5C242;--chfs-surf:#fff;--chfs-surf2:#EDF3F9;--chfs-line:rgba(14,53,80,.12);--chfs-good:#1B7F53;--chfs-warn:#B45309;--chfs-ease:cubic-bezier(.22,.61,.36,1);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--chfs-ink);max-width:1040px;margin:0 auto;text-align:left}
+.chfs *,.chfs *::before,.chfs *::after{box-sizing:border-box}
+.chfs-panel{background:var(--chfs-surf);border:1px solid var(--chfs-line);border-radius:20px;box-shadow:0 4px 10px rgba(14,53,80,.08),0 22px 48px rgba(14,53,80,.12);padding:16px}
+.chfs-row{display:grid;gap:10px}
+@media(min-width:820px){.chfs-row.chfs-main{grid-template-columns:1.1fr 1.4fr 1.1fr auto;align-items:end}}
+.chfs-f{display:grid;gap:6px;min-width:0}
+.chfs-lab{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--chfs-faint)}
+.chfs-ctl{width:100%;font:inherit;font-size:15.5px;font-weight:600;color:var(--chfs-ink);background:var(--chfs-surf2);border:1px solid transparent;border-radius:14px;padding:12px 14px;appearance:none;-webkit-appearance:none;transition:border-color .25s var(--chfs-ease),box-shadow .25s var(--chfs-ease)}
+select.chfs-ctl{padding-right:34px;background-image:linear-gradient(45deg,transparent 50%,var(--chfs-soft) 50%),linear-gradient(135deg,var(--chfs-soft) 50%,transparent 50%);background-position:calc(100% - 19px) calc(50% + 1px),calc(100% - 14px) calc(50% + 1px);background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.chfs-ctl:hover{border-color:var(--chfs-line)}
+.chfs-ctl:focus-visible{outline:none;border-color:var(--chfs-sky);box-shadow:0 0 0 4px rgba(14,111,182,.25)}
+.chfs-go{width:100%;border:0;border-radius:14px;background:var(--chfs-sun);color:#16324A;font:inherit;font-weight:800;font-size:16px;padding:14px 26px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(14,53,80,.16);transition:transform .18s var(--chfs-ease),box-shadow .25s var(--chfs-ease)}
+.chfs-go:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(245,194,66,.42),0 3px 8px rgba(14,53,80,.16)}
+.chfs-go:active{transform:none}
+@media(min-width:820px){.chfs-go{width:auto}}
+.chfs-sub{margin-top:14px;padding-top:14px;border-top:1px solid var(--chfs-line);display:grid;gap:12px}
+@media(min-width:700px){.chfs-sub{grid-template-columns:1fr auto;align-items:center}}
+.chfs-seg{display:inline-flex;gap:3px;background:var(--chfs-surf2);border-radius:999px;padding:4px}
+.chfs-seg button{border:0;background:transparent;font:inherit;font-weight:700;font-size:13px;color:var(--chfs-soft);padding:8px 14px;border-radius:999px;cursor:pointer;transition:all .25s var(--chfs-ease)}
+.chfs-seg button[aria-pressed="true"]{background:var(--chfs-surf);color:var(--chfs-ink);box-shadow:0 1px 3px rgba(14,53,80,.14)}
+.chfs-budget{display:grid;gap:6px}
+.chfs-bl{display:flex;justify-content:space-between;align-items:baseline}
+.chfs-bl b{font-size:15px;color:var(--chfs-sky);font-variant-numeric:tabular-nums}
+.chfs-range{width:100%;height:22px;background:transparent;appearance:none;-webkit-appearance:none;cursor:pointer}
+.chfs-range::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:rgba(14,53,80,.14)}
+.chfs-range::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-7px;width:20px;height:20px;border-radius:50%;background:var(--chfs-sun);border:2px solid #fff;box-shadow:0 2px 6px rgba(14,53,80,.28)}
+.chfs-range::-moz-range-track{height:6px;border-radius:999px;background:rgba(14,53,80,.14)}
+.chfs-range::-moz-range-thumb{width:20px;height:20px;border:2px solid #fff;border-radius:50%;background:var(--chfs-sun)}
+.chfs-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin:26px 2px 12px}
+.chfs-head h3{font-size:19px;font-weight:800;letter-spacing:-.02em;margin:0}
+.chfs-count{font-size:13.5px;color:var(--chfs-soft);font-variant-numeric:tabular-nums}
+.chfs-chips{margin-left:auto;display:flex;gap:6px}
+.chfs-chip{border:1px solid var(--chfs-line);background:var(--chfs-surf);color:var(--chfs-soft);font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .25s var(--chfs-ease)}
+.chfs-chip[aria-pressed="true"]{background:var(--chfs-ink);color:#fff;border-color:var(--chfs-ink)}
+.chfs-grid{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:640px){.chfs-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:980px){.chfs-grid{grid-template-columns:1fr 1fr 1fr}}
+.chfs-card{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;width:100%;text-align:left;background:var(--chfs-surf);border:1px solid var(--chfs-line);border-radius:14px;box-shadow:0 1px 2px rgba(14,53,80,.06),0 2px 8px rgba(14,53,80,.05);padding:13px;font:inherit;color:inherit;cursor:pointer;transition:transform .28s var(--chfs-ease),box-shadow .28s var(--chfs-ease),border-color .28s var(--chfs-ease)}
+.chfs-card:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(14,53,80,.07),0 10px 26px rgba(14,53,80,.1);border-color:rgba(14,111,182,.35)}
+.chfs-card:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(14,111,182,.3)}
+.chfs-flag{font-size:24px;line-height:1}
+.chfs-city{display:block;font-weight:700;font-size:15px;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chfs-meta{display:block;font-size:12px;color:var(--chfs-soft);font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chfs-price{display:block;font-weight:800;font-size:18px;color:var(--chfs-sky);letter-spacing:-.02em;font-variant-numeric:tabular-nums;text-align:right}
+.chfs-was{display:block;font-size:11px;color:var(--chfs-faint);text-decoration:line-through;font-variant-numeric:tabular-nums;text-align:right}
+.chfs-tag{display:inline-block;margin-top:4px;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px}
+.chfs-tag.g{background:rgba(27,127,83,.14);color:var(--chfs-good)}
+.chfs-tag.b{background:rgba(14,111,182,.14);color:var(--chfs-sky)}
+.chfs-tag.w{background:rgba(180,83,9,.14);color:var(--chfs-warn)}
+.chfs-empty{grid-column:1/-1;text-align:center;padding:44px 20px;border:1px dashed var(--chfs-line);border-radius:20px;background:var(--chfs-surf);color:var(--chfs-soft)}
+.chfs-empty strong{display:block;color:var(--chfs-ink);font-size:17px;margin-bottom:5px}
+.chfs-skel{height:76px;border-radius:14px;background:var(--chfs-surf);border:1px solid var(--chfs-line);background-image:linear-gradient(100deg,transparent 36%,rgba(255,255,255,.65) 50%,transparent 64%);background-size:240% 100%;animation:chfs-sh 1.5s ease-in-out infinite}
+@keyframes chfs-sh{0%{background-position:-140% 0}100%{background-position:240% 0}}
+.chfs-note{margin-top:26px;border:1px solid var(--chfs-line);border-left:3px solid var(--chfs-sun);border-radius:14px;background:var(--chfs-surf);padding:14px 16px;font-size:13.5px;color:var(--chfs-soft)}
+.chfs-note b{color:var(--chfs-ink)}
+.chfs-bg{position:fixed;inset:0;background:rgba(8,26,42,.6);backdrop-filter:blur(3px);display:grid;place-items:end center;z-index:9999}
+@media(min-width:640px){.chfs-bg{place-items:center;padding:20px}}
+.chfs-bg[hidden]{display:none}
+.chfs-sheet{background:var(--chfs-surf);width:100%;max-width:520px;max-height:86vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:20px 20px 26px;box-shadow:0 22px 60px rgba(0,0,0,.35);animation:chfs-up .3s var(--chfs-ease)}
+@media(min-width:640px){.chfs-sheet{border-radius:20px}}
+@keyframes chfs-up{from{opacity:0;transform:translateY(18px)}}
+.chfs-sheet h4{margin:0;font-size:22px;font-weight:800;letter-spacing:-.025em}
+.chfs-sub2{margin:3px 0 0;color:var(--chfs-soft);font-size:13.5px}
+.chfs-x{margin-left:auto;width:34px;height:34px;border-radius:50%;border:1px solid var(--chfs-line);background:var(--chfs-surf2);font-size:18px;line-height:1;cursor:pointer;flex:0 0 auto}
+.chfs-verdict{margin-top:16px;border-radius:14px;padding:12px 15px;border:1px solid var(--chfs-line);background:var(--chfs-surf2)}
+.chfs-verdict.g{border-color:rgba(27,127,83,.35);background:rgba(27,127,83,.09)}
+.chfs-verdict.w{border-color:rgba(180,83,9,.35);background:rgba(180,83,9,.09)}
+.chfs-verdict strong{display:block;font-size:15px}
+.chfs-verdict span{font-size:13px;color:var(--chfs-soft)}
+.chfs-opts{margin-top:16px;display:grid;gap:6px}
+.chfs-opt{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--chfs-line);border-radius:12px;background:var(--chfs-surf2);font-size:13px}
+.chfs-opt .d{font-weight:700;font-variant-numeric:tabular-nums}
+.chfs-opt .s{display:block;color:var(--chfs-soft);font-size:12px}
+.chfs-opt .p{font-weight:800;color:var(--chfs-sky);font-variant-numeric:tabular-nums;font-size:15px;text-align:right}
+.chfs-book{display:inline-block;margin-top:5px;padding:6px 14px;border-radius:999px;background:var(--chfs-sun);color:#16324A;font-weight:800;font-size:12px;text-decoration:none;white-space:nowrap}
+.chfs-cta{display:block;width:100%;margin-top:18px;border-radius:14px;background:var(--chfs-sun);color:#16324A;font-weight:800;font-size:15.5px;padding:14px;text-align:center;text-decoration:none;transition:transform .2s var(--chfs-ease)}
+.chfs-cta:hover{transform:translateY(-2px)}
+.chfs-fine{text-align:center;font-size:11.5px;color:var(--chfs-faint);margin:10px 0 0}
+@media (prefers-reduced-motion:reduce){.chfs *{animation-duration:.01ms!important;transition-duration:.01ms!important}.chfs-card:hover{transform:none!important}}
+</style>
+
+<div class="chfs">
+  <div class="chfs-panel">
+    <div class="chfs-row chfs-main">
+      <div class="chfs-f">
+        <label class="chfs-lab" for="chfsFrom">Flying from</label>
+        <select id="chfsFrom" class="chfs-ctl"></select>
+      </div>
+      <div class="chfs-f">
+        <label class="chfs-lab" for="chfsTo">Going to</label>
+        <input id="chfsTo" class="chfs-ctl" type="search" placeholder="Everywhere &ndash; or type a city" autocomplete="off">
+      </div>
+      <div class="chfs-f">
+        <label class="chfs-lab" for="chfsWhen">When</label>
+        <select id="chfsWhen" class="chfs-ctl"></select>
+      </div>
+      <button id="chfsGo" class="chfs-go">Search</button>
+    </div>
+
+    <div class="chfs-sub">
+      <div class="chfs-budget">
+        <div class="chfs-bl">
+          <label class="chfs-lab" for="chfsBudget">Max price</label>
+          <b id="chfsBudgetVal">Any price</b>
+        </div>
+        <input id="chfsBudget" class="chfs-range" type="range" min="20" max="600" step="10" value="600">
+      </div>
+      <div class="chfs-seg" role="group" aria-label="Trip type">
+        <button id="chfsAny" aria-pressed="true">Any</button>
+        <button id="chfsOne" aria-pressed="false">One way</button>
+        <button id="chfsRet" aria-pressed="false">Return</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chfs-head">
+    <h3 id="chfsTitle">Loading fares&hellip;</h3>
+    <span class="chfs-count" id="chfsCount"></span>
+    <div class="chfs-chips" role="group" aria-label="Sort and filter">
+      <button class="chfs-chip" id="chfsSort" aria-pressed="true">Cheapest</button>
+      <button class="chfs-chip" id="chfsDirect" aria-pressed="false">Direct only</button>
+    </div>
+  </div>
+
+  <div class="chfs-grid" id="chfsGrid"></div>
+
+  <div class="chfs-note">
+    <b>Real fares, refreshed daily.</b> Found by scanning live searches across all 12 CloudHenry airports.
+    A fare can move between us finding it and you booking, so the booking page always shows today&rsquo;s price.
+    <span id="chfsStamp"></span>
+  </div>
+
+  <div class="chfs-bg" id="chfsBg" hidden>
+    <div class="chfs-sheet" role="dialog" aria-modal="true" aria-labelledby="chfsCity">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <div style="min-width:0">
+          <h4 id="chfsCity"></h4>
+          <p class="chfs-sub2" id="chfsRoute"></p>
+        </div>
+        <button class="chfs-x" id="chfsClose" aria-label="Close">&times;</button>
+      </div>
+      <div id="chfsVerdict"></div>
+      <div class="chfs-opts" id="chfsOpts"></div>
+      <a class="chfs-cta" id="chfsMain" href="#" target="_blank" rel="noopener sponsored">Search this route on Aviasales</a>
+      <p class="chfs-fine">Opens Aviasales. CloudHenry earns a commission at no extra cost to you.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/search.js" defer></script>

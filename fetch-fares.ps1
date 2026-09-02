@@ -37,6 +37,9 @@ param(
   [switch] $DryRun,
   [switch] $SkipMonthMatrix,
   [int]    $TopRoutesPerOrigin = 12,
+  [int]    $MonthsAhead = 2,
+  [int]    $MaxOptionsPerRoute = 24,
+  [switch] $AllRoutes,
   [string] $Currency = "gbp"
 )
 
@@ -164,6 +167,7 @@ function Build-Row {
     airline     = [string](Get-Field $Entry @("airline","gate") "")
     flight      = [string](Get-Field $Entry @("flight_number") "")
     typical     = $null   # filled by the month matrix pass
+    options     = $null   # dated departures from the month matrix
   }
 }
 
@@ -194,29 +198,112 @@ foreach ($origin in $ORIGINS) {
 if ($rows.Count -eq 0) { Log "Nothing fetched. Aborting without writing." "ERROR"; exit 1 }
 Log "Collected $($rows.Count) routes."
 
-# ---- "Usual price", which is what makes the deal score possible -------
+# ---- Dated options -----------------------------------------------------
+# The month matrix returns one row per departure date, each with its own
+# price, stop count and (when it is a return) a return date. That gives
+# three things at once: the date picker, the one-way/return split, and the
+# twelve-month average behind the deal score.
 if (-not $SkipMonthMatrix) {
-  $month = (Get-Date).ToString("yyyy-MM-01")
-  $targets = $rows | Group-Object origin | ForEach-Object {
-    $_.Group | Sort-Object price | Select-Object -First $TopRoutesPerOrigin
+  $months = @()
+  for ($i = 0; $i -lt $MonthsAhead; $i++) {
+    $months += (Get-Date).AddMonths($i).ToString("yyyy-MM-01")
   }
-  Log "Month matrix for $($targets.Count) routes (top $TopRoutesPerOrigin per airport)."
+
+  $targets = if ($AllRoutes) {
+    $rows
+  } else {
+    $rows | Group-Object origin | ForEach-Object { $_.Group | Sort-Object price | Select-Object -First $TopRoutesPerOrigin }
+  }
+
+  Log "Month matrix: $(@($targets).Count) routes x $($months.Count) months."
+  $done = 0
 
   foreach ($t in $targets) {
-    $m = Invoke-TP -Path "/v2/prices/month-matrix" -Query @{
-      origin = $t.origin; destination = $t.destination; month = $month; currency = $Currency
+    $opts = @()
+    foreach ($mon in $months) {
+      $m = Invoke-TP -Path "/v2/prices/month-matrix" -Query @{
+        origin = $t.origin; destination = $t.destination; month = $mon; currency = $Currency
+      } -Token $token
+
+      if ($null -ne $m -and $m.success -and $m.data) {
+        foreach ($d in @($m.data)) {
+          $p = [int](Get-Field $d @("value","price") 0)
+          if ($p -le 0) { continue }
+          $dep = [string](Get-Field $d @("depart_date") "")
+          if (-not $dep) { continue }
+          $opts += [pscustomobject]@{
+            d = $dep
+            r = [string](Get-Field $d @("return_date") "")
+            p = $p
+            s = [int](Get-Field $d @("number_of_changes") 0)
+          }
+        }
+      }
+      Start-Sleep -Milliseconds 320
+    }
+
+    if (@($opts).Count -gt 0) {
+      # Cheapest first, de-duplicated by date + return date, capped so the
+      # published file stays a sensible size.
+      $seenKeys = @{}
+      $clean = @()
+      foreach ($o in (@($opts) | Sort-Object p)) {
+        $k = "$($o.d)|$($o.r)"
+        if (-not $seenKeys.ContainsKey($k)) { $seenKeys[$k] = $true; $clean += $o }
+      }
+      $t.options = @($clean | Select-Object -First $MaxOptionsPerRoute)
+      $t.typical = [int]([math]::Round((@($clean) | ForEach-Object { $_.p } | Measure-Object -Average).Average))
+    }
+
+    $done++
+    if ($done % 40 -eq 0) { Log "  ... $done of $(@($targets).Count)" }
+  }
+
+  $withTypical = @($rows | Where-Object { $null -ne $_.typical }).Count
+  $withOpts    = @($rows | Where-Object { $null -ne $_.options -and @($_.options).Count -gt 0 }).Count
+  Log "Usual price on $withTypical routes; one-way options on $withOpts."
+}
+
+# ---- Return trips ------------------------------------------------------
+# month-matrix only ever returns one-ways: every row comes back with an
+# empty return_date. Round trips come from prices/latest with
+# one_way=false, so they need their own pass.
+if (-not $SkipReturns) {
+  Log "Return trips for $(@($rows).Count) routes."
+  $doneR = 0
+  foreach ($t in $rows) {
+    $lr = Invoke-TP -Path "/v2/prices/latest" -Query @{
+      origin = $t.origin; destination = $t.destination
+      one_way = "false"; limit = 30; currency = $Currency
+      period_type = "year"; show_to_affiliates = "true"
     } -Token $token
 
-    if ($null -ne $m -and $m.success -and $m.data) {
-      $prices = @($m.data | ForEach-Object { [int](Get-Field $_ @("value","price") 0) } | Where-Object { $_ -gt 0 })
-      if ($prices.Count -ge 3) {
-        $t.typical = [int]([math]::Round(($prices | Measure-Object -Average).Average))
+    if ($null -ne $lr -and $lr.success -and $lr.data) {
+      $add = @()
+      foreach ($d in @($lr.data)) {
+        $p = [int](Get-Field $d @("value","price") 0)
+        $dep = [string](Get-Field $d @("depart_date") "")
+        $ret = [string](Get-Field $d @("return_date") "")
+        if ($p -le 0 -or -not $dep -or -not $ret) { continue }
+        $add += [pscustomobject]@{ d = $dep; r = $ret; p = $p; s = [int](Get-Field $d @("number_of_changes") 0) }
+      }
+      if (@($add).Count -gt 0) {
+        $existing = @()
+        if ($null -ne $t.options) { $existing = @($t.options) }
+        $merged = @($existing) + @($add | Sort-Object p | Select-Object -First $MaxOptionsPerRoute)
+        $t.options = @($merged)
       }
     }
-    Start-Sleep -Milliseconds 350
+
+    $doneR++
+    if ($doneR % 60 -eq 0) { Log "  ... returns $doneR of $(@($rows).Count)" }
+    Start-Sleep -Milliseconds 300
   }
-  $withTypical = @($rows | Where-Object { $null -ne $_.typical }).Count
-  Log "Usual price resolved for $withTypical routes."
+
+  $withRet = @($rows | Where-Object {
+    $null -ne $_.options -and @($_.options | Where-Object { $_.r }).Count -gt 0
+  }).Count
+  Log "Return options on $withRet routes."
 }
 
 # ---- Rolling history, so the deal score improves over time ------------
