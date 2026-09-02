@@ -63,6 +63,14 @@ try {
   & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "add-weekends.ps1")
   if ($LASTEXITCODE -ne 0) { throw "add-weekends.ps1 exited $LASTEXITCODE" }
 
+  # --- 2c. Christmas markets ---------------------------------------------
+  # Nothing was asking for the Christmas window, so the tab only had what
+  # turned up by accident. prices/latest takes beginning_of_period, so
+  # November and December can be requested directly.
+  Log "step 2c: christmas markets"
+  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "add-xmas.ps1")
+  if ($LASTEXITCODE -ne 0) { throw "add-xmas.ps1 exited $LASTEXITCODE" }
+
   # --- 3. sanity check before anything is published ---------------------
   if (-not (Test-Path $Fares)) { throw "fares.json is missing after the run" }
   $after = (Get-Item $Fares).Length

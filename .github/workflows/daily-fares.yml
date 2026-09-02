@@ -1,0 +1,95 @@
+# Refreshes CloudHenry's fares in the cloud, every morning.
+#
+# This exists so the site does not depend on Henry's PC being switched on.
+# The Windows scheduled task does the same work locally; either can run and
+# the other will simply find nothing to commit.
+#
+# The API token lives in the repository secret TRAVELPAYOUTS_TOKEN and is
+# written to .token at runtime. .token is gitignored, so it can never be
+# committed, and GitHub masks the value in logs.
+
+name: Daily fare refresh
+
+on:
+  schedule:
+    # 06:00 UTC. British Summer Time makes that 07:00 locally in summer,
+    # 06:00 in winter. GitHub runs schedules in UTC only.
+    - cron: "0 6 * * *"
+  workflow_dispatch:        # lets Henry run it by hand from the Actions tab
+
+permissions:
+  contents: write           # needed to push the refreshed fares back
+
+jobs:
+  refresh:
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Write the API token
+        shell: pwsh
+        env:
+          TP_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
+        run: |
+          if (-not $env:TP_TOKEN) {
+            throw "TRAVELPAYOUTS_TOKEN secret is not set. Add it under Settings, Secrets and variables, Actions."
+          }
+          Set-Content -Path ".token" -Value $env:TP_TOKEN -NoNewline -Encoding ascii
+          Write-Host "token written, $($env:TP_TOKEN.Length) characters"
+
+      - name: Fetch fares
+        shell: powershell
+        run: .\fetch-fares.ps1 -DryRun -AllRoutes -MonthsAhead 4 -SkipReturns
+
+      - name: Add return trips
+        shell: powershell
+        run: .\add-returns.ps1
+
+      - name: Add weekend breaks
+        shell: powershell
+        run: .\add-weekends.ps1
+
+      - name: Add Christmas markets
+        shell: powershell
+        run: .\add-xmas.ps1
+
+      - name: Check the result before publishing
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "fares.json")) { throw "fares.json is missing" }
+          $j = Get-Content "fares.json" -Raw | ConvertFrom-Json
+          $count = @($j.fares).Count
+          $size  = (Get-Item "fares.json").Length
+          Write-Host "routes: $count, size: $size bytes"
+          # Refuse to publish a thin file rather than empty the site.
+          if ($count -lt 100) { throw "only $count routes, refusing to publish" }
+          if ($size -lt 100000) { throw "file is only $size bytes, refusing to publish" }
+
+      - name: Commit and push
+        shell: pwsh
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fares.json history.json
+          if (-not (git status --porcelain fares.json history.json)) {
+            Write-Host "no change since the last run"
+            exit 0
+          }
+          $count = @((Get-Content "fares.json" -Raw | ConvertFrom-Json).fares).Count
+          git commit -m "Refresh fares $(Get-Date -Format 'yyyy-MM-dd')" -m "$count routes across 12 UK airports." -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          git push
+
+      - name: Clear the CDN cache
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          Invoke-WebRequest -Uri "https://purge.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/fares.json" -UseBasicParsing -TimeoutSec 60 | Out-Null
+          Write-Host "purged"
+
+      - name: Remove the token
+        if: always()
+        shell: pwsh
+        run: Remove-Item ".token" -ErrorAction SilentlyContinue
