@@ -45,7 +45,7 @@
   // point is to show what they are missing, not to hide it.
   function applyGate(root) {
     if (PAID) return;
-    var links = (root || document).querySelectorAll(".chfs-book, #chfsMain, .chfs-live a");
+    var links = (root || document).querySelectorAll(".chfs-book, #chfsMain, .chfs-live a, .chfs-nodata a");
     Array.prototype.forEach.call(links, function (a) {
       a.setAttribute("href", "#/portal/signup");
       a.removeAttribute("target");
