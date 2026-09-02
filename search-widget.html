@@ -38,6 +38,7 @@ select.chfs-ctl{padding-right:34px;background-image:linear-gradient(45deg,transp
 .chfs-live span{font-size:13px;color:var(--chfs-soft);flex:1 1 220px}
 .chfs-live a{background:var(--chfs-sun);color:#16324A;font-weight:800;font-size:13px;padding:9px 16px;border-radius:999px;text-decoration:none;white-space:nowrap}
 .chfs-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chfs-month{border:1px solid var(--chfs-line);background:var(--chfs-surf);color:var(--chfs-ink);font:inherit;font-size:12.5px;font-weight:700;padding:6px 30px 6px 12px;border-radius:999px;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--chfs-soft) 50%),linear-gradient(135deg,var(--chfs-soft) 50%,transparent 50%);background-position:calc(100% - 16px) calc(50% + 1px),calc(100% - 11px) calc(50% + 1px);background-size:5px 5px,5px 5px;background-repeat:no-repeat}
 .chfs-quick button{border:1px solid var(--chfs-line);background:var(--chfs-surf);color:var(--chfs-soft);font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .25s var(--chfs-ease)}
 .chfs-quick button:hover{border-color:var(--chfs-sky);color:var(--chfs-sky)}
 .chfs-nodata{grid-column:1/-1;text-align:center;padding:34px 20px;border:1px dashed var(--chfs-line);border-radius:20px;background:var(--chfs-surf);color:var(--chfs-soft)}
@@ -146,6 +147,7 @@ img.chfs-flag{display:block;width:38px;height:28px;object-fit:cover;border-radiu
         <input id="chfsBudget" class="chfs-range" type="range" min="20" max="600" step="10" value="600">
       </div>
       <div class="chfs-quick" role="group" aria-label="Quick dates">
+        <select id="chfsMonth" class="chfs-month" aria-label="Whole month"></select>
         <button type="button" data-days="3">Next 3 days</button>
         <button type="button" data-days="7">Next week</button>
         <button type="button" data-days="14">Next 2 weeks</button>

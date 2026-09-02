@@ -147,7 +147,7 @@
 
   if (!$("chfsGrid")) { return; }   // widget not on this page
 
-  var FARES = [], state = { from:"MAN", q:"", from2:"", to2:"", flex:3, trip:"any", sort:"price", direct:false, budget:600 };
+  var FARES = [], state = { from:"MAN", q:"", from2:"", to2:"", month:"", flex:3, trip:"any", sort:"price", direct:false, budget:600 };
 
   ORIGINS.forEach(function (o) {
     var opt = document.createElement("option");
@@ -265,6 +265,9 @@
     // Exact dates, with a tolerance either side. Someone asking for the
     // 12th does not want an empty page because the cache holds the 13th,
     // but they do want the 12th first. Set flex to 0 for exact only.
+    if (state.month) {
+      rows = rows.filter(function (r) { return monthKey(r.dep) === state.month; });
+    }
     if (state.from2) {
       rows = rows.filter(function (r) { return Math.abs(dayDiff(r.dep, state.from2)) <= state.flex; });
     }
@@ -442,12 +445,54 @@
   $("chfsBg").addEventListener("click", function (e) { if (e.target === $("chfsBg")) closeSheet(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("chfsBg").hidden) closeSheet(); });
 
-  $("chfsFrom").addEventListener("change", function () { state.from = this.value; render(); });
+  $("chfsFrom").addEventListener("change", function () { state.from = this.value; buildMonths(); render(); });
   $("chfsTo").addEventListener("input", function () { state.q = this.value; render(); });
   function isoToday() { return new Date().toISOString().slice(0, 10); }
 
-  $("chfsFrom2").addEventListener("change", function () { state.from2 = this.value; render(); });
-  $("chfsTo2").addEventListener("change", function () { state.to2 = this.value; render(); });
+  var MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  function buildMonths() {
+    var sel = $("chfsMonth");
+    if (!sel) return;
+    var seen = {};
+    FARES.forEach(function (f) {
+      if (f.origin !== state.from) return;
+      var opts = (f.options && f.options.length) ? f.options : [{ d: f.departure }];
+      opts.forEach(function (o) { if (o.d) seen[monthKey(o.d)] = 1; });
+    });
+    var keys = Object.keys(seen).sort();
+    sel.innerHTML = "";
+    var any = document.createElement("option");
+    any.value = ""; any.textContent = "Any month";
+    sel.appendChild(any);
+    keys.forEach(function (k) {
+      var p = k.split("-");
+      var o = document.createElement("option");
+      o.value = k;
+      o.textContent = MONTH_NAMES[parseInt(p[1], 10) - 1] + " " + p[0];
+      sel.appendChild(o);
+    });
+    sel.value = (keys.indexOf(state.month) > -1) ? state.month : "";
+    state.month = sel.value;
+  }
+
+  $("chfsMonth").addEventListener("change", function () {
+    state.month = this.value;
+    if (state.month) {                    // a whole month and exact dates
+      state.from2 = ""; state.to2 = "";   // are different questions
+      $("chfsFrom2").value = ""; $("chfsTo2").value = "";
+    }
+    render();
+  });
+
+  function clearMonth() {
+    state.month = "";
+    var m = $("chfsMonth");
+    if (m) m.value = "";
+  }
+
+  $("chfsFrom2").addEventListener("change", function () { state.from2 = this.value; clearMonth(); render(); });
+  $("chfsTo2").addEventListener("change", function () { state.to2 = this.value; clearMonth(); render(); });
 
   var flexBtn = $("chfsFlex");
   if (flexBtn) {
@@ -468,6 +513,7 @@
       } else {
         var start = new Date();
         var end = new Date(Date.now() + days * 86400000);
+        clearMonth();
         state.from2 = start.toISOString().slice(0, 10);
         state.to2 = end.toISOString().slice(0, 10);
         $("chfsFrom2").value = state.from2;
@@ -535,6 +581,7 @@
       var today = isoToday();
       $("chfsFrom2").min = today;
       $("chfsTo2").min = today;
+      buildMonths();
       render();
       checkMember().then(function (paid) {
         PAID = paid;
