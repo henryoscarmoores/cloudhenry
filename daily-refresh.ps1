@@ -55,6 +55,14 @@ try {
   & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "add-returns.ps1")
   if ($LASTEXITCODE -ne 0) { throw "add-returns.ps1 exited $LASTEXITCODE" }
 
+  # --- 2b. weekend breaks -----------------------------------------------
+  # Asking per route with a short trip_duration finds far more genuine
+  # Friday-to-Sunday breaks than asking per origin: 366 extra fares
+  # against roughly 40 the other way.
+  Log "step 2b: weekend breaks"
+  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "add-weekends.ps1")
+  if ($LASTEXITCODE -ne 0) { throw "add-weekends.ps1 exited $LASTEXITCODE" }
+
   # --- 3. sanity check before anything is published ---------------------
   if (-not (Test-Path $Fares)) { throw "fares.json is missing after the run" }
   $after = (Get-Item $Fares).Length
