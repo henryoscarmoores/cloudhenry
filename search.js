@@ -51,7 +51,7 @@
       a.removeAttribute("target");
       a.removeAttribute("rel");
       a.classList.add("chfs-locked");
-      a.textContent = a.id === "chfsMain" ? "Subscribe to book — £2.99/month" : "Unlock";
+      a.textContent = a.id === "chfsMain" ? "Subscribe to book â Â£2.99/month" : "Unlock";
     });
   }
 
@@ -64,74 +64,75 @@
   ];
 
   var PLACES = {
-    BCN:["Barcelona","Spain","🇪🇸"],AYT:["Antalya","Türkiye","🇹🇷"],
-    IST:["Istanbul","Türkiye","🇹🇷"],MOW:["Moscow","Russia","🇷🇺"],
-    LED:["St Petersburg","Russia","🇷🇺"],EDI:["Edinburgh","Scotland","🏴"],
-    PAR:["Paris","France","🇫🇷"],AGP:["Málaga","Spain","🇪🇸"],
-    ALC:["Alicante","Spain","🇪🇸"],OSS:["Osh","Kyrgyzstan","🇰🇬"],
-    FAO:["Faro","Portugal","🇵🇹"],TAS:["Tashkent","Uzbekistan","🇺🇿"],
-    BFS:["Belfast","N. Ireland","🇬🇧"],KRK:["Kraków","Poland","🇵🇱"],
-    AMS:["Amsterdam","Netherlands","🇳🇱"],PMI:["Palma","Spain","🇪🇸"],
-    LIS:["Lisbon","Portugal","🇵🇹"],BAK:["Baku","Azerbaijan","🇦🇿"],
-    ACE:["Lanzarote","Spain","🇪🇸"],MAD:["Madrid","Spain","🇪🇸"],
-    BKK:["Bangkok","Thailand","🇹🇭"],LON:["London","England","🏴"],
-    YTO:["Toronto","Canada","🇨🇦"],PRG:["Prague","Czechia","🇨🇿"],
-    ALA:["Almaty","Kazakhstan","🇰🇿"],SKD:["Samarkand","Uzbekistan","🇺🇿"],
-    DUB:["Dublin","Ireland","🇮🇪"],WAW:["Warsaw","Poland","🇵🇱"],
-    BER:["Berlin","Germany","🇩🇪"],LPA:["Gran Canaria","Spain","🇪🇸"],
-    BEG:["Belgrade","Serbia","🇷🇸"],NYC:["New York","USA","🇺🇸"],
-    DUS:["Düsseldorf","Germany","🇩🇪"],RMO:["Chișinău","Moldova","🇲🇩"],
-    GRO:["Girona","Spain","🇪🇸"],HAM:["Hamburg","Germany","🇩🇪"],
-    TCI:["Tenerife","Spain","🇪🇸"],CIT:["Shymkent","Kazakhstan","🇰🇿"],
-    DLM:["Dalaman","Türkiye","🇹🇷"],CPH:["Copenhagen","Denmark","🇩🇰"],
-    HEL:["Helsinki","Finland","🇫🇮"],DXB:["Dubai","UAE","🇦🇪"],
-    CGN:["Cologne","Germany","🇩🇪"],BIO:["Bilbao","Spain","🇪🇸"],
-    DYU:["Dushanbe","Tajikistan","🇹🇯"],TBS:["Tbilisi","Georgia","🇬🇪"],
-    BUD:["Budapest","Hungary","🇭🇺"],NQZ:["Astana","Kazakhstan","🇰🇿"],
-    OSL:["Oslo","Norway","🇳🇴"],OPO:["Porto","Portugal","🇵🇹"],
-    IZM:["Izmir","Türkiye","🇹🇷"],GLA:["Glasgow","Scotland","🏴"],
-    ROM:["Rome","Italy","🇮🇹"],VIE:["Vienna","Austria","🇦🇹"],
-    LOS:["Lagos","Nigeria","🇳🇬"],BRS:["Bristol","England","🏴"],
-    LHE:["Lahore","Pakistan","🇵🇰"],JNB:["Johannesburg","South Africa","🇿🇦"],
-    HKG:["Hong Kong","Hong Kong","🇭🇰"],VNO:["Vilnius","Lithuania","🇱🇹"],
-    BRI:["Bari","Italy","🇮🇹"],KZN:["Kazan","Russia","🇷🇺"],
-    AGA:["Agadir","Morocco","🇲🇦"],CWL:["Cardiff","Wales","🏴"],
-    MLA:["Malta","Malta","🇲🇹"],MAN:["Manchester","England","🏴"],
-    REU:["Reus","Spain","🇪🇸"],JMK:["Mykonos","Greece","🇬🇷"],
-    HKT:["Phuket","Thailand","🇹🇭"],SYD:["Sydney","Australia","🇦🇺"],
-    BHX:["Birmingham","England","🏴"],AER:["Sochi","Russia","🇷🇺"],
-    KRR:["Krasnodar","Russia","🇷🇺"],ILY:["Islay","Scotland","🏴"],
-    KOI:["Kirkwall","Scotland","🏴"],FRA:["Frankfurt","Germany","🇩🇪"],
-    GBE:["Gaborone","Botswana","🇧🇼"],MCX:["Makhachkala","Russia","🇷🇺"],
-    LPL:["Liverpool","England","🏴"],RAK:["Marrakesh","Morocco","🇲🇦"],
-    OLB:["Olbia","Italy","🇮🇹"],FUE:["Fuerteventura","Spain","🇪🇸"],
-    PFO:["Paphos","Cyprus","🇨🇾"],ORK:["Cork","Ireland","🇮🇪"],
-    NCL:["Newcastle","England","🏴"],KUN:["Kaunas","Lithuania","🇱🇹"],
-    DBV:["Dubrovnik","Croatia","🇭🇷"],CLT:["Charlotte","USA","🇺🇸"],
-    MSQ:["Minsk","Belarus","🇧🇾"],CAG:["Cagliari","Italy","🇮🇹"],
-    KTT:["Kittilä","Finland","🇫🇮"],PRN:["Pristina","Kosovo","🇽🇰"],
-    FAE:["Faroe Islands","Faroes","🇫🇴"],ORL:["Orlando","USA","🇺🇸"],
-    MIR:["Monastir","Tunisia","🇹🇳"],HAK:["Haikou","China","🇨🇳"],
-    EBL:["Erbil","Iraq","🇮🇶"],CAI:["Cairo","Egypt","🇪🇬"],
-    FNA:["Freetown","Sierra Leone","🇸🇱"],JED:["Jeddah","Saudi Arabia","🇸🇦"],
-    GDN:["Gdańsk","Poland","🇵🇱"],ACC:["Accra","Ghana","🇬🇭"],
-    ATQ:["Amritsar","India","🇮🇳"],BUH:["Bucharest","Romania","🇷🇴"],
-    BOD:["Bordeaux","France","🇫🇷"],CLJ:["Cluj-Napoca","Romania","🇷🇴"],
-    BOS:["Boston","USA","🇺🇸"],BOJ:["Burgas","Bulgaria","🇧🇬"],
-    GIB:["Gibraltar","Gibraltar","🇬🇮"],IBZ:["Ibiza","Spain","🇪🇸"],
-    CHQ:["Chania","Greece","🇬🇷"],CFU:["Corfu","Greece","🇬🇷"],
-    KTM:["Kathmandu","Nepal","🇳🇵"],SJO:["San José","Costa Rica","🇨🇷"],
-    NCE:["Nice","France","🇫🇷"],KUT:["Kutaisi","Georgia","🇬🇪"],
-    BUS:["Batumi","Georgia","🇬🇪"],ZTH:["Zakynthos","Greece","🇬🇷"],
-    SSH:["Sharm el-Sheikh","Egypt","🇪🇬"],MIL:["Milan","Italy","🇮🇹"],
-    ABV:["Abuja","Nigeria","🇳🇬"],ISB:["Islamabad","Pakistan","🇵🇰"],
-    BRU:["Brussels","Belgium","🇧🇪"],BJV:["Bodrum","Türkiye","🇹🇷"]
+    BCN:["Barcelona","Spain","ðªð¸"],AYT:["Antalya","TÃ¼rkiye","ð¹ð·"],
+    IST:["Istanbul","TÃ¼rkiye","ð¹ð·"],MOW:["Moscow","Russia","ð·ðº"],
+    LED:["St Petersburg","Russia","ð·ðº"],EDI:["Edinburgh","Scotland","ð´"],
+    PAR:["Paris","France","ð«ð·"],AGP:["MÃ¡laga","Spain","ðªð¸"],
+    ALC:["Alicante","Spain","ðªð¸"],OSS:["Osh","Kyrgyzstan","ð°ð¬"],
+    FAO:["Faro","Portugal","ðµð¹"],TAS:["Tashkent","Uzbekistan","ðºð¿"],
+    BFS:["Belfast","N. Ireland","ð¬ð§"],KRK:["KrakÃ³w","Poland","ðµð±"],
+    AMS:["Amsterdam","Netherlands","ð³ð±"],PMI:["Palma","Spain","ðªð¸"],
+    LIS:["Lisbon","Portugal","ðµð¹"],BAK:["Baku","Azerbaijan","ð¦ð¿"],
+    ACE:["Lanzarote","Spain","ðªð¸"],MAD:["Madrid","Spain","ðªð¸"],
+    BKK:["Bangkok","Thailand","ð¹ð­"],LON:["London","England","ð´"],
+    YTO:["Toronto","Canada","ð¨ð¦"],PRG:["Prague","Czechia","ð¨ð¿"],
+    ALA:["Almaty","Kazakhstan","ð°ð¿"],SKD:["Samarkand","Uzbekistan","ðºð¿"],
+    DUB:["Dublin","Ireland","ð®ðª"],WAW:["Warsaw","Poland","ðµð±"],
+    BER:["Berlin","Germany","ð©ðª"],LPA:["Gran Canaria","Spain","ðªð¸"],
+    BEG:["Belgrade","Serbia","ð·ð¸"],NYC:["New York","USA","ðºð¸"],
+    DUS:["DÃ¼sseldorf","Germany","ð©ðª"],RMO:["ChiÈinÄu","Moldova","ð²ð©"],
+    GRO:["Girona","Spain","ðªð¸"],HAM:["Hamburg","Germany","ð©ðª"],
+    TCI:["Tenerife","Spain","ðªð¸"],CIT:["Shymkent","Kazakhstan","ð°ð¿"],
+    DLM:["Dalaman","TÃ¼rkiye","ð¹ð·"],CPH:["Copenhagen","Denmark","ð©ð°"],
+    HEL:["Helsinki","Finland","ð«ð®"],DXB:["Dubai","UAE","ð¦ðª"],
+    CGN:["Cologne","Germany","ð©ðª"],BIO:["Bilbao","Spain","ðªð¸"],
+    DYU:["Dushanbe","Tajikistan","ð¹ð¯"],TBS:["Tbilisi","Georgia","ð¬ðª"],
+    BUD:["Budapest","Hungary","ð­ðº"],NQZ:["Astana","Kazakhstan","ð°ð¿"],
+    OSL:["Oslo","Norway","ð³ð´"],OPO:["Porto","Portugal","ðµð¹"],
+    IZM:["Izmir","TÃ¼rkiye","ð¹ð·"],GLA:["Glasgow","Scotland","ð´"],
+    ROM:["Rome","Italy","ð®ð¹"],VIE:["Vienna","Austria","ð¦ð¹"],
+    LOS:["Lagos","Nigeria","ð³ð¬"],BRS:["Bristol","England","ð´"],
+    LHE:["Lahore","Pakistan","ðµð°"],JNB:["Johannesburg","South Africa","ð¿ð¦"],
+    HKG:["Hong Kong","Hong Kong","ð­ð°"],VNO:["Vilnius","Lithuania","ð±ð¹"],
+    BRI:["Bari","Italy","ð®ð¹"],KZN:["Kazan","Russia","ð·ðº"],
+    AGA:["Agadir","Morocco","ð²ð¦"],CWL:["Cardiff","Wales","ð´"],
+    MLA:["Malta","Malta","ð²ð¹"],MAN:["Manchester","England","ð´"],
+    REU:["Reus","Spain","ðªð¸"],JMK:["Mykonos","Greece","ð¬ð·"],
+    HKT:["Phuket","Thailand","ð¹ð­"],SYD:["Sydney","Australia","ð¦ðº"],
+    BHX:["Birmingham","England","ð´"],AER:["Sochi","Russia","ð·ðº"],
+    KRR:["Krasnodar","Russia","ð·ðº"],ILY:["Islay","Scotland","ð´"],
+    KOI:["Kirkwall","Scotland","ð´"],FRA:["Frankfurt","Germany","ð©ðª"],
+    GBE:["Gaborone","Botswana","ð§ð¼"],MCX:["Makhachkala","Russia","ð·ðº"],
+    LPL:["Liverpool","England","ð´"],RAK:["Marrakesh","Morocco","ð²ð¦"],
+    OLB:["Olbia","Italy","ð®ð¹"],FUE:["Fuerteventura","Spain","ðªð¸"],
+    PFO:["Paphos","Cyprus","ð¨ð¾"],ORK:["Cork","Ireland","ð®ðª"],
+    NCL:["Newcastle","England","ð´"],KUN:["Kaunas","Lithuania","ð±ð¹"],
+    DBV:["Dubrovnik","Croatia","ð­ð·"],CLT:["Charlotte","USA","ðºð¸"],
+    MSQ:["Minsk","Belarus","ð§ð¾"],CAG:["Cagliari","Italy","ð®ð¹"],
+    KTT:["KittilÃ¤","Finland","ð«ð®"],PRN:["Pristina","Kosovo","ð½ð°"],
+    FAE:["Faroe Islands","Faroes","ð«ð´"],ORL:["Orlando","USA","ðºð¸"],
+    MIR:["Monastir","Tunisia","ð¹ð³"],HAK:["Haikou","China","ð¨ð³"],
+    EBL:["Erbil","Iraq","ð®ð¶"],CAI:["Cairo","Egypt","ðªð¬"],
+    FNA:["Freetown","Sierra Leone","ð¸ð±"],JED:["Jeddah","Saudi Arabia","ð¸ð¦"],
+    GDN:["GdaÅsk","Poland","ðµð±"],ACC:["Accra","Ghana","ð¬ð­"],
+    ATQ:["Amritsar","India","ð®ð³"],BUH:["Bucharest","Romania","ð·ð´"],
+    BOD:["Bordeaux","France","ð«ð·"],CLJ:["Cluj-Napoca","Romania","ð·ð´"],
+    BOS:["Boston","USA","ðºð¸"],BOJ:["Burgas","Bulgaria","ð§ð¬"],
+    GIB:["Gibraltar","Gibraltar","ð¬ð®"],IBZ:["Ibiza","Spain","ðªð¸"],
+    CHQ:["Chania","Greece","ð¬ð·"],CFU:["Corfu","Greece","ð¬ð·"],
+    KTM:["Kathmandu","Nepal","ð³ðµ"],SJO:["San JosÃ©","Costa Rica","ð¨ð·"],
+    NCE:["Nice","France","ð«ð·"],KUT:["Kutaisi","Georgia","ð¬ðª"],
+    BUS:["Batumi","Georgia","ð¬ðª"],ZTH:["Zakynthos","Greece","ð¬ð·"],
+    SSH:["Sharm el-Sheikh","Egypt","ðªð¬"],MIL:["Milan","Italy","ð®ð¹"],
+    ABV:["Abuja","Nigeria","ð³ð¬"],ISB:["Islamabad","Pakistan","ðµð°"],
+    BRU:["Brussels","Belgium","ð§ðª"],BJV:["Bodrum","TÃ¼rkiye","ð¹ð·"],
+    BSZ:["Bartica","Guyana","🇬🇾"],DSE:["Dessie","Ethiopia","🇪🇹"]
   };
 
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   function $(id) { return document.getElementById(id); }
-  function place(code) { return PLACES[code] || [code, "", "✈️"]; }
+  function place(code) { return PLACES[code] || [code, "", "âï¸"]; }
 
   // Windows has never shipped flag emoji, so a regional-indicator pair
   // renders as bare letters there. Draw a country badge instead: it is
@@ -411,7 +412,7 @@
       var b = document.createElement("button");
       b.type = "button";
       b.className = "chfs-card";
-      var when = fmt(r.dep) + (r.ret ? " – " + fmt(r.ret) : "");
+      var when = fmt(r.dep) + (r.ret ? " â " + fmt(r.ret) : "");
       var trip = r.ret ? "return" : "one way";
       var stops = r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops");
 
@@ -419,12 +420,12 @@
         flagImg(p) +
         '<span style="min-width:0">' +
           '<span class="chfs-city">' + p[0] + '</span>' +
-          '<span class="chfs-meta">' + when + " · " + trip + " · " + stops + '</span>' +
+          '<span class="chfs-meta">' + when + " Â· " + trip + " Â· " + stops + '</span>' +
           tag(r) +
         '</span>' +
         '<span>' +
-          '<span class="chfs-price">£' + r.price + '</span>' +
-          (r.typical && r.typical > r.price ? '<span class="chfs-was">£' + r.typical + '</span>' : '') +
+          '<span class="chfs-price">Â£' + r.price + '</span>' +
+          (r.typical && r.typical > r.price ? '<span class="chfs-was">Â£' + r.typical + '</span>' : '') +
         '</span>';
 
       b.addEventListener("click", function () { openSheet(r); });
@@ -441,18 +442,18 @@
     ORIGINS.forEach(function (o) { if (o[0] === state.from) fromCity = o[1]; });
 
     $("chfsCity").innerHTML = flagImg(p) + " " + p[0];
-    $("chfsRoute").textContent = fromCity + " → " + p[0] + (p[1] ? ", " + p[1] : "");
+    $("chfsRoute").textContent = fromCity + " â " + p[0] + (p[1] ? ", " + p[1] : "");
 
     var v = $("chfsVerdict");
     if (r.typical) {
       var s = Math.round(((r.typical - r.price) / r.typical) * 100);
       v.className = "chfs-verdict " + (s >= 12 ? "g" : (s <= -15 ? "w" : ""));
       v.innerHTML = "<strong>" + (s >= 25 ? "Book it" : s >= 12 ? "Good price" : s <= -15 ? "Above the usual price" : "About usual") +
-        "</strong><span>£" + r.price + " against a usual £" + r.typical + " — " +
+        "</strong><span>Â£" + r.price + " against a usual Â£" + r.typical + " â " +
         (s >= 0 ? s + "% cheaper" : Math.abs(s) + "% dearer") + " than normal.</span>";
     } else {
       v.className = "chfs-verdict";
-      v.innerHTML = "<strong>£" + r.price + "</strong><span>No price history for this route yet.</span>";
+      v.innerHTML = "<strong>Â£" + r.price + "</strong><span>No price history for this route yet.</span>";
     }
 
     // Other dates for the same destination, so people can shift a few days.
@@ -475,9 +476,9 @@
       var row = document.createElement("div");
       row.className = "chfs-opt";
       row.innerHTML =
-        '<span><span class="d">' + fmt(a.dep) + (a.ret ? " – " + fmt(a.ret) : "") + '</span>' +
-        '<span class="s">' + (a.ret ? "return" : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + '</span></span>' +
-        '<span><span class="p">£' + a.price + '</span>' +
+        '<span><span class="d">' + fmt(a.dep) + (a.ret ? " â " + fmt(a.ret) : "") + '</span>' +
+        '<span class="s">' + (a.ret ? "return" : "one way") + " Â· " + (a.stops === 0 ? "direct" : a.stops + " stop") + '</span></span>' +
+        '<span><span class="p">Â£' + a.price + '</span>' +
         '<a class="chfs-book" target="_blank" rel="noopener sponsored" href="' + bookUrl(state.from, a.dest, a.dep, a.ret) + '">Book</a></span>';
       o.appendChild(row);
     });
@@ -714,7 +715,7 @@
   $("chfsGo").addEventListener("click", render);
   $("chfsBudget").addEventListener("input", function () {
     state.budget = parseInt(this.value, 10);
-    $("chfsBudgetVal").textContent = state.budget >= 600 ? "Any price" : "Under £" + state.budget;
+    $("chfsBudgetVal").textContent = state.budget >= 600 ? "Any price" : "Under Â£" + state.budget;
     render();
   });
 
@@ -747,7 +748,7 @@
 
   $("chfsSort").addEventListener("click", function () {
     state.sort = state.sort === "price" ? "date" : (state.sort === "date" ? "name" : "price");
-    this.textContent = state.sort === "price" ? "Cheapest" : (state.sort === "date" ? "Soonest" : "A–Z");
+    this.textContent = state.sort === "price" ? "Cheapest" : (state.sort === "date" ? "Soonest" : "AâZ");
     this.setAttribute("aria-pressed", state.sort === "name" ? "false" : "true");
     render();
   });
