@@ -36,6 +36,7 @@ param(
   [switch] $Inspect,
   [switch] $DryRun,
   [switch] $SkipMonthMatrix,
+  [switch] $SkipReturns,
   [int]    $TopRoutesPerOrigin = 12,
   [int]    $MonthsAhead = 2,
   [int]    $MaxOptionsPerRoute = 24,
