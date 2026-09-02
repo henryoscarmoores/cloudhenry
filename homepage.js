@@ -24,6 +24,29 @@
   var path = location.pathname.replace(/\/+$/, "");
   if (path !== "" && path !== "/") return;
 
+  // Codes read as jargon in a headline. "Newcastle to Krakow" persuades;
+  // "NCL to KRK" asks the reader to do work. Only the codes that actually
+  // appear as origins, plus the destinations the feed returns most.
+  var NAMES = {
+    MAN:"Manchester",BHX:"Birmingham",LBA:"Leeds",STN:"London",LTN:"London",
+    BRS:"Bristol",NCL:"Newcastle",GLA:"Glasgow",EDI:"Edinburgh",LGW:"London",
+    LPL:"Liverpool",BFS:"Belfast",
+    BCN:"Barcelona",AYT:"Antalya",IST:"Istanbul",MOW:"Moscow",LED:"St Petersburg",
+    PAR:"Paris",AGP:"Malaga",ALC:"Alicante",FAO:"Faro",KRK:"Krakow",AMS:"Amsterdam",
+    PMI:"Palma",LIS:"Lisbon",ACE:"Lanzarote",MAD:"Madrid",BKK:"Bangkok",LON:"London",
+    PRG:"Prague",DUB:"Dublin",WAW:"Warsaw",BER:"Berlin",LPA:"Gran Canaria",
+    NYC:"New York",DUS:"Dusseldorf",GRO:"Girona",HAM:"Hamburg",TCI:"Tenerife",
+    DLM:"Dalaman",CPH:"Copenhagen",HEL:"Helsinki",DXB:"Dubai",CGN:"Cologne",
+    BIO:"Bilbao",TBS:"Tbilisi",BUD:"Budapest",OSL:"Oslo",OPO:"Porto",IZM:"Izmir",
+    ROM:"Rome",VIE:"Vienna",VNO:"Vilnius",BRI:"Bari",AGA:"Agadir",MLA:"Malta",
+    REU:"Reus",FRA:"Frankfurt",RAK:"Marrakesh",OLB:"Olbia",FUE:"Fuerteventura",
+    PFO:"Paphos",ORK:"Cork",DBV:"Dubrovnik",CAG:"Cagliari",NCE:"Nice",MIL:"Milan",
+    BRU:"Brussels",BJV:"Bodrum",IBZ:"Ibiza",CFU:"Corfu",CHQ:"Chania",GDN:"Gdansk",
+    BUH:"Bucharest",BOD:"Bordeaux",VCE:"Venice",ATH:"Athens",RIX:"Riga",MXP:"Milan",
+    FCO:"Rome",NAP:"Naples",CDG:"Paris",GVA:"Geneva",SSH:"Sharm el-Sheikh",CAI:"Cairo"
+  };
+  function name(code) { return NAMES[code] || code; }
+
   var CSS =
     ".ch-hp-proof{display:block;font-weight:800;font-size:13.5px;color:#FFE071;letter-spacing:.01em}" +
     ".ch-hp-deal{margin:14px auto 0;max-width:34ch;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.24);" +
@@ -109,7 +132,7 @@
         var el = document.createElement("div");
         el.className = "ch-hp-deal";
         el.innerHTML =
-          "Found this week: <b>" + best.f.origin + " to " + best.f.destination + "</b> for <b>&pound;" +
+          "Found this week: <b>" + name(best.f.origin) + " to " + name(best.f.destination) + "</b> for <b>&pound;" +
           best.f.price + "</b>, usually <span class=\"ch-hp-was\">&pound;" + best.f.typical + "</span>. " +
           "That is " + pct + "% under." +
           "<span class=\"ch-hp-sub\">Members get every fare like it for &pound;2.99 a month, less than a pint.</span>";
