@@ -472,7 +472,112 @@
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("chfsBg").hidden) closeSheet(); });
 
   $("chfsFrom").addEventListener("change", function () { state.from = this.value; buildMonths(); render(); });
-  $("chfsTo").addEventListener("input", function () { state.q = this.value; render(); });
+  // Typing a destination should suggest, not punish. A misspelling used
+  // to return nothing at all; now the list shows what is actually
+  // reachable from the chosen airport, cheapest first, and picking one
+  // sets the exact name so the filter always matches.
+  var acList = $("chfsAcList");
+  var acItems = [];
+  var acIndex = -1;
+
+  function reachable() {
+    var seen = {};
+    FARES.forEach(function (f) {
+      if (f.origin !== state.from || !PLACES[f.destination]) return;
+      var price = f.price || 0;
+      if (f.options && f.options.length) {
+        f.options.forEach(function (o) { if (o.p && (!price || o.p < price)) price = o.p; });
+      }
+      if (!seen[f.destination] || price < seen[f.destination]) seen[f.destination] = price;
+    });
+    return Object.keys(seen).map(function (code) {
+      return { code: code, name: PLACES[code][0], country: PLACES[code][1], price: seen[code] };
+    }).sort(function (a, b) { return a.price - b.price; });
+  }
+
+  function acClose() {
+    acList.hidden = true;
+    acItems = []; acIndex = -1;
+    $("chfsTo").setAttribute("aria-expanded", "false");
+  }
+
+  function acOpen(q) {
+    var all = reachable();
+    var term = (q || "").trim().toLowerCase();
+    var matches;
+
+    if (!term) {
+      matches = all.slice(0, 8);
+    } else {
+      matches = all.filter(function (d) {
+        return d.name.toLowerCase().indexOf(term) === 0 ||
+               d.country.toLowerCase().indexOf(term) === 0 ||
+               d.code.toLowerCase() === term;
+      });
+      if (!matches.length) {
+        matches = all.filter(function (d) {
+          return (d.name + " " + d.country).toLowerCase().indexOf(term) > -1;
+        });
+      }
+      // Still nothing: a typo. Fall back to anything sharing a first
+      // letter rather than showing an empty box.
+      if (!matches.length) {
+        matches = all.filter(function (d) { return d.name.toLowerCase().charAt(0) === term.charAt(0); });
+      }
+      matches = matches.slice(0, 8);
+    }
+
+    acItems = matches;
+    if (!matches.length) { acClose(); return; }
+
+    var html = '<li class="ac-head">' + (term ? "Did you mean" : "Cheapest from here") + "</li>";
+    matches.forEach(function (d, i) {
+      var code = SUBDIVISION[d.country] || badgeCode(PLACES[d.code][2]).toLowerCase();
+      html += '<li role="option" data-i="' + i + '" aria-selected="false">' +
+              (code ? '<img alt="" loading="lazy" src="https://flagcdn.com/w40/' + code + '.png">' : "") +
+              "<span>" + d.name + (d.country ? ", " + d.country : "") + "</span>" +
+              '<span class="ac-sub">from &pound;' + d.price + "</span></li>";
+    });
+    acList.innerHTML = html;
+    acList.hidden = false;
+    $("chfsTo").setAttribute("aria-expanded", "true");
+  }
+
+  function acPick(i) {
+    var d = acItems[i];
+    if (!d) return;
+    $("chfsTo").value = d.name;
+    state.q = d.name;
+    acClose();
+    render();
+  }
+
+  acList.addEventListener("mousedown", function (e) {
+    var li = e.target.closest("li[data-i]");
+    if (li) { e.preventDefault(); acPick(parseInt(li.dataset.i, 10)); }
+  });
+
+  $("chfsTo").addEventListener("focus", function () { acOpen(this.value); });
+  $("chfsTo").addEventListener("blur", function () { setTimeout(acClose, 150); });
+  $("chfsTo").addEventListener("keydown", function (e) {
+    if (acList.hidden) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      acIndex += (e.key === "ArrowDown") ? 1 : -1;
+      if (acIndex < 0) acIndex = acItems.length - 1;
+      if (acIndex >= acItems.length) acIndex = 0;
+      Array.prototype.forEach.call(acList.querySelectorAll("li[data-i]"), function (li, i) {
+        li.setAttribute("aria-selected", i === acIndex ? "true" : "false");
+      });
+    } else if (e.key === "Enter" && acIndex > -1) {
+      e.preventDefault();
+      acPick(acIndex);
+    } else if (e.key === "Escape") {
+      acClose();
+    }
+  });
+
+  $("chfsTo").addEventListener("input", function () { state.q = this.value; acOpen(this.value); render(); });
   function isoToday() { return new Date().toISOString().slice(0, 10); }
 
   var MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
