@@ -25,6 +25,10 @@ select.chfs-ctl{padding-right:34px;background-image:linear-gradient(45deg,transp
 .chfs-seg{display:inline-flex;gap:3px;background:var(--chfs-surf2);border-radius:999px;padding:4px}
 .chfs-seg button{border:0;background:transparent;font:inherit;font-weight:700;font-size:13px;color:var(--chfs-soft);padding:8px 14px;border-radius:999px;cursor:pointer;transition:all .25s var(--chfs-ease)}
 .chfs-seg button[aria-pressed="true"]{background:var(--chfs-surf);color:var(--chfs-ink);box-shadow:0 1px 3px rgba(14,53,80,.14)}
+.chfs-seg button.chfs-wknd{color:var(--chfs-sky)}
+.chfs-seg button.chfs-wknd[aria-pressed="true"]{background:var(--chfs-sky);color:#fff}
+.chfs-wknd-note{margin:10px 0 0;font-size:12.5px;color:var(--chfs-soft);line-height:1.45}
+.chfs-wknd-note b{color:var(--chfs-ink)}
 .chfs-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .chfs-quick button{border:1px solid var(--chfs-line);background:var(--chfs-surf);color:var(--chfs-soft);font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .25s var(--chfs-ease)}
 .chfs-quick button:hover{border-color:var(--chfs-sky);color:var(--chfs-sky)}
@@ -142,9 +146,12 @@ img.chfs-flag{display:block;width:38px;height:28px;object-fit:cover;border-radiu
         <button id="chfsAny" aria-pressed="true">Any</button>
         <button id="chfsOne" aria-pressed="false">One way</button>
         <button id="chfsRet" aria-pressed="false">Return</button>
+        <button id="chfsWknd" aria-pressed="false" class="chfs-wknd">Weekend</button>
       </div>
     </div>
   </div>
+
+  <p class="chfs-wknd-note" id="chfsWkndNote" hidden></p>
 
   <div class="chfs-head">
     <h3 id="chfsTitle">Loading fares&hellip;</h3>

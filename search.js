@@ -170,6 +170,26 @@
   }
   function monthKey(iso) { return String(iso).slice(0, 7); }
 
+  // Day of week from the ISO string directly. Parsing these with Date
+  // invites timezone shifts that can move a Friday flight to Thursday.
+  function dow(iso) {
+    var p = String(iso).slice(0, 10).split("-");
+    if (p.length !== 3) return -1;
+    var y = +p[0], m = +p[1], d = +p[2];
+    if (m < 3) { m += 12; y--; }
+    var k = y % 100, j = Math.floor(y / 100);
+    var h = (d + Math.floor((13 * (m + 1)) / 5) + k + Math.floor(k / 4) + Math.floor(j / 4) + 5 * j) % 7;
+    return (h + 6) % 7;   // 0 = Sunday
+  }
+
+  // Out on Friday or Saturday, home on Sunday. The most requested thing
+  // Henry gets asked for, and the commonest pattern in the fare data.
+  function isWeekendBreak(r) {
+    if (!r.ret) return false;
+    var out = dow(r.dep), back = dow(r.ret);
+    return (out === 5 || out === 6) && back === 0;
+  }
+
   // Aviasales deep link. Format: ORIGIN + DDMM + DEST + [DDMM return] + pax
   function bookUrl(origin, dest, dep, ret) {
     var o = ddmm(dep);
@@ -222,6 +242,7 @@
     }
     if (state.trip === "one") rows = rows.filter(function (r) { return !r.ret; });
     if (state.trip === "ret") rows = rows.filter(function (r) { return !!r.ret; });
+    if (state.trip === "weekend") rows = rows.filter(isWeekendBreak);
     if (state.direct) rows = rows.filter(function (r) { return r.stops === 0; });
     if (state.budget < 600) rows = rows.filter(function (r) { return r.price <= state.budget; });
     // A window rather than a month: "leaving on or after" and "back by"
@@ -400,11 +421,19 @@
     $("chfsAny").setAttribute("aria-pressed", v === "any" ? "true" : "false");
     $("chfsOne").setAttribute("aria-pressed", v === "one" ? "true" : "false");
     $("chfsRet").setAttribute("aria-pressed", v === "ret" ? "true" : "false");
+    $("chfsWknd").setAttribute("aria-pressed", v === "weekend" ? "true" : "false");
+    var note = $("chfsWkndNote");
+    if (note) {
+      note.hidden = (v !== "weekend");
+      note.innerHTML = "<b>Weekend getaways.</b> Out on a Friday or Saturday, home on the Sunday. " +
+                       "Nothing here needs a day off work.";
+    }
     render();
   }
   $("chfsAny").addEventListener("click", function () { setTrip("any"); });
   $("chfsOne").addEventListener("click", function () { setTrip("one"); });
   $("chfsRet").addEventListener("click", function () { setTrip("ret"); });
+  $("chfsWknd").addEventListener("click", function () { setTrip("weekend"); });
 
   $("chfsSort").addEventListener("click", function () {
     state.sort = state.sort === "price" ? "date" : (state.sort === "date" ? "name" : "price");
