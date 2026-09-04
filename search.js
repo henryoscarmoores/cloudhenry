@@ -212,7 +212,7 @@
 
   // A search is worth sharing and worth linking to from an email, so the
   // interesting parts of it live in the address bar: /search/?from=LBA&to=Krakow&trip=weekend
-  var URL_KEYS = ["from", "to", "trip", "month", "dep", "ret", "theme", "max"];
+  var URL_KEYS = ["from", "to", "trip", "month", "dep", "ret", "theme", "max", "plan"];
   function readUrl() {
     var params = {};
     (location.search || "").replace(/^\?/, "").split("&").forEach(function (kv) {
@@ -1276,6 +1276,11 @@
       if (u.month) { state.month = u.month; $("chfsMonth").value = u.month; }
       if (u.trip && ["any","one","ret","weekend","xmas"].indexOf(u.trip) > -1) {
         setTrip(u.trip);                       // this renders
+      }
+      // Sent here from the homepage's "tell us what you fancy" box.
+      if (u.plan && $("chfsPlanQ")) {
+        $("chfsPlanQ").value = u.plan;
+        plan();
       }
       render();
       checkMember().then(function (paid) {

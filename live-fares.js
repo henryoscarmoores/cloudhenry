@@ -195,20 +195,131 @@
   // Ghost renders this block from a script in the footer, and that script
   // rebuilds it several times during load. Rather than fight it, paint
   // over the finished rows and repaint whenever it rebuilds them.
+  // The homepage box follows the airport picker above it. Nothing chosen
+  // means the best from all twelve.
+  var homeOrigin = "";
+
+  function searchLink(origin, dest) {
+    var parts = [];
+    if (origin) parts.push("from=" + origin);
+    if (dest) parts.push("to=" + encodeURIComponent(dest));
+    return "/search/" + (parts.length ? "?" + parts.join("&") : "");
+  }
+
+  // Every row is a door to the search page. The old box was a picture of
+  // twelve fares; this one is twelve links to every date for that city.
+  function makeRowLink(row, origin, cityName) {
+    var href = searchLink(origin, cityName);
+    if (row.getAttribute("data-ch-link") === href) return;
+    row.setAttribute("data-ch-link", href);
+    row.setAttribute("role", "link");
+    row.setAttribute("tabindex", "0");
+    row.setAttribute("title", "See every date for " + cityName + " on the search");
+    row.addEventListener("click", function () { location.href = href; });
+    row.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); location.href = href; } });
+  }
+
+  function ensureHomeStyles() {
+    if (document.getElementById("ch-home-live-css")) return;
+    var st = document.createElement("style");
+    st.id = "ch-home-live-css";
+    st.textContent =
+      ".ch-d2[data-ch-link]{cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}" +
+      ".ch-d2[data-ch-link]:hover,.ch-d2[data-ch-link]:focus-visible{transform:translateY(-1px);box-shadow:0 6px 16px rgba(14,53,80,.16);outline:none}" +
+      ".ch-d2[data-ch-link] .ch-d2-route::after{content:' \\2192';color:#0E6FB6;font-weight:800;opacity:.55}" +
+      ".ch-hp{display:flex;gap:8px;margin:0 0 12px;position:relative;z-index:2}" +
+      ".ch-hp input{flex:1 1 auto;min-width:0;font:inherit;font-size:14px;font-weight:600;color:#0E3550;background:#fff;border:1px solid rgba(14,53,80,.14);border-radius:999px;padding:11px 16px;box-shadow:0 2px 8px rgba(14,53,80,.10)}" +
+      ".ch-hp input::placeholder{color:#6B8394;font-weight:500}" +
+      ".ch-hp input:focus{outline:none;border-color:#0E6FB6;box-shadow:0 0 0 4px rgba(14,111,182,.22)}" +
+      ".ch-hp button{flex:0 0 auto;border:0;border-radius:999px;background:#F5C242;color:#16324A;font:inherit;font-weight:800;font-size:14px;padding:11px 18px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(14,53,80,.16)}" +
+      ".ch-hp button:hover{transform:translateY(-1px)}" +
+      ".ch-hp-lab{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#E8F3FB;margin:0 0 6px;text-align:center}" +
+      "@media(max-width:480px){.ch-hp input{font-size:13.5px;padding:10px 13px}.ch-hp button{padding:10px 14px;font-size:13px}}";
+    document.head.appendChild(st);
+  }
+
+  // One line above the box: say what you fancy, land on the search page
+  // with it already applied. No filters here; the search page has them.
+  function ensurePlanBar() {
+    if (document.getElementById("ch-home-plan")) return;
+    var box = document.querySelector(".ch-dbox");
+    if (!box || !box.parentNode) return;
+    var wrap = document.createElement("div");
+    wrap.id = "ch-home-plan";
+    wrap.innerHTML =
+      '<span class="ch-hp-lab">&#10024; Or tell us what you fancy</span>' +
+      '<form class="ch-hp" action="/search/" method="get">' +
+        '<input type="text" name="plan" maxlength="300" autocomplete="off" aria-label="Describe your trip" ' +
+               'placeholder="Somewhere warm in November under £60">' +
+        '<button type="submit">Plan it →</button>' +
+      '</form>';
+    box.parentNode.insertBefore(wrap, box);
+    wrap.querySelector("form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var q = wrap.querySelector("input").value.trim();
+      var parts = [];
+      if (q) parts.push("plan=" + encodeURIComponent(q));
+      if (homeOrigin) parts.push("from=" + homeOrigin);
+      location.href = "/search/" + (parts.length ? "?" + parts.join("&") : "");
+    });
+  }
+
+  // The lock card under the blurred rows used to sell the subscription.
+  // It now points at the search, which is where the selling happens.
+  function paintLockCard() {
+    var card = document.querySelector(".ch-dbox .ch-veil .ch-vin");
+    if (!card) return;
+    var t = card.querySelector(".ch-vt");
+    var subs = card.querySelectorAll(".ch-vs");
+    var cta = card.querySelector(".ch-cta");
+    var fine = card.querySelector(".ch-vf");
+    var fromCity = homeOrigin ? ORIGIN_NAME[homeOrigin] : "";
+    if (t) t.textContent = fromCity ? "Every fare from " + fromCity + ", every date" : "Every fare, every date, all 12 airports";
+    if (subs[0]) subs[0].textContent = "Tell us where, when and how much, and see everything we have found today. Members book any of it in one tap.";
+    if (cta) {
+      cta.textContent = "Search flights →";
+      cta.setAttribute("href", searchLink(homeOrigin, ""));
+    }
+    if (fine) fine.innerHTML = '<span class="ch-hlb">£2.99 a month</span> · cancel anytime';
+  }
+
+  function paintCaption() {
+    var cap = document.querySelector(".ch-hcap");
+    if (!cap) return;
+    var text = homeOrigin ? "This week’s fares from " + ORIGIN_NAME[homeOrigin] : "This week’s fares";
+    if (cap.textContent !== text) cap.textContent = text;
+  }
+
+  // The hero's airport picker drives the box. Its option values are the
+  // join-page slugs, so "join-leeds" becomes LBA.
+  function watchPicker() {
+    var sel = document.querySelector(".ch-ap-select");
+    if (!sel || sel.getAttribute("data-ch-live")) return;
+    sel.setAttribute("data-ch-live", "1");
+    sel.addEventListener("change", function () {
+      var slug = String(sel.value || "").replace(/^join-/, "");
+      homeOrigin = JOIN_ORIGIN[slug] || "";
+      if (window.__chHomeRepaint) window.__chHomeRepaint();
+    });
+  }
+
   function paintHomepage(fares) {
     var cols = document.querySelectorAll(".ch-dbox .ch-col");
     if (cols.length < 2) return false;
 
-    var ow = spread(bestPerDestination(candidates(fares, { returns:false, within:60 })), 6);
+    ensureHomeStyles();
+    watchPicker();
+
+    var ow = spread(bestPerDestination(candidates(fares, { origin: homeOrigin, returns:false, within:60 })), 6);
 
     // Keep the two columns showing twelve different cities. The same
     // place once as a one-way and again as a return wastes a row.
     var taken = {};
     ow.forEach(function (r) { taken[r.dest] = true; });
-    var rtPool = bestPerDestination(candidates(fares, { returns:true, within:75 }))
+    var rtPool = bestPerDestination(candidates(fares, { origin: homeOrigin, returns:true, within:75 }))
                    .filter(function (r) { return !taken[r.dest]; });
     var rt = spread(rtPool, 6);
-    if (ow.length < 3 || rt.length < 3) return false;   // do not gut the page
+    if (ow.length < 3 || rt.length < 2) return false;   // do not gut the page
 
     function paint(col, rows, isReturn) {
       var cells = col.querySelectorAll(".ch-d2");
@@ -218,6 +329,7 @@
         c.style.display = "";
         var r = rows[i];
         var p = places() ? places()[r.dest] : null;
+        makeRowLink(c, r.origin, p ? p[0] : r.dest);
         var routeEl = c.querySelector(".ch-d2-route");
         var metaEl  = c.querySelector(".ch-d2-meta");
         var priceEl = c.querySelector(".ch-d2-price");
@@ -249,6 +361,9 @@
     paint(cols[1], rt, true);
     rt.forEach(function (r) { taken[r.dest] = true; });
     paintLocked(fares, taken);
+    paintLockCard();
+    paintCaption();
+    ensurePlanBar();
     stampDate();
     return true;
   }
@@ -259,7 +374,7 @@
   function paintLocked(fares, taken) {
     var rows = document.querySelectorAll(".ch-lockwrap .ch-d");
     if (!rows.length) return;
-    var pool = bestPerDestination(candidates(fares, { within: 45 }))
+    var pool = bestPerDestination(candidates(fares, { origin: homeOrigin, within: 45 }))
                  .filter(function (r) { return !taken[r.dest]; });
     var picks = spread(pool, rows.length);
     for (var i = 0; i < rows.length && i < picks.length; i++) {
@@ -472,6 +587,9 @@
     }
 
     paint();
+    // The airport picker needs a way to ask for a repaint. Allow it a
+    // fresh run count so choosing airports never hits the cap.
+    window.__chHomeRepaint = function () { runs = 0; paint(); };
 
     // Ghost's own script rebuilds the homepage rows at 400ms, 1200ms and
     // 2500ms after load, which would put the old prices back. Repaint
