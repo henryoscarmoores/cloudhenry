@@ -27,7 +27,7 @@
     var d = new Date();
     return DATA + "?v=" + d.getUTCFullYear() +
            ("0" + (d.getUTCMonth() + 1)).slice(-2) +
-           ("0" + d.getUTCDate()).slice(-2);
+           ("0" + d.getUTCDate()).slice(-2) + (d.getUTCHours() < 12 ? "-am" : "-pm");
   }
 
   // Short enough for the homepage teaser, which is one line at 12px.

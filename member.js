@@ -41,7 +41,7 @@
     return d.getDate() + " " + MONTHS[d.getMonth()] + " " + d.getFullYear();
   }
   function airportByCode(code) { for (var i = 0; i < AIRPORTS.length; i++) if (AIRPORTS[i][0] === code) return AIRPORTS[i]; return null; }
-  function stamp() { var d = new Date(); return d.getUTCFullYear() + ("0" + (d.getUTCMonth() + 1)).slice(-2) + ("0" + d.getUTCDate()).slice(-2); }
+  function stamp() { var d = new Date(); return d.getUTCFullYear() + ("0" + (d.getUTCMonth() + 1)).slice(-2) + ("0" + d.getUTCDate()).slice(-2) + (d.getUTCHours() < 12 ? "-am" : "-pm"); }
 
   // ---- who is this -----------------------------------------------------
   function getMember() {
