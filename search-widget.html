@@ -85,6 +85,25 @@ select.chfs-ctl{padding-right:34px;background-image:linear-gradient(45deg,transp
 .chfs[data-embed] .chfs-row.chfs-main #fDep,.chfs[data-embed] .chfs-row.chfs-main #fRet{order:4}
 .chfs[data-embed] .chfs-row.chfs-main .chfs-go{order:5;grid-column:1/-1}
 .chfs[data-embed] .chfs-go{width:100%!important;padding:12px 18px}
+/* Wider than a phone: Going to and the Search button share a row */
+@media(min-width:700px){
+  .chfs[data-embed] .chfs-row.chfs-main{grid-template-columns:1fr 1fr auto!important}
+  .chfs[data-embed] .chfs-row.chfs-main .chfs-f:nth-child(1){grid-column:1}
+  .chfs[data-embed] .chfs-row.chfs-main #fMonth{grid-column:2/-1}
+  .chfs[data-embed] .chfs-row.chfs-main .chfs-f:nth-child(2){grid-column:1/3}
+  .chfs[data-embed] .chfs-row.chfs-main .chfs-go{grid-column:3;width:auto!important;padding:12px 22px}
+  .chfs[data-embed] .chfs-plan-eg{margin-top:6px}
+  .chfs[data-embed] .chfs-plan-eg button{padding:4px 9px;font-size:11.5px}
+}
+.chfs[data-embed] .chfs-sub{gap:8px;margin-top:8px;padding-top:8px}
+.chfs[data-embed] .chfs-chips .chfs-sortgrp{display:none}
+.chfs[data-embed] .chfs-card .chfs-meta{display:inline}
+.chfs[data-embed] .chfs-card .chfs-tag{display:inline-block;margin:0 0 0 6px;vertical-align:1px}
+.chfs[data-embed] .chfs-tease{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:12px 16px}
+.chfs[data-embed] .chfs-tease strong{font-size:14.5px;flex:1 1 100%}
+.chfs[data-embed] .chfs-tease span{font-size:13px;flex:1 1 200px}
+.chfs[data-embed] .chfs-tease-cta{margin-top:0;padding:9px 16px;font-size:13px}
+@media(min-width:1100px){.chfs[data-embed] .chfs-grid{grid-template-columns:1fr 1fr 1fr!important}}
 .chfs[data-embed] .chfs-budget,.chfs[data-embed] .chfs-datemode,.chfs[data-embed] .chfs-quick{display:none!important}
 .chfs[data-embed] .chfs-sub{grid-template-columns:1fr!important;gap:10px;margin-top:10px;padding-top:10px}
 .chfs[data-embed] .chfs-sub>.chfs-seg{grid-column:1!important;grid-row:auto!important;justify-self:start!important;flex-wrap:wrap;border-radius:18px;overflow:visible}
@@ -232,9 +251,9 @@ img.chfs-flag{display:block;width:38px;height:28px;object-fit:cover;border-radiu
         <button type="button" id="chfsPlanGo" class="chfs-go chfs-plan-go">Plan it</button>
       </div>
       <div class="chfs-plan-eg" role="group" aria-label="Examples">
-        <button type="button">Christmas markets, long weekend, any airport</button>
-        <button type="button">Beach in October under &pound;40 from Manchester</button>
-        <button type="button">Somewhere I have never been, cheap as possible</button>
+        <button type="button">Christmas markets, any airport</button>
+        <button type="button">Beach in October under &pound;40</button>
+        <button type="button">Somewhere new, cheap as possible</button>
       </div>
       <div class="chfs-plan-reply" id="chfsPlanReply" hidden aria-live="polite"></div>
     </div>
