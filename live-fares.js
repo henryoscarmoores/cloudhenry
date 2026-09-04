@@ -119,7 +119,10 @@
       a.forEach(function (v) { s += v; });
       return Math.round(s / a.length);
     }
-    var owAvg = mean(ow), rtAvg = mean(rt);
+    // One-ways use the route's typical price from the API when the feed
+    // has it. The search and the join page deal card do the same, so a
+    // fare no longer shows two different "usual" prices on one page.
+    var owAvg = route.typical || mean(ow), rtAvg = mean(rt);
 
     rows.forEach(function (r) {
       r.origin = route.origin;

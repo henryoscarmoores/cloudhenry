@@ -51,17 +51,59 @@
       a.removeAttribute("target");
       a.removeAttribute("rel");
       a.classList.add("chfs-locked");
-      a.textContent = a.id === "chfsMain" ? "Subscribe to book — £2.99/month" : "Unlock";
+      a.textContent = a.id === "chfsMain" ? "Subscribe to book, £2.99 a month" : "Unlock";
     });
   }
 
 
+  // "Any UK airport" is a real option, not a label. Weekend and
+  // Christmas inventory is thin from most regional airports and someone
+  // in the Midlands is often happy to leave from Birmingham or
+  // Manchester, so the search can look at all twelve at once.
+  var ANY = "ANY";
   var ORIGINS = [
+    [ANY,"Any UK airport"],
     ["MAN","Manchester"], ["BHX","Birmingham"], ["LBA","Leeds Bradford"],
     ["STN","London Stansted"], ["LTN","London Luton"], ["BRS","Bristol"],
     ["NCL","Newcastle"], ["GLA","Glasgow"], ["EDI","Edinburgh"],
     ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"]
   ];
+  function originName(code) {
+    var n = code;
+    ORIGINS.forEach(function (o) { if (o[0] === code) n = o[1]; });
+    return n;
+  }
+  // Short form for the card meta line, where "London Stansted" is too long.
+  var ORIGIN_SHORT = { MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
+                       LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
+                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast" };
+  function fromMatches(f) { return state.from === ANY || f.origin === state.from; }
+
+  // Other UK airports. A £44 hop to London with a stop is not a deal a
+  // flight deals site should lead with. They still show when typed.
+  var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1,
+             LGW:1, LPL:1, BFS:1, CWL:1, ILY:1, KOI:1, ABZ:1, INV:1, SOU:1, EXT:1, NQY:1 };
+
+  // Codes the feed produces that are not real destinations for anyone
+  // browsing. Bartica is a river town in Guyana quoted at £73 with two
+  // stops; that is a data fault, not a fare, and it sat third in the
+  // suggestions for "Barcelona".
+  var BOGUS = { BSZ:1, DSE:1 };
+
+  // Loose themes for the Inspire me row. Not exhaustive and not meant to
+  // be; the point is a starting place for someone who has no destination
+  // in mind, which is most people who land on this page.
+  var THEMES = {
+    beach: { label:"Beach", codes:"AGP ALC PMI IBZ FAO ACE LPA TCI FUE AYT DLM BJV IZM CFU CHQ ZTH JMK HER RHO MLA PFO SSH AGA RAK OLB CAG BRI BOJ" },
+    city:  { label:"City break", codes:"PAR CDG AMS BCN MAD LIS OPO ROM FCO MIL MXP VCE NAP BER HAM DUS CGN FRA MUC PRG VIE BUD KRK WAW GDN CPH OSL ARN HEL RIX VNO TLL DUB ORK BRU GVA ZRH ATH BUH BEG IST EDI" },
+    sun:   { label:"Winter sun", codes:"ACE LPA TCI FUE AGA RAK SSH HRG CAI DXB MLA PFO AGP ALC FAO MIR TUN" },
+    long:  { label:"Long haul", codes:"NYC BOS YTO ORL CLT BKK HKT DXB JED SYD HKG KTM ISB LHE ATQ JNB ACC LOS TBS BAK ALA TAS" }
+  };
+  Object.keys(THEMES).forEach(function (k) {
+    var set = {};
+    THEMES[k].codes.split(" ").forEach(function (c) { set[c] = 1; });
+    THEMES[k].set = set;
+  });
 
   var PLACES = {
     BCN:["Barcelona","Spain","🇪🇸"],AYT:["Antalya","Türkiye","🇹🇷"],
@@ -159,7 +201,36 @@
 
   if (!$("chfsGrid")) { return; }   // widget not on this page
 
-  var FARES = [], state = { from:"MAN", q:"", from2:"", to2:"", month:"", flex:3, trip:"any", sort:"price", direct:false, budget:600 };
+  var FARES = [], state = { from:"MAN", q:"", from2:"", to2:"", month:"", flex:3, trip:"any", sort:"price", direct:false, budget:600, theme:"" };
+
+  // A search is worth sharing and worth linking to from an email, so the
+  // interesting parts of it live in the address bar: /search/?from=LBA&to=Krakow&trip=weekend
+  var URL_KEYS = ["from", "to", "trip", "month", "dep", "ret", "theme", "max"];
+  function readUrl() {
+    var params = {};
+    (location.search || "").replace(/^\?/, "").split("&").forEach(function (kv) {
+      if (!kv) return;
+      var i = kv.indexOf("=");
+      var k = decodeURIComponent(i > -1 ? kv.slice(0, i) : kv);
+      var v = decodeURIComponent(i > -1 ? kv.slice(i + 1) : "").replace(/\+/g, " ");
+      if (URL_KEYS.indexOf(k) > -1) params[k] = v;
+    });
+    return params;
+  }
+  function writeUrl() {
+    if (!window.history || !history.replaceState) return;
+    var parts = [];
+    if (state.from !== "MAN") parts.push("from=" + state.from);
+    if (state.q.trim()) parts.push("to=" + encodeURIComponent(state.q.trim()));
+    if (state.trip !== "any") parts.push("trip=" + state.trip);
+    if (state.month) parts.push("month=" + state.month);
+    if (state.from2) parts.push("dep=" + state.from2);
+    if (state.to2) parts.push("ret=" + state.to2);
+    if (state.theme) parts.push("theme=" + state.theme);
+    if (state.budget < 600) parts.push("max=" + state.budget);
+    var next = location.pathname + (parts.length ? "?" + parts.join("&") : "");
+    if (next !== location.pathname + location.search) history.replaceState(null, "", next);
+  }
 
   ORIGINS.forEach(function (o) {
     var opt = document.createElement("option");
@@ -251,27 +322,52 @@
 
   function flatten() {
     var out = [];
+    var today = isoToday();
     FARES.forEach(function (f) {
-      if (f.origin !== state.from) return;
+      if (!fromMatches(f)) return;
       var opts = f.options && f.options.length ? f.options : null;
       if (!PLACES[f.destination]) return;   // unnamed code, looks broken
+      if (BOGUS[f.destination]) return;
       if (opts) {
         // A return costs more than a one-way, so they need separate
         // baselines. Comparing a return against the one-way average was
         // making every round trip look "above usual" against a cheaper
         // struck-through figure, which is simply wrong.
+        //
+        // For one-ways the feed carries the route's own typical price
+        // from the API. Prefer it: an average of the cheap dates we
+        // happened to cache understates what people normally pay, and
+        // the join pages already quote the API figure, so the same fare
+        // was showing two different "usual" prices on one page.
         var ow = [], rt = [];
         opts.forEach(function (o) { (o.r ? rt : ow).push(o.p); });
-        var owAvg = mean(ow), rtAvg = mean(rt);
+        var owAvg = f.typical || mean(ow), rtAvg = mean(rt);
         opts.forEach(function (o) {
-          out.push({ dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0,
+          if (o.d && o.d < today) return;   // already departed
+          out.push({ origin:f.origin, dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0,
                      typical: o.r ? rtAvg : owAvg });
         });
-      } else {
-        out.push({ dest:f.destination, price:f.price, dep:f.departure, ret:f.ret || "", stops:f.transfers || 0, typical: f.ret ? null : (f.typical || null) });
+      } else if (!f.departure || String(f.departure).slice(0, 10) >= today) {
+        out.push({ origin:f.origin, dest:f.destination, price:f.price, dep:f.departure, ret:f.ret || "", stops:f.transfers || 0, typical: f.ret ? null : (f.typical || null) });
       }
     });
     return out;
+  }
+
+  // True when the typed text names at least one reachable place. Used so
+  // a half-typed or misspelt city does not wipe the results while the
+  // suggestions are still open.
+  function queryMatchesSomething(q) {
+    var term = q.trim().toLowerCase();
+    if (!term) return true;
+    if (term === "everywhere" || term === "anywhere" || term === "any") return true;
+    var hit = false;
+    Object.keys(PLACES).forEach(function (code) {
+      if (hit) return;
+      var p = PLACES[code];
+      if ((p[0] + " " + p[1] + " " + code).toLowerCase().indexOf(term) > -1) hit = true;
+    });
+    return hit;
   }
 
   function build() {
@@ -284,6 +380,18 @@
         var p = place(r.dest);
         return (p[0] + " " + p[1] + " " + r.dest).toLowerCase().indexOf(q) > -1;
       });
+    } else {
+      // Browsing, not asking for somewhere in particular: leave out the
+      // hops to other UK airports.
+      rows = rows.filter(function (r) { return !UK[r.dest]; });
+    }
+    if (state.theme && THEMES[state.theme]) {
+      var set = THEMES[state.theme].set;
+      rows = rows.filter(function (r) { return set[r.dest]; });
+      // Winter sun means winter. A Lanzarote fare in July is not it.
+      if (state.theme === "sun") {
+        rows = rows.filter(function (r) { var m = parseInt(String(r.dep).slice(5, 7), 10); return m >= 10 || m <= 3; });
+      }
     }
     if (state.trip === "one") rows = rows.filter(function (r) { return !r.ret; });
     if (state.trip === "ret") rows = rows.filter(function (r) { return !!r.ret; });
@@ -324,10 +432,17 @@
     var seen = {}, unique = [];
     var perDestination = !state.q.trim();
     rows.forEach(function (r) {
-      var k = perDestination ? r.dest : (r.dest + "|" + r.dep + "|" + r.ret);
+      var k = perDestination ? r.dest : (r.origin + "|" + r.dest + "|" + r.dep + "|" + r.ret);
       if (!seen[k]) { seen[k] = 1; unique.push(r); }
     });
     return unique;
+  }
+
+  // The struck-through price only earns its place when the gap is worth
+  // reading. £873 against £879 was being shown, which looks like a fault.
+  function wasPrice(r) {
+    if (!r.typical || r.typical < r.price * 1.1) return "";
+    return '<span class="chfs-was">£' + r.typical + '</span>';
   }
 
   function tag(r) {
@@ -356,7 +471,7 @@
     // be the end of the road.
     if (!state.from2 && state.trip === "weekend") {
       var wk = nextWeekend();
-      return "https://www.aviasales.com/search/" + state.from + ddmm(wk[0]) + ddmm(wk[1]) + "1?marker=" + MARKER;
+      return "https://www.aviasales.com/search/" + liveOrigin() + ddmm(wk[0]) + ddmm(wk[1]) + "1?marker=" + MARKER;
     }
     if (!state.from2) return null;
     var destCode = "";
@@ -367,7 +482,7 @@
       }
     }
     var back = (state.trip === "one" || !state.to2) ? "" : ddmm(state.to2);
-    return "https://www.aviasales.com/search/" + state.from + ddmm(state.from2) +
+    return "https://www.aviasales.com/search/" + liveOrigin() + ddmm(state.from2) +
            destCode + back + "1?marker=" + MARKER;
   }
 
@@ -394,21 +509,51 @@
     applyGate(bar);   // the bar sits outside the grid
   }
 
+  // The airport code Aviasales gets when the reader has not picked one.
+  // "LON" covers all the London airports, which hold most of the fares.
+  function liveOrigin() { return state.from === ANY ? "LON" : state.from; }
+
+  // Offered on every empty result from one airport. Switching to all
+  // twelve is usually the answer, and a button beats an instruction.
+  function tryAnyButton() {
+    if (state.from === ANY) return "";
+    return '<button type="button" class="chfs-tryany" id="chfsTryAny">Try every UK airport</button>';
+  }
+  function wireTryAny() {
+    var b = $("chfsTryAny");
+    if (!b) return;
+    b.addEventListener("click", function () {
+      state.from = ANY;
+      $("chfsFrom").value = ANY;
+      buildMonths();
+      render();
+    });
+  }
+
   function render() {
+    writeUrl();
     renderLiveBar();
     var rows = build();
     var grid = $("chfsGrid");
-    var fromCity = "";
-    ORIGINS.forEach(function (o) { if (o[0] === state.from) fromCity = o[1]; });
+    var fromCity = originName(state.from);
+    var anyMode = (state.from === ANY);
 
-    $("chfsTitle").textContent = state.q ? "Flights from " + fromCity : "Everywhere from " + fromCity;
-    $("chfsCount").textContent = rows.length ? (rows.length > 120 ? "showing 120 of " + rows.length + " flights" : rows.length + (rows.length === 1 ? " flight" : " flights")) : "";
+    var browsing = !state.q.trim();
+    var themeLabel = state.theme && THEMES[state.theme] ? THEMES[state.theme].label + " " : "";
+    $("chfsTitle").textContent = browsing
+      ? (anyMode ? themeLabel + "Everywhere from any UK airport" : themeLabel + "Everywhere from " + fromCity)
+      : (anyMode ? "Flights from any UK airport" : "Flights from " + fromCity);
+    var noun = browsing ? "destination" : "flight";
+    $("chfsCount").textContent = rows.length
+      ? (rows.length > 120 ? "showing 120 of " + rows.length + " " + noun + "s"
+                           : rows.length + " " + noun + (rows.length === 1 ? "" : "s"))
+      : "";
 
     grid.innerHTML = "";
     if (!rows.length) {
       if (state.from2) {
         var dest = state.q.trim() ? state.q.trim().toUpperCase().slice(0, 3) : "";
-        var url = "https://www.aviasales.com/search/" + state.from + ddmm(state.from2) +
+        var url = "https://www.aviasales.com/search/" + liveOrigin() + ddmm(state.from2) +
                   dest + (state.to2 ? ddmm(state.to2) : "") + "1?marker=" + MARKER;
         grid.innerHTML =
           '<div class="chfs-nodata">' +
@@ -416,28 +561,30 @@
             '<p>We refresh fares daily and these dates are not in this run. ' +
             'You can still search them live.</p>' +
             '<a href="' + url + '" target="_blank" rel="noopener sponsored">Search these dates on Aviasales</a>' +
+            tryAnyButton() +
           '</div>';
-      } else if (state.trip === "weekend") {
-        // Weekend inventory is heavily London weighted: Gatwick, Stansted
-        // and Luton hold 459 of 520 breaks and Leeds Bradford holds none.
-        // Telling a Leeds visitor to clear the destination is simply wrong.
+      } else if (state.trip === "weekend" || state.trip === "xmas") {
+        // Weekend and Christmas inventory is heavily London weighted.
+        // Telling a Leeds visitor to clear the destination is simply
+        // wrong; offering all twelve airports usually solves it.
         var wk = nextWeekend();
-        var wkUrl = "https://www.aviasales.com/search/" + state.from + ddmm(wk[0]) + ddmm(wk[1]) + "1?marker=" + MARKER;
-        var fromCity = "";
-        ORIGINS.forEach(function (o) { if (o[0] === state.from) fromCity = o[1]; });
+        var wkUrl = "https://www.aviasales.com/search/" + liveOrigin() + ddmm(wk[0]) + ddmm(wk[1]) + "1?marker=" + MARKER;
+        var what = state.trip === "xmas" ? "Christmas market trips" : "weekend breaks";
         grid.innerHTML =
           '<div class="chfs-nodata">' +
-            '<strong>No weekend breaks cached from ' + fromCity + ' yet</strong>' +
-            '<p>Our weekend fares are strongest from the London airports right now. ' +
-            'Try another airport above, or check this coming weekend live.</p>' +
+            '<strong>No ' + what + ' cached from ' + fromCity + ' yet</strong>' +
+            '<p>These fares are strongest from the London airports right now. ' +
+            (anyMode ? 'Try widening your dates or your budget.' : 'Widen the search to every UK airport, or check this coming weekend live.') + '</p>' +
+            tryAnyButton() +
             '<a href="' + wkUrl + '" target="_blank" rel="noopener sponsored">Search ' +
             fmt(wk[0]) + ' to ' + fmt(wk[1]) + ' live</a>' +
           '</div>';
-        applyGate(grid);
       } else {
-        grid.innerHTML = '<div class="chfs-empty"><strong>No flights match</strong>Try another airport, raise the price, or widen your dates.</div>';
+        grid.innerHTML = '<div class="chfs-empty"><strong>No flights match</strong>' +
+          'Try another destination, raise the price, or widen your dates.' + tryAnyButton() + '</div>';
       }
       applyGate(grid);
+      wireTryAny();
       return;
     }
 
@@ -449,17 +596,20 @@
       var when = fmt(r.dep) + (r.ret ? " – " + fmt(r.ret) : "");
       var trip = r.ret ? "return" : "one way";
       var stops = r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops");
+      var nights = r.ret ? dayDiff(r.ret, r.dep) : 0;
+      var extra = nights > 0 ? " · " + nights + (nights === 1 ? " night" : " nights") : "";
+      var from = anyMode ? '<span class="chfs-from">from ' + (ORIGIN_SHORT[r.origin] || r.origin) + '</span>' : "";
 
       b.innerHTML =
         flagImg(p) +
         '<span style="min-width:0">' +
-          '<span class="chfs-city">' + p[0] + '</span>' +
-          '<span class="chfs-meta">' + when + " · " + trip + " · " + stops + '</span>' +
+          '<span class="chfs-city">' + p[0] + from + '</span>' +
+          '<span class="chfs-meta">' + when + " · " + trip + extra + " · " + stops + '</span>' +
           tag(r) +
         '</span>' +
         '<span>' +
           '<span class="chfs-price">£' + r.price + '</span>' +
-          (r.typical && r.typical > r.price ? '<span class="chfs-was">£' + r.typical + '</span>' : '') +
+          wasPrice(r) +
         '</span>';
 
       b.addEventListener("click", function () { openSheet(r); });
@@ -474,8 +624,7 @@
   function openSheet(r) {
     lastFocus = document.activeElement;
     var p = place(r.dest);
-    var fromCity = "";
-    ORIGINS.forEach(function (o) { if (o[0] === state.from) fromCity = o[1]; });
+    var fromCity = originName(r.origin);
 
     $("chfsCity").innerHTML = flagImg(p) + " " + p[0];
     $("chfsRoute").textContent = fromCity + " → " + p[0] + (p[1] ? ", " + p[1] : "");
@@ -485,7 +634,7 @@
       var s = Math.round(((r.typical - r.price) / r.typical) * 100);
       v.className = "chfs-verdict " + (s >= 12 ? "g" : (s <= -15 ? "w" : ""));
       v.innerHTML = "<strong>" + (s >= 25 ? "Book it" : s >= 12 ? "Good price" : s <= -15 ? "Above the usual price" : "About usual") +
-        "</strong><span>£" + r.price + " against a usual £" + r.typical + " — " +
+        "</strong><span>£" + r.price + " against a usual £" + r.typical + ", " +
         (s >= 0 ? s + "% cheaper" : Math.abs(s) + "% dearer") + " than normal.</span>";
     } else {
       v.className = "chfs-verdict";
@@ -494,7 +643,7 @@
 
     // Other dates for the same destination, so people can shift a few days.
     var alts = flatten()
-      .filter(function (x) { return x.dest === r.dest; })
+      .filter(function (x) { return x.dest === r.dest && x.origin === r.origin; })
       .filter(function (x) {
         if (state.trip === "one") return !x.ret;
         if (state.trip === "ret") return !!x.ret;
@@ -515,11 +664,11 @@
         '<span><span class="d">' + fmt(a.dep) + (a.ret ? " – " + fmt(a.ret) : "") + '</span>' +
         '<span class="s">' + (a.ret ? "return" : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + '</span></span>' +
         '<span><span class="p">£' + a.price + '</span>' +
-        '<a class="chfs-book" target="_blank" rel="noopener sponsored" href="' + bookUrl(state.from, a.dest, a.dep, a.ret) + '">Book</a></span>';
+        '<a class="chfs-book" target="_blank" rel="noopener sponsored" href="' + bookUrl(a.origin, a.dest, a.dep, a.ret) + '">Book</a></span>';
       o.appendChild(row);
     });
 
-    $("chfsMain").href = bookUrl(state.from, r.dest, r.dep, r.ret);
+    $("chfsMain").href = bookUrl(r.origin, r.dest, r.dep, r.ret);
     applyGate(document.getElementById("chfsBg"));
     $("chfsBg").hidden = false;
     $("chfsClose").focus();
@@ -543,7 +692,7 @@
   function reachable() {
     var seen = {};
     FARES.forEach(function (f) {
-      if (f.origin !== state.from || !PLACES[f.destination]) return;
+      if (!fromMatches(f) || !PLACES[f.destination] || BOGUS[f.destination]) return;
       var price = f.price || 0;
       if (f.options && f.options.length) {
         f.options.forEach(function (o) { if (o.p && (!price || o.p < price)) price = o.p; });
@@ -567,7 +716,8 @@
     var matches;
 
     if (!term) {
-      matches = all.slice(0, 8);
+      // The opening list is inspiration, so no hops to other UK airports.
+      matches = all.filter(function (d) { return !UK[d.code]; }).slice(0, 8);
     } else {
       matches = all.filter(function (d) {
         return d.name.toLowerCase().indexOf(term) === 0 ||
@@ -637,7 +787,14 @@
     }
   });
 
-  $("chfsTo").addEventListener("input", function () { state.q = this.value; acOpen(this.value); render(); });
+  // While someone is still typing, a misspelling should not wipe the
+  // results underneath the suggestions. The grid only follows the text
+  // once it names a real place, or is cleared.
+  $("chfsTo").addEventListener("input", function () {
+    state.q = this.value;
+    acOpen(this.value);
+    if (queryMatchesSomething(this.value)) render();
+  });
   function isoToday() { return new Date().toISOString().slice(0, 10); }
 
   var MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -647,7 +804,7 @@
     if (!sel) return;
     var seen = {};
     FARES.forEach(function (f) {
-      if (f.origin !== state.from) return;
+      if (!fromMatches(f)) return;
       var opts = (f.options && f.options.length) ? f.options : [{ d: f.departure }];
       opts.forEach(function (o) { if (o.d) seen[monthKey(o.d)] = 1; });
     });
@@ -677,6 +834,14 @@
     $("fDep").hidden = !dates;
     $("fRet").hidden = !dates || state.trip === "one";
     $("fMonth").hidden = dates;
+    // The quick-date chips only mean something once dates are in play.
+    // In month mode they were five buttons that did nothing useful and
+    // pushed the first result off a phone screen. The Inspire me row
+    // takes their place there.
+    var quick = document.querySelector(".chfs-quick");
+    var themes = document.querySelector(".chfs-themes");
+    if (quick) quick.hidden = !dates;
+    if (themes) themes.hidden = dates;
     if (dates) {
       state.month = ""; $("chfsMonth").value = "";
     } else {
@@ -787,11 +952,31 @@
   $("chfsWknd").addEventListener("click", function () { setTrip("weekend"); });
   if ($("chfsXmas")) $("chfsXmas").addEventListener("click", function () { setTrip("xmas"); });
 
-  $("chfsSort").addEventListener("click", function () {
-    state.sort = state.sort === "price" ? "date" : (state.sort === "date" ? "name" : "price");
-    this.textContent = state.sort === "price" ? "Cheapest" : (state.sort === "date" ? "Soonest" : "A–Z");
-    this.setAttribute("aria-pressed", state.sort === "name" ? "false" : "true");
+  // Sorting used to be one button that cycled through three states, and
+  // nobody could tell it was a control at all. Three chips, one lit.
+  var sortBtns = document.querySelectorAll(".chfs-sortgrp button");
+  function setSort(v) {
+    state.sort = v;
+    Array.prototype.forEach.call(sortBtns, function (b) {
+      b.setAttribute("aria-pressed", b.dataset.sort === v ? "true" : "false");
+    });
     render();
+  }
+  Array.prototype.forEach.call(sortBtns, function (b) {
+    b.addEventListener("click", function () { setSort(b.dataset.sort); });
+  });
+
+  // Inspire me. One tap narrows Everywhere to a kind of trip.
+  var themeBtns = document.querySelectorAll(".chfs-themes button");
+  function setTheme(v) {
+    state.theme = (state.theme === v) ? "" : v;   // tap again to clear
+    Array.prototype.forEach.call(themeBtns, function (b) {
+      b.setAttribute("aria-pressed", b.dataset.theme === state.theme ? "true" : "false");
+    });
+    render();
+  }
+  Array.prototype.forEach.call(themeBtns, function (b) {
+    b.addEventListener("click", function () { setTheme(b.dataset.theme); });
   });
   $("chfsDirect").addEventListener("click", function () {
     state.direct = !state.direct;
@@ -820,7 +1005,34 @@
       var today = isoToday();
       $("chfsFrom2").min = today;
       $("chfsTo2").min = today;
+
+      // Restore a shared or emailed search from the address bar.
+      var u = readUrl();
+      if (u.from && (u.from === ANY || ORIGINS.some(function (o) { return o[0] === u.from; }))) {
+        state.from = u.from; $("chfsFrom").value = u.from;
+      }
+      if (u.to) { state.q = u.to; $("chfsTo").value = u.to; }
+      if (u.max && parseInt(u.max, 10) >= 20 && parseInt(u.max, 10) < 600) {
+        state.budget = parseInt(u.max, 10);
+        $("chfsBudget").value = state.budget;
+        $("chfsBudgetVal").textContent = "Under £" + state.budget;
+      }
+      if (u.theme && THEMES[u.theme]) {
+        state.theme = u.theme;
+        Array.prototype.forEach.call(themeBtns, function (b) {
+          b.setAttribute("aria-pressed", b.dataset.theme === u.theme ? "true" : "false");
+        });
+      }
+      if (u.dep) {
+        setDateMode("dates");
+        state.from2 = u.dep; $("chfsFrom2").value = u.dep;
+        if (u.ret) { state.to2 = u.ret; $("chfsTo2").value = u.ret; }
+      }
       buildMonths();
+      if (u.month) { state.month = u.month; $("chfsMonth").value = u.month; }
+      if (u.trip && ["any","one","ret","weekend","xmas"].indexOf(u.trip) > -1) {
+        setTrip(u.trip);                       // this renders
+      }
       render();
       checkMember().then(function (paid) {
         PAID = paid;

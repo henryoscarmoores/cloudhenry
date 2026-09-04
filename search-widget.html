@@ -59,6 +59,20 @@ select.chfs-ctl{padding-right:34px;background-image:linear-gradient(45deg,transp
 .chfs-month{border:1px solid var(--chfs-line);background:var(--chfs-surf);color:var(--chfs-ink);font:inherit;font-size:12.5px;font-weight:700;padding:6px 30px 6px 12px;border-radius:999px;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--chfs-soft) 50%),linear-gradient(135deg,var(--chfs-soft) 50%,transparent 50%);background-position:calc(100% - 16px) calc(50% + 1px),calc(100% - 11px) calc(50% + 1px);background-size:5px 5px,5px 5px;background-repeat:no-repeat}
 .chfs-quick button{border:1px solid var(--chfs-line);background:var(--chfs-surf);color:var(--chfs-soft);font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .25s var(--chfs-ease)}
 .chfs-quick button:hover{border-color:var(--chfs-sky);color:var(--chfs-sky)}
+.chfs-quick[hidden],.chfs-themes[hidden]{display:none!important}
+.chfs-themes{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px}
+.chfs-themes-lab{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--chfs-soft);margin-right:4px}
+.chfs-themes button{border:1px solid var(--chfs-line);background:var(--chfs-surf);color:var(--chfs-ink);font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .25s var(--chfs-ease)}
+.chfs-themes button:hover{border-color:var(--chfs-sky);color:var(--chfs-sky)}
+.chfs-themes button[aria-pressed="true"]{background:var(--chfs-sky);border-color:var(--chfs-sky);color:#fff}
+@media(min-width:700px){.chfs-sub>.chfs-themes{grid-column:1/-1;grid-row:3}}
+.chfs-sortgrp{display:inline-flex;gap:0;border:1px solid var(--chfs-line);border-radius:999px;overflow:hidden}
+.chfs-sortgrp .chfs-chip{border:0;border-radius:0;padding:6px 11px}
+.chfs-sortgrp .chfs-chip+.chfs-chip{border-left:1px solid var(--chfs-line)}
+.chfs-from{display:inline-block;margin-left:7px;font-size:11px;font-weight:700;color:var(--chfs-sky);background:rgba(14,111,182,.08);padding:2px 7px;border-radius:999px;vertical-align:2px;white-space:nowrap}
+.chfs-tryany{display:inline-block;margin:16px 6px 0;border:2px solid var(--chfs-sky);background:transparent;color:var(--chfs-sky);font:inherit;font-weight:800;font-size:14px;padding:9px 20px;border-radius:999px;cursor:pointer}
+.chfs-tryany:hover{background:var(--chfs-sky);color:#fff}
+.chfs-nodata a{margin-left:6px;margin-right:6px}
 .chfs-nodata{grid-column:1/-1;text-align:center;padding:34px 20px;border:1px dashed var(--chfs-line);border-radius:20px;background:var(--chfs-surf);color:var(--chfs-soft)}
 .chfs-nodata strong{display:block;color:var(--chfs-ink);font-size:17px;margin-bottom:6px}
 .chfs-nodata p{margin:0 auto;max-width:44ch;font-size:14px;line-height:1.5}
@@ -176,12 +190,19 @@ img.chfs-flag{display:block;width:38px;height:28px;object-fit:cover;border-radiu
         <button type="button" id="chfsModeMonth" aria-pressed="true">Whole month</button>
         <button type="button" id="chfsModeDates" aria-pressed="false">Specific dates</button>
       </div>
-      <div class="chfs-quick" role="group" aria-label="Quick dates">
+      <div class="chfs-quick" role="group" aria-label="Quick dates" hidden>
         <button type="button" data-days="3">Next 3 days</button>
         <button type="button" data-days="7">Next week</button>
         <button type="button" data-days="14">Next 2 weeks</button>
         <button type="button" data-days="0">Clear dates</button>
         <button type="button" id="chfsFlex" data-flex="1">Exact dates only</button>
+      </div>
+      <div class="chfs-themes" role="group" aria-label="Inspire me">
+        <span class="chfs-themes-lab">Inspire me</span>
+        <button type="button" data-theme="beach" aria-pressed="false">🏖️ Beach</button>
+        <button type="button" data-theme="city" aria-pressed="false">🏙️ City break</button>
+        <button type="button" data-theme="sun" aria-pressed="false">☀️ Winter sun</button>
+        <button type="button" data-theme="long" aria-pressed="false">🌍 Long haul</button>
       </div>
       <div class="chfs-seg" role="group" aria-label="Trip type">
         <button id="chfsAny" aria-pressed="true">Any</button>
@@ -199,7 +220,11 @@ img.chfs-flag{display:block;width:38px;height:28px;object-fit:cover;border-radiu
     <h3 id="chfsTitle">Loading fares&hellip;</h3>
     <span class="chfs-count" id="chfsCount"></span>
     <div class="chfs-chips" role="group" aria-label="Sort and filter">
-      <button class="chfs-chip" id="chfsSort" aria-pressed="true">Cheapest</button>
+      <span class="chfs-sortgrp" role="group" aria-label="Sort by">
+        <button class="chfs-chip" type="button" data-sort="price" aria-pressed="true">Cheapest</button>
+        <button class="chfs-chip" type="button" data-sort="date" aria-pressed="false">Soonest</button>
+        <button class="chfs-chip" type="button" data-sort="name" aria-pressed="false">A to Z</button>
+      </span>
       <button class="chfs-chip" id="chfsDirect" aria-pressed="false">Direct only</button>
     </div>
   </div>
