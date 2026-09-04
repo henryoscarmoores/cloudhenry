@@ -58,6 +58,15 @@ jobs:
         continue-on-error: true
         run: .\name-places.ps1
 
+      # Members who joined on an airport page but carry no airport label
+      # get one, from the page Ghost recorded at signup.
+      - name: Label members with their airport
+        shell: powershell
+        continue-on-error: true
+        env:
+          GHOST_ADMIN_KEY: ${{ secrets.GHOST_ADMIN_KEY }}
+        run: .\label-airports.ps1
+
       - name: Check the result before publishing
         shell: pwsh
         run: |
