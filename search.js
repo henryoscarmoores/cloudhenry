@@ -217,7 +217,14 @@
     });
     return params;
   }
+  // Read the address bar once, before anything renders. The first render
+  // happens while the controls are being wired up, and it must not wipe
+  // a shared link's parameters before the fares have loaded.
+  var INITIAL = readUrl();
+  var READY = false;
+
   function writeUrl() {
+    if (!READY) return;
     if (!window.history || !history.replaceState) return;
     var parts = [];
     if (state.from !== "MAN") parts.push("from=" + state.from);
@@ -1007,7 +1014,8 @@
       $("chfsTo2").min = today;
 
       // Restore a shared or emailed search from the address bar.
-      var u = readUrl();
+      var u = INITIAL;
+      READY = true;
       if (u.from && (u.from === ANY || ORIGINS.some(function (o) { return o[0] === u.from; }))) {
         state.from = u.from; $("chfsFrom").value = u.from;
       }

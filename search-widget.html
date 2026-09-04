@@ -30,6 +30,7 @@ select.chfs-ctl{padding-right:34px;background-image:linear-gradient(45deg,transp
   .chfs-sub>.chfs-datemode{grid-column:1/-1;grid-row:2;justify-self:start}
 }
 .chfs-seg{display:inline-flex;gap:3px;background:var(--chfs-surf2);border-radius:999px;padding:4px;flex:0 0 auto;flex-wrap:nowrap;max-width:100%;overflow-x:auto}
+@media(max-width:699px){.chfs-seg{flex-wrap:wrap;border-radius:18px;overflow:visible}}
 .chfs-seg button{border:0;background:transparent;font:inherit;font-weight:700;font-size:13px;color:var(--chfs-soft);padding:8px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;flex:0 0 auto;transition:all .25s var(--chfs-ease)}
 .chfs-seg button[aria-pressed="true"]{background:var(--chfs-surf);color:var(--chfs-ink);box-shadow:0 1px 3px rgba(14,53,80,.14)}
 .chfs-seg button.chfs-wknd{color:var(--chfs-sky)}
