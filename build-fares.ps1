@@ -48,6 +48,7 @@ param(
   [switch]   $SkipXmas,
   [string[]] $OnlyOrigins,
   [int]      $PauseMs = 180,
+  [switch]   $WriteSlim,
   [string]   $Currency = "gbp"
 )
 
@@ -185,8 +186,15 @@ foreach ($origin in $ORIGINS) {
   foreach ($t in $list) {
     $opts = @()
 
+    # The London airports each know seven hundred destinations, and the
+    # long tail of those took the first full build to an hour and three
+    # quarters. Routes beyond the cheapest 150 get one month fewer and no
+    # weekend pass; they are still in the search with real dates.
+    $deep = ($n -lt 150)
+    $routeMonths = if ($deep -or $months.Count -le 1) { $months } else { $months[0..($months.Count - 2)] }
+
     # One-way, a price per day, for the months ahead.
-    foreach ($mon in $months) {
+    foreach ($mon in $routeMonths) {
       $m = Invoke-TP -Path "/v2/prices/month-matrix" -Query @{ origin = $origin; destination = $t.destination; month = $mon; currency = $Currency }
       $calls++
       if ($m -and $m.success -and $m.data) {
@@ -217,7 +225,7 @@ foreach ($origin in $ORIGINS) {
     # Weekends, Europe and the near neighbours only.
     $special = @()
     $country = if ($COUNTRY_OF.ContainsKey($t.destination)) { $COUNTRY_OF[$t.destination] } else { "" }
-    if (-not $SkipWeekends -and -not $UK.ContainsKey($t.destination) -and $weekendOk.ContainsKey($country)) {
+    if ($deep -and -not $SkipWeekends -and -not $UK.ContainsKey($t.destination) -and $weekendOk.ContainsKey($country)) {
       foreach ($dur in 1, 2, 3) {
         $w = Invoke-TP -Path "/v2/prices/latest" -Query @{
           origin = $origin; destination = $t.destination; one_way = "false"; trip_duration = $dur; limit = 500
@@ -291,31 +299,55 @@ foreach ($origin in $ORIGINS) {
   # Best forty routes by cheapest option, a dozen one-ways and eight
   # returns each, plus any weekends. Same shape as the airport file, so
   # the homepage, join pages and Today's Deals need no changes.
-  $ranked = $withOpts | Sort-Object { ($_.options | Measure-Object p -Minimum).Minimum } | Select-Object -First 40
-  foreach ($t in $ranked) {
-    $ow = @($t.options | Where-Object { -not $_.r } | Sort-Object p | Select-Object -First 12)
-    $rt = @($t.options | Where-Object { $_.r } | Sort-Object p | Select-Object -First 8)
-    $wk = @($t.options | Where-Object { $_.r } | Where-Object {
-      try { Is-Weekend -Dep ([datetime]::Parse($_.d)) -Ret ([datetime]::Parse($_.r)) } catch { $false }
-    } | Sort-Object p | Select-Object -First 6)
-    $seenK = @{}; $keep = @()
-    foreach ($o in (@($wk) + @($ow) + @($rt))) { $k = "$($o.d)|$($o.r)"; if (-not $seenK.ContainsKey($k)) { $seenK[$k] = 1; $keep += $o } }
-    $slim.Add([pscustomobject]@{
-      origin = $t.origin; destination = $t.destination; price = $t.price; departure = $t.departure; ret = $t.ret
-      transfers = $t.transfers; airline = $t.airline; flight = $t.flight; typical = $t.typical; options = $keep
-    })
+  # The airport file above is the valuable output. Nothing in here may
+  # sink the run: the first full cloud build finished all twelve airports
+  # and then died in this block with a type error, publishing nothing.
+  try {
+    $rankedList = @()
+    foreach ($t in $withOpts) {
+      $min = 999999
+      foreach ($o in @($t.options)) { $pv = 0; try { $pv = [int]$o.p } catch {}; if ($pv -gt 0 -and $pv -lt $min) { $min = $pv } }
+      $rankedList += [pscustomobject]@{ min = [int]$min; route = $t }
+    }
+    $ranked = @($rankedList | Sort-Object -Property min | Select-Object -First 40 | ForEach-Object { $_.route })
+    foreach ($t in $ranked) {
+      $ow = @(); $rt = @(); $wk = @()
+      foreach ($o in @($t.options)) {
+        if ($o.r) {
+          $rt += $o
+          try { if (Is-Weekend -Dep ([datetime]::Parse($o.d)) -Ret ([datetime]::Parse($o.r))) { $wk += $o } } catch {}
+        } else { $ow += $o }
+      }
+      $ow = @($ow | Sort-Object -Property p | Select-Object -First 12)
+      $rt = @($rt | Sort-Object -Property p | Select-Object -First 8)
+      $wk = @($wk | Sort-Object -Property p | Select-Object -First 6)
+      $seenK = @{}; $keep = @()
+      foreach ($o in (@($wk) + @($ow) + @($rt))) { $k = "$($o.d)|$($o.r)"; if (-not $seenK.ContainsKey($k)) { $seenK[$k] = 1; $keep += $o } }
+      $slim.Add([pscustomobject]@{
+        origin = [string]$t.origin; destination = [string]$t.destination; price = [int]$t.price
+        departure = [string]$t.departure; ret = [string]$t.ret; transfers = [int]$t.transfers
+        airline = [string]$t.airline; flight = [string]$t.flight; typical = $t.typical; options = @($keep)
+      })
+    }
+  } catch {
+    Log ("{0}: slim summary skipped: {1}" -f $origin, $_.Exception.Message) "WARN"
   }
 }
 
 # ---- Slim file ------------------------------------------------------------
-if ($OnlyOrigins) {
+if ($OnlyOrigins -and -not $WriteSlim) {
   Log "Partial run ($($ORIGINS -join ',')): airport files written, slim fares.json left alone."
 } elseif ($slim.Count -lt 300) {
   Log "Slim file would hold only $($slim.Count) routes. Keeping the previous fares.json." "WARN"
 } else {
-  $slimOut = [pscustomobject]@{ generated = $generated; currency = $Currency.ToUpper(); origins = $ORIGINS; count = $slim.Count; fares = @($slim) }
-  Write-Json -Path (Join-Path $RepoDir "fares.json") -Obj $slimOut
-  Log ("fares.json: {0} routes, {1} KB" -f $slim.Count, [math]::Round((Get-Item (Join-Path $RepoDir "fares.json")).Length / 1KB))
+  try {
+    $slimArr = @($slim.ToArray())
+    $slimOut = [pscustomobject]@{ generated = $generated; currency = $Currency.ToUpper(); origins = @($ORIGINS); count = $slimArr.Count; fares = $slimArr }
+    Write-Json -Path (Join-Path $RepoDir "fares.json") -Obj $slimOut
+    Log ("fares.json: {0} routes, {1} KB" -f $slimArr.Count, [math]::Round((Get-Item (Join-Path $RepoDir "fares.json")).Length / 1KB))
+  } catch {
+    Log ("slim fares.json not written: {0}. The airport files are unaffected." -f $_.Exception.Message) "WARN"
+  }
 }
 
 Log ("DONE. {0} routes, {1:n0} dated options, {2:n0} API calls, {3:n0} minutes." -f $totalRoutes, $totalOptions, $calls, ((Get-Date) - $runStart).TotalMinutes)

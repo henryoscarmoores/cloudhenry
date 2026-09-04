@@ -23,7 +23,7 @@ permissions:
 jobs:
   refresh:
     runs-on: windows-latest
-    timeout-minutes: 110
+    timeout-minutes: 170
 
     steps:
       - name: Check out the repository
