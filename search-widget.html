@@ -61,6 +61,21 @@ select.chfs-ctl{padding-right:34px;background-image:linear-gradient(45deg,transp
 .chfs-quick button{border:1px solid var(--chfs-line);background:var(--chfs-surf);color:var(--chfs-soft);font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .25s var(--chfs-ease)}
 .chfs-quick button:hover{border-color:var(--chfs-sky);color:var(--chfs-sky)}
 .chfs-quick[hidden],.chfs-themes[hidden]{display:none!important}
+.chfs-plan{padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--chfs-line)}
+.chfs-plan-lab{display:block;margin-bottom:6px}
+.chfs-plan-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:stretch}
+.chfs-plan-go{width:auto;padding:0 20px;white-space:nowrap}
+@media(max-width:519px){.chfs-plan-row{grid-template-columns:1fr}.chfs-plan-go{width:100%;padding:12px}}
+.chfs-plan-eg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chfs-plan-eg button{border:1px dashed var(--chfs-line);background:transparent;color:var(--chfs-soft);font:inherit;font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;cursor:pointer;transition:all .25s var(--chfs-ease)}
+.chfs-plan-eg button:hover{border-style:solid;border-color:var(--chfs-sky);color:var(--chfs-sky)}
+.chfs-plan-reply{margin-top:10px;background:rgba(14,111,182,.07);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45;color:var(--chfs-ink)}
+.chfs-plan-reply[hidden]{display:none!important}
+.chfs-plan-reply .chfs-plan-err{color:var(--chfs-warn)}
+.chfs-plan-ideas{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chfs-plan-ideas button{border:1px solid var(--chfs-sky);background:var(--chfs-surf);color:var(--chfs-sky);font:inherit;font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:999px;cursor:pointer}
+.chfs-plan-ideas button:hover{background:var(--chfs-sky);color:#fff}
+.chfs-plan-go[disabled]{opacity:.6;cursor:wait}
 .chfs-themes{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px}
 .chfs-themes-lab{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--chfs-soft);margin-right:4px}
 .chfs-themes button{border:1px solid var(--chfs-line);background:var(--chfs-surf);color:var(--chfs-ink);font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .25s var(--chfs-ease)}
@@ -151,6 +166,20 @@ img.chfs-flag{display:block;width:38px;height:28px;object-fit:cover;border-radiu
 
 <div class="chfs">
   <div class="chfs-panel">
+    <div class="chfs-plan">
+      <label class="chfs-lab chfs-plan-lab" for="chfsPlanQ">&#10024; Plan my trip</label>
+      <div class="chfs-plan-row">
+        <input id="chfsPlanQ" class="chfs-ctl" type="text" maxlength="300" autocomplete="off"
+               placeholder="Tell me what you fancy: somewhere warm in November under &pound;60 from Leeds">
+        <button type="button" id="chfsPlanGo" class="chfs-go chfs-plan-go">Plan it</button>
+      </div>
+      <div class="chfs-plan-eg" role="group" aria-label="Examples">
+        <button type="button">Christmas markets, long weekend, any airport</button>
+        <button type="button">Beach in October under &pound;40 from Manchester</button>
+        <button type="button">Somewhere I have never been, cheap as possible</button>
+      </div>
+      <div class="chfs-plan-reply" id="chfsPlanReply" hidden aria-live="polite"></div>
+    </div>
     <div class="chfs-row chfs-main">
       <div class="chfs-f">
         <label class="chfs-lab" for="chfsFrom">Flying from</label>

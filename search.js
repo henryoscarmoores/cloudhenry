@@ -991,6 +991,147 @@
     render();
   });
 
+  // --- Plan my trip -----------------------------------------------------
+  // A sentence in, search filters out. When the Worker is deployed the
+  // sentence goes to Claude; until then, and whenever the Worker cannot
+  // be reached, a small parser here does a plain-English best effort so
+  // the box always does something.
+  var PLANNER_URL = "";   // e.g. "https://cloudhenry-planner.<account>.workers.dev"
+
+  var MONTH_WORDS = { january:1, jan:1, february:2, feb:2, march:3, mar:3, april:4, apr:4, may:5,
+                      june:6, jun:6, july:7, jul:7, august:8, aug:8, september:9, sep:9, sept:9,
+                      october:10, oct:10, november:11, nov:11, december:12, dec:12 };
+
+  function planLocal(q) {
+    var t = " " + q.toLowerCase().replace(/[^a-z0-9£ ]+/g, " ") + " ";
+    var p = { from: state.from, to: "", trip: "any", month: "", dep: "", ret: "", theme: "", max: 0, ideas: [], reply: "" };
+
+    if (/ (anywhere|any airport|any uk airport|dont mind where from|wherever) /.test(t)) p.from = ANY;
+    ORIGINS.forEach(function (o) {
+      if (o[0] === ANY) return;
+      var name = o[1].toLowerCase().replace("london ", "");
+      if (t.indexOf(" from " + name) > -1 || t.indexOf(" " + o[0].toLowerCase() + " ") > -1) p.from = o[0];
+    });
+
+    // Longest place names first so "gran canaria" beats "canaria".
+    var codes = Object.keys(PLACES).sort(function (a, b) { return PLACES[b][0].length - PLACES[a][0].length; });
+    for (var i = 0; i < codes.length && !p.to; i++) {
+      var nm = PLACES[codes[i]][0].toLowerCase().replace(/[^a-z ]/g, "");
+      if (nm.length > 3 && t.indexOf(" " + nm + " ") > -1 && !UK[codes[i]] && !BOGUS[codes[i]]) p.to = PLACES[codes[i]][0];
+    }
+
+    if (/christmas|xmas|market/.test(t)) p.trip = "xmas";
+    else if (/weekend/.test(t)) p.trip = "weekend";
+    else if (/one way|single/.test(t)) p.trip = "one";
+    else if (/return|round trip|come back|back on|nights|week away|fortnight/.test(t)) p.trip = "ret";
+
+    var now = new Date(), y = now.getUTCFullYear(), m0 = now.getUTCMonth() + 1;
+    Object.keys(MONTH_WORDS).some(function (w) {
+      if (t.indexOf(" " + w + " ") === -1) return false;
+      var m = MONTH_WORDS[w], yy = (m < m0) ? y + 1 : y;
+      p.month = yy + "-" + ("0" + m).slice(-2);
+      return true;
+    });
+
+    var money = t.match(/£\s?(\d{2,3})|under (\d{2,3})|(\d{2,3}) quid|(\d{2,3}) pounds|budget of (\d{2,3})/);
+    if (money) p.max = parseInt(money[1] || money[2] || money[3] || money[4] || money[5], 10);
+
+    var winter = p.month ? (parseInt(p.month.slice(5), 10) >= 10 || parseInt(p.month.slice(5), 10) <= 3) : (m0 >= 10 || m0 <= 3);
+    if (/beach|sun|warm|hot|sunny|sea/.test(t)) p.theme = winter ? "sun" : "beach";
+    else if (/city|culture|museum|weekend break|bars|food/.test(t)) p.theme = "city";
+    else if (/long haul|far away|asia|america|thailand|usa|new york|dubai/.test(t)) p.theme = "long";
+
+    p.reply = "Set the search to " + (p.to ? p.to : "everywhere") +
+              " from " + originName(p.from).toLowerCase().replace("any uk airport", "any UK airport") +
+              (p.month ? " in " + MONTH_NAMES[parseInt(p.month.slice(5), 10) - 1] : "") +
+              (p.max ? " under £" + p.max : "") +
+              (p.trip === "weekend" ? ", weekends only" : p.trip === "xmas" ? ", Christmas markets" : "") + ".";
+    return p;
+  }
+
+  function applyPlan(p) {
+    if (p.from && ORIGINS.some(function (o) { return o[0] === p.from; })) {
+      state.from = p.from; $("chfsFrom").value = p.from;
+    }
+    state.q = p.to || ""; $("chfsTo").value = state.q;
+    state.theme = (p.theme && THEMES[p.theme]) ? p.theme : "";
+    Array.prototype.forEach.call(themeBtns, function (b) {
+      b.setAttribute("aria-pressed", b.dataset.theme === state.theme ? "true" : "false");
+    });
+    state.budget = (p.max && p.max >= 20 && p.max < 600) ? p.max : 600;
+    $("chfsBudget").value = state.budget;
+    $("chfsBudgetVal").textContent = state.budget >= 600 ? "Any price" : "Under £" + state.budget;
+
+    if (p.dep) {
+      setDateMode("dates");
+      state.from2 = p.dep; $("chfsFrom2").value = p.dep;
+      state.to2 = p.ret || ""; $("chfsTo2").value = state.to2;
+    } else {
+      setDateMode("month");
+    }
+    buildMonths();
+    if (p.month && !p.dep) {
+      var sel = $("chfsMonth");
+      var has = Array.prototype.some.call(sel.options, function (o) { return o.value === p.month; });
+      state.month = has ? p.month : ""; sel.value = state.month;
+    }
+    setTrip(["any", "one", "ret", "weekend", "xmas"].indexOf(p.trip) > -1 ? p.trip : "any");   // renders
+
+    var box = $("chfsPlanReply");
+    var html = "";
+    if (p.error) html += '<span class="chfs-plan-err">' + p.error + "</span>";
+    else if (p.reply) html += p.reply;
+    if (p.ideas && p.ideas.length) {
+      html += '<div class="chfs-plan-ideas">' + p.ideas.map(function (n) {
+        var city = String(n).split(" (")[0];
+        return '<button type="button" data-city="' + city.replace(/"/g, "") + '">' + city + "</button>";
+      }).join("") + "</div>";
+    }
+    box.innerHTML = html;
+    box.hidden = !html;
+    Array.prototype.forEach.call(box.querySelectorAll("button[data-city]"), function (b) {
+      b.addEventListener("click", function () {
+        state.q = b.dataset.city; $("chfsTo").value = state.q;
+        render();
+        var head = $("chfsTitle"); if (head && head.scrollIntoView) head.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+    var head = $("chfsTitle");
+    if (head && head.scrollIntoView && window.innerWidth < 700) head.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function plan() {
+    var q = $("chfsPlanQ").value.trim();
+    if (!q) { $("chfsPlanQ").focus(); return; }
+    var btn = $("chfsPlanGo");
+    btn.disabled = true; btn.textContent = "Thinking";
+
+    function done(p) { btn.disabled = false; btn.textContent = "Plan it"; applyPlan(p); }
+
+    if (!PLANNER_URL) { done(planLocal(q)); return; }
+    fetch(PLANNER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: q, from: state.from })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (p) {
+        if (!p || (p.error && !p.reply)) {
+          var local = planLocal(q);
+          if (p && p.error) local.error = p.error;
+          done(local);
+        } else done(p);
+      })
+      .catch(function () { done(planLocal(q)); });
+  }
+  if ($("chfsPlanGo")) {
+    $("chfsPlanGo").addEventListener("click", plan);
+    $("chfsPlanQ").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); plan(); } });
+    Array.prototype.forEach.call(document.querySelectorAll(".chfs-plan-eg button"), function (b) {
+      b.addEventListener("click", function () { $("chfsPlanQ").value = b.textContent; plan(); });
+    });
+  }
+
   // --- load -------------------------------------------------------------
   var g = $("chfsGrid");
   g.innerHTML = "";
