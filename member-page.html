@@ -1,0 +1,58 @@
+<!-- CloudHenry member area. The HTML card on /my-cloudhenry/.
+     Namespaced .chm- so it cannot affect the rest of the site. The page
+     is built by member.js from the signed-in member's own data. -->
+<style>
+.chm{--sky:#0E6FB6;--sky-deep:#0B558C;--ink:#0E3550;--soft:#46607A;--faint:#7A90A5;--sun:#F5C242;--surf:#fff;--surf2:#EDF3F9;--line:rgba(14,53,80,.12);--good:#1B7F53;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:1040px;margin:0 auto;text-align:left}
+.chm *,.chm *::before,.chm *::after{box-sizing:border-box}
+.chm a{color:inherit}
+.chm-card{background:var(--surf);border:1px solid var(--line);border-radius:18px;box-shadow:0 4px 10px rgba(14,53,80,.08),0 18px 40px rgba(14,53,80,.10);padding:18px}
+.chm-card+.chm-card{margin-top:14px}
+.chm-loading,.chm-gate{text-align:center;padding:40px 20px;color:var(--soft)}
+.chm-gate h2{margin:0 0 8px;font-size:22px;color:var(--ink)}
+.chm-gate p{margin:0 auto 16px;max-width:44ch}
+.chm-btn{display:inline-block;background:var(--sun);color:#16324A;font-weight:800;font-size:14px;padding:11px 20px;border-radius:999px;text-decoration:none;margin:4px}
+.chm-btn.chm-ghost{background:transparent;border:2px solid var(--sky);color:var(--sky)}
+.chm-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;color:#fff;margin:0 0 18px}
+.chm-hi h1{margin:0;font-size:clamp(28px,4.5vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.05;text-shadow:0 2px 10px rgba(11,103,172,.35)}
+.chm-hi p{margin:8px 0 0;color:#D7EDFA;max-width:56ch;font-size:15px}
+.chm-hi p b{color:#FFE9AE}
+.chm-pick{display:grid;gap:5px;min-width:240px}
+.chm-pick span{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#D7EDFA}
+.chm-pick select{font:inherit;font-size:15px;font-weight:700;color:var(--ink);background:var(--surf);border:1px solid transparent;border-radius:14px;padding:11px 36px 11px 14px;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--soft) 50%),linear-gradient(135deg,var(--soft) 50%,transparent 50%);background-position:calc(100% - 19px) calc(50% + 1px),calc(100% - 14px) calc(50% + 1px);background-size:5px 5px,5px 5px;background-repeat:no-repeat;box-shadow:0 2px 8px rgba(14,53,80,.15)}
+.chm-pick select:disabled{opacity:.6}
+.chm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.chm-stat{background:var(--surf);border-radius:14px;padding:12px 14px;box-shadow:0 4px 10px rgba(14,53,80,.08);min-width:0}
+.chm-stat small{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.chm-stat b{display:block;margin-top:4px;font-size:15px;font-weight:800;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chm-stat:first-child{background:linear-gradient(135deg,var(--sun),#F9D774);color:#16324A}
+.chm-stat:first-child small{color:rgba(22,50,74,.7)}
+@media(max-width:700px){.chm-stats{grid-template-columns:1fr 1fr}}
+.chm-cols{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;align-items:start}
+@media(max-width:860px){.chm-cols{grid-template-columns:1fr}}
+.chm-hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.chm-hd h2{margin:0;font-size:18px;font-weight:800;letter-spacing:-.02em}
+.chm-hd span{font-size:12.5px;color:var(--soft);font-weight:600}
+.chm-hd a{font-size:13px;font-weight:700;color:var(--sky);text-decoration:none;white-space:nowrap}
+.chm-mail,.chm-fare{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;text-decoration:none;transition:transform .15s ease,box-shadow .15s ease}
+.chm-mail+.chm-mail,.chm-fare+.chm-fare{margin-top:8px}
+.chm-mail:hover,.chm-fare:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(14,53,80,.12)}
+.chm-mail b,.chm-fare b{display:block;font-size:14px;font-weight:700}
+.chm-mail small,.chm-fare small{display:block;font-size:12px;color:var(--soft);margin-top:2px}
+.chm-open{font-size:13px;font-weight:700;color:var(--sky);white-space:nowrap}
+.chm-price{font-weight:800;font-size:16px;color:var(--sky);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.chm-price s{display:block;font-size:11px;color:var(--faint);font-weight:500}
+.chm-empty{margin:0;padding:18px 10px;text-align:center;color:var(--soft);font-size:14px}
+.chm-plan{display:flex;gap:8px;margin-top:12px}
+.chm-plan input[type=text]{flex:1;min-width:0;font:inherit;font-size:14px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surf2);color:var(--ink)}
+.chm-plan input::placeholder{color:var(--faint)}
+.chm-plan button{border:0;background:var(--sun);color:#16324A;font:inherit;font-weight:800;font-size:13.5px;padding:10px 16px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.chm-rows{display:grid;gap:8px}
+.chm-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-size:14px;font-weight:700}
+.chm-row small{display:block;font-weight:500;font-size:12.5px;color:var(--soft);margin-top:1px;overflow-wrap:anywhere}
+.chm-row a{font-size:13px;font-weight:700;color:var(--sky);text-decoration:none;white-space:nowrap}
+.chm .chm-hero{position:relative;z-index:2}
+</style>
+<div class="chm">
+  <div id="chm"><div class="chm-card chm-loading">Loading your CloudHenry&hellip;</div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/member.js" defer></script>
