@@ -131,6 +131,20 @@ select.chfs-ctl{padding-right:34px;background-image:linear-gradient(45deg,transp
 .chfs[data-embed] .chfs-note{display:none}
 @media(min-width:700px){.chfs[data-embed] .chfs-grid{grid-template-columns:1fr 1fr!important}}
 @media(min-width:1100px){.chfs[data-embed] .chfs-grid{grid-template-columns:1fr 1fr 1fr!important}}
+/* Big screens: the whole form on one row, four columns of results, so
+   the box fills its width rather than floating in sky. */
+@media(min-width:1200px){
+  .chfs[data-embed] .chfs-row.chfs-main{grid-template-columns:1fr 1.4fr 1fr auto!important}
+  .chfs[data-embed] .chfs-row.chfs-main .chfs-f:nth-child(1){grid-column:1;order:1}
+  .chfs[data-embed] .chfs-row.chfs-main .chfs-f:nth-child(2){grid-column:2;order:2}
+  .chfs[data-embed] .chfs-row.chfs-main #fMonth{grid-column:3;order:3}
+  .chfs[data-embed] .chfs-row.chfs-main #fDep,.chfs[data-embed] .chfs-row.chfs-main #fRet{grid-column:auto;order:4}
+  .chfs[data-embed] .chfs-row.chfs-main .chfs-go{grid-column:4;order:5}
+  .chfs[data-embed] .chfs-sub{grid-template-columns:auto 1fr!important;align-items:center}
+  .chfs[data-embed] .chfs-sub>.chfs-themes{grid-column:1!important;grid-row:1!important}
+  .chfs[data-embed] .chfs-sub>.chfs-seg{grid-column:2!important;grid-row:1!important;justify-self:end!important}
+}
+@media(min-width:1300px){.chfs[data-embed] .chfs-grid{grid-template-columns:1fr 1fr 1fr 1fr!important}}
 @media(max-width:699px){
   .chfs[data-embed] .chfs-plan-eg{display:none}
   .chfs[data-embed] .chfs-plan-row{grid-template-columns:1fr auto}
