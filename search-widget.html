@@ -92,11 +92,25 @@ select.chfs-ctl{padding-right:34px;background-image:linear-gradient(45deg,transp
 .chfs[data-embed] .chfs-plan{padding-bottom:10px;margin-bottom:10px}
 .chfs[data-embed] .chfs-plan-row{grid-template-columns:1fr auto}
 .chfs[data-embed] .chfs-plan-go{width:auto;padding:0 16px}
-.chfs[data-embed] .chfs-grid{grid-template-columns:1fr!important;gap:8px}
-.chfs[data-embed] .chfs-head{margin:16px 2px 8px}
-.chfs[data-embed] .chfs-head h3{font-size:16px}
-.chfs[data-embed] .chfs-tease{margin-top:14px;padding:14px 16px}
-.chfs[data-embed] .chfs-note{font-size:11.5px;margin-top:10px}
+/* Results packed tight: the hero cannot carry a tall column of cards */
+.chfs[data-embed] .chfs-grid{grid-template-columns:1fr!important;gap:6px}
+.chfs[data-embed] .chfs-card{grid-template-columns:28px 1fr auto;gap:8px;padding:8px 10px;border-radius:12px}
+.chfs[data-embed] .chfs-card:hover{transform:none}
+.chfs[data-embed] .chfs-flag{width:28px;height:20px}
+.chfs[data-embed] .chfs-city{font-size:13.5px}
+.chfs[data-embed] .chfs-meta{font-size:11px}
+.chfs[data-embed] .chfs-price{font-size:15.5px}
+.chfs[data-embed] .chfs-was{font-size:10px}
+.chfs[data-embed] .chfs-tag{font-size:9px;padding:1px 6px;margin-top:2px}
+.chfs[data-embed] .chfs-head{margin:12px 2px 6px}
+.chfs[data-embed] .chfs-head h3{font-size:15px}
+.chfs[data-embed] .chfs-count{font-size:12px}
+.chfs[data-embed] .chfs-chip{font-size:11.5px;padding:5px 10px}
+.chfs[data-embed] .chfs-more{padding:10px 14px;font-size:13px}
+.chfs[data-embed] .chfs-tease{margin-top:12px;padding:12px 14px}
+.chfs[data-embed] .chfs-tease strong{font-size:15px}
+.chfs[data-embed] .chfs-note{display:none}
+@media(min-width:700px){.chfs[data-embed] .chfs-grid{grid-template-columns:1fr 1fr!important}}
 @media(max-width:699px){
   .chfs[data-embed] .chfs-plan-eg{display:none}
   .chfs[data-embed] .chfs-plan-row{grid-template-columns:1fr auto}
