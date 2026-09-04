@@ -405,6 +405,16 @@
     var t = (q || "").trim().toLowerCase();
     return !t || t === "everywhere" || t === "anywhere" || t === "any";
   }
+  var COUNTRIES = null;
+  function isCountry(q) {
+    var t = (q || "").trim().toLowerCase();
+    if (!t) return false;
+    if (!COUNTRIES) {
+      COUNTRIES = {};
+      Object.keys(PLACES).forEach(function (c) { if (PLACES[c][1]) COUNTRIES[PLACES[c][1].toLowerCase()] = 1; });
+    }
+    return !!COUNTRIES[t];
+  }
 
   function build() {
     var rows = flatten();
@@ -465,7 +475,9 @@
     // twelve consecutive Paris cards on screen and buried every other
     // city. Once a destination is named, every date for it is listed.
     var seen = {}, unique = [];
-    var perDestination = isEverywhere(state.q);
+    // A country is a question about places too: one card per Spanish
+    // city, not every Barcelona date in a row.
+    var perDestination = isEverywhere(state.q) || isCountry(state.q);
     rows.forEach(function (r) {
       var k = perDestination ? r.dest : (r.origin + "|" + r.dest + "|" + r.dep + "|" + r.ret);
       if (!seen[k]) { seen[k] = 1; unique.push(r); }
@@ -574,11 +586,14 @@
     var anyMode = (state.from === ANY);
 
     var browsing = isEverywhere(state.q);
+    var country = !browsing && isCountry(state.q);
     var themeLabel = state.theme && THEMES[state.theme] ? THEMES[state.theme].label + " " : "";
     $("chfsTitle").textContent = browsing
       ? (anyMode ? themeLabel + "Everywhere from any UK airport" : themeLabel + "Everywhere from " + fromCity)
-      : (anyMode ? "Flights from any UK airport" : "Flights from " + fromCity);
-    var noun = browsing ? "destination" : "flight";
+      : country
+        ? state.q.trim() + " from " + (anyMode ? "any UK airport" : fromCity)
+        : (anyMode ? "Flights from any UK airport" : "Flights from " + fromCity);
+    var noun = (browsing || country) ? "destination" : "flight";
     $("chfsCount").textContent = rows.length
       ? (rows.length > LIMIT ? "showing " + LIMIT + " of " + rows.length + " " + noun + "s"
                            : rows.length + " " + noun + (rows.length === 1 ? "" : "s"))
@@ -1073,6 +1088,21 @@
       var nm = PLACES[codes[i]][0].toLowerCase().replace(/[^a-z ]/g, "");
       if (nm.length > 3 && t.indexOf(" " + nm + " ") > -1 && !UK[codes[i]] && !BOGUS[codes[i]]) p.to = PLACES[codes[i]][0];
     }
+    // A country works too. "Spain" was the first thing someone typed and
+    // the parser knew nothing but cities.
+    if (!p.to) {
+      var ALIAS = { turkey:"Türkiye", holland:"Netherlands", america:"USA", usa:"USA", "the states":"USA",
+                    czech:"Czechia", "czech republic":"Czechia", uae:"UAE", emirates:"UAE" };
+      Object.keys(ALIAS).forEach(function (a) { if (!p.to && t.indexOf(" " + a + " ") > -1) p.to = ALIAS[a]; });
+      var countries = {};
+      Object.keys(PLACES).forEach(function (c) {
+        if (!UK[c] && !BOGUS[c] && PLACES[c][1]) countries[PLACES[c][1]] = 1;
+      });
+      Object.keys(countries).sort(function (a, b) { return b.length - a.length; }).forEach(function (cn) {
+        var k = cn.toLowerCase().replace(/[^a-z ]/g, "");
+        if (!p.to && k.length > 3 && t.indexOf(" " + k + " ") > -1) p.to = cn;
+      });
+    }
 
     if (/christmas|xmas|market/.test(t)) p.trip = "xmas";
     else if (/weekend/.test(t)) p.trip = "weekend";
@@ -1097,6 +1127,14 @@
     else if (/city|culture|museum|weekend break|bars|food/.test(t)) p.theme = "city";
     else if (/long haul|far away|asia|america|thailand|usa|new york|dubai/.test(t)) p.theme = "long";
 
+    // Nothing recognised at all: say so, rather than quietly showing the
+    // same results and looking broken.
+    var understood = p.to || p.month || p.max || p.theme || p.trip !== "any" || p.from !== state.from;
+    if (!understood) {
+      p.error = "I did not catch a place, a month or a budget in that. Try something like \"Spain in October\", \"weekend under £50\" or \"somewhere warm from Leeds\".";
+      p.from = state.from;
+      return p;
+    }
     p.reply = "Set the search to " + (p.to ? p.to : "everywhere") +
               " from " + originName(p.from).toLowerCase().replace("any uk airport", "any UK airport") +
               (p.month ? " in " + MONTH_NAMES[parseInt(p.month.slice(5), 10) - 1] : "") +
