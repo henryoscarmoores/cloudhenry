@@ -96,7 +96,7 @@
   var THEMES = {
     beach: { label:"Beach", codes:"AGP ALC PMI IBZ FAO ACE LPA TCI FUE AYT DLM BJV IZM CFU CHQ ZTH JMK HER RHO MLA PFO SSH AGA RAK OLB CAG BRI BOJ" },
     city:  { label:"City break", codes:"PAR CDG AMS BCN MAD LIS OPO ROM FCO MIL MXP VCE NAP BER HAM DUS CGN FRA MUC PRG VIE BUD KRK WAW GDN CPH OSL ARN HEL RIX VNO TLL DUB ORK BRU GVA ZRH ATH BUH BEG IST EDI" },
-    sun:   { label:"Winter sun", codes:"ACE LPA TCI FUE AGA RAK SSH HRG CAI DXB MLA PFO AGP ALC FAO MIR TUN" },
+    sun:   { label:"Winter sun", codes:"ACE LPA TCI FUE AGA RAK SSH HRG CAI DXB MLA PFO AGP ALC FAO MIR TUN AYT DLM" },
     long:  { label:"Long haul", codes:"NYC BOS YTO ORL CLT BKK HKT DXB JED SYD HKG KTM ISB LHE ATQ JNB ACC LOS TBS BAK ALA TAS" }
   };
   Object.keys(THEMES).forEach(function (k) {
@@ -1009,8 +1009,10 @@
     if (/ (anywhere|any airport|any uk airport|dont mind where from|wherever) /.test(t)) p.from = ANY;
     ORIGINS.forEach(function (o) {
       if (o[0] === ANY) return;
-      var name = o[1].toLowerCase().replace("london ", "");
-      if (t.indexOf(" from " + name) > -1 || t.indexOf(" " + o[0].toLowerCase() + " ") > -1) p.from = o[0];
+      var names = [o[1].toLowerCase(), o[1].toLowerCase().replace("london ", ""), (ORIGIN_SHORT[o[0]] || "").toLowerCase(), o[0].toLowerCase()];
+      names.forEach(function (name) {
+        if (name && t.indexOf(" " + name + " ") > -1) p.from = o[0];
+      });
     });
 
     // Longest place names first so "gran canaria" beats "canaria".
@@ -1037,7 +1039,9 @@
     if (money) p.max = parseInt(money[1] || money[2] || money[3] || money[4] || money[5], 10);
 
     var winter = p.month ? (parseInt(p.month.slice(5), 10) >= 10 || parseInt(p.month.slice(5), 10) <= 3) : (m0 >= 10 || m0 <= 3);
-    if (/beach|sun|warm|hot|sunny|sea/.test(t)) p.theme = winter ? "sun" : "beach";
+    if (/winter sun/.test(t)) p.theme = "sun";
+    else if (/beach|seaside|by the sea/.test(t)) p.theme = "beach";
+    else if (/\bsun\b|warm|hot|sunny|sunshine/.test(t)) p.theme = winter ? "sun" : "beach";
     else if (/city|culture|museum|weekend break|bars|food/.test(t)) p.theme = "city";
     else if (/long haul|far away|asia|america|thailand|usa|new york|dubai/.test(t)) p.theme = "long";
 
@@ -1070,9 +1074,10 @@
       setDateMode("month");
     }
     buildMonths();
-    if (p.month && !p.dep) {
+    if (!p.dep) {
+      // Always set it, so a plan with no month clears the last one.
       var sel = $("chfsMonth");
-      var has = Array.prototype.some.call(sel.options, function (o) { return o.value === p.month; });
+      var has = !!p.month && Array.prototype.some.call(sel.options, function (o) { return o.value === p.month; });
       state.month = has ? p.month : ""; sel.value = state.month;
     }
     setTrip(["any", "one", "ret", "weekend", "xmas"].indexOf(p.trip) > -1 ? p.trip : "any");   // renders
