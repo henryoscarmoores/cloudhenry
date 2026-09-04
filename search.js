@@ -241,7 +241,7 @@
 
   ORIGINS.forEach(function (o) {
     var opt = document.createElement("option");
-    opt.value = o[0]; opt.textContent = o[1] + " (" + o[0] + ")";
+    opt.value = o[0]; opt.textContent = o[0] === ANY ? o[1] : o[1] + " (" + o[0] + ")";
     $("chfsFrom").appendChild(opt);
   });
   $("chfsFrom").value = state.from;
@@ -507,7 +507,7 @@
     var wk = wkMode ? nextWeekend() : null;
     bar.innerHTML =
       "<span>" + (wkMode
-        ? "We hold a handful of weekend fares. Check this coming weekend live, " +
+        ? (build().length ? "Want this coming weekend checked live as well, " : "We hold a handful of weekend fares. Check this coming weekend live, ") +
           fmt(wk[0]) + " to " + fmt(wk[1]) + "."
         : "Want these exact dates checked live, including any we have not cached?") + "</span>" +
       '<a href="' + url + '" target="_blank" rel="noopener sponsored">' +
