@@ -45,31 +45,13 @@ try {
   }
   Log "previous fares.json: $before bytes"
 
-  # --- 1. one-way fares and dated options ------------------------------
-  Log "step 1: fetching fares"
-  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "fetch-fares.ps1") -DryRun -AllRoutes -MonthsAhead 4 -SkipReturns
-  if ($LASTEXITCODE -ne 0) { throw "fetch-fares.ps1 exited $LASTEXITCODE" }
-
-  # --- 2. round trips ---------------------------------------------------
-  Log "step 2: adding return trips"
-  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "add-returns.ps1")
-  if ($LASTEXITCODE -ne 0) { throw "add-returns.ps1 exited $LASTEXITCODE" }
-
-  # --- 2b. weekend breaks -----------------------------------------------
-  # Asking per route with a short trip_duration finds far more genuine
-  # Friday-to-Sunday breaks than asking per origin: 366 extra fares
-  # against roughly 40 the other way.
-  Log "step 2b: weekend breaks"
-  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "add-weekends.ps1")
-  if ($LASTEXITCODE -ne 0) { throw "add-weekends.ps1 exited $LASTEXITCODE" }
-
-  # --- 2c. Christmas markets ---------------------------------------------
-  # Nothing was asking for the Christmas window, so the tab only had what
-  # turned up by accident. prices/latest takes beginning_of_period, so
-  # November and December can be requested directly.
-  Log "step 2c: christmas markets"
-  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "add-xmas.ps1")
-  if ($LASTEXITCODE -ne 0) { throw "add-xmas.ps1 exited $LASTEXITCODE" }
+  # --- 1. everything, in one pass ---------------------------------------
+  # build-fares.ps1 replaced the four separate scripts on 4 September. It
+  # asks each airport for every destination the cache knows, fills in the
+  # dates per route, writes one file per airport and the slim fares.json.
+  Log "step 1: building fares"
+  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "build-fares.ps1") -MonthsAhead 3
+  if ($LASTEXITCODE -ne 0) { throw "build-fares.ps1 exited $LASTEXITCODE" }
 
   # --- 3. sanity check before anything is published ---------------------
   if (-not (Test-Path $Fares)) { throw "fares.json is missing after the run" }
@@ -90,8 +72,8 @@ try {
   # --- 4. publish -------------------------------------------------------
   Push-Location $RepoDir
   try {
-    git add fares.json history.json | Out-Null
-    $changed = git status --porcelain fares.json history.json
+    git add fares.json fares-*.json | Out-Null
+    $changed = git status --porcelain fares.json fares-*.json
     if ([string]::IsNullOrWhiteSpace($changed)) {
       Log "no change since the last run - nothing to publish"
       exit 0
@@ -114,7 +96,9 @@ try {
   }
 
   try {
-    Invoke-WebRequest -Uri "https://purge.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/fares.json" -UseBasicParsing -TimeoutSec 60 | Out-Null
+    foreach ($f in @("fares.json") + @(Get-ChildItem (Join-Path $RepoDir "fares-*.json") | ForEach-Object { $_.Name })) {
+      Invoke-WebRequest -Uri "https://purge.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/$f" -UseBasicParsing -TimeoutSec 60 | Out-Null
+    }
     Log "CDN purged"
   } catch {
     Log "CDN purge failed; it will refresh on its own within about 12 hours" "WARN"

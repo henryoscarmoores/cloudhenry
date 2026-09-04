@@ -11,3 +11,4 @@ fetch-fares.log
 fares.json.prev
 fares-slim.json
 daily-refresh.log
+build-fares.log

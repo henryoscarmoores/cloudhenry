@@ -230,6 +230,57 @@
   var INITIAL = EMBED ? {} : readUrl();
   var READY = false;
 
+  // Fares come in one file per airport (fares-MAN.json and so on), built
+  // by build-fares.ps1 with every destination the cache knows. The slim
+  // fares.json the rest of the site reads is loaded first so the page
+  // paints straight away, then the airport file replaces it. If an
+  // airport file is missing the slim data for that airport stands in.
+  var FILE_BASE = "https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/";
+  var LOADED = {}, LOADING = {}, SLIM = null, GENERATED = "";
+
+  function stamp() {
+    var d = new Date();
+    return d.getUTCFullYear() + ("0" + (d.getUTCMonth() + 1)).slice(-2) + ("0" + d.getUTCDate()).slice(-2) + "-" + (d.getUTCHours() < 12 ? "am" : "pm");
+  }
+  function originsNeeded() {
+    if (state.from === ANY) return ORIGINS.filter(function (o) { return o[0] !== ANY; }).map(function (o) { return o[0]; });
+    return [state.from];
+  }
+  function composeFares() {
+    var out = [];
+    originsNeeded().forEach(function (c) {
+      out = out.concat(LOADED[c] ? LOADED[c] : (SLIM || []).filter(function (f) { return f.origin === c; }));
+    });
+    FARES = out;
+  }
+  function loadOrigin(code) {
+    if (LOADED[code] || LOADING[code]) return;
+    LOADING[code] = true;
+    fetch(FILE_BASE + "fares-" + code + ".json?v=" + stamp(), { cache: "default" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        LOADED[code] = (j && j.fares && j.fares.length) ? j.fares : ((SLIM || []).filter(function (f) { return f.origin === code; }));
+        if (j && j.generated) { GENERATED = j.generated; stampLabel(); }
+      })
+      .catch(function () { LOADED[code] = (SLIM || []).filter(function (f) { return f.origin === code; }); })
+      .then(function () {
+        LOADING[code] = false;
+        if (originsNeeded().indexOf(code) > -1) { composeFares(); buildMonths(); render(); }
+      });
+  }
+  // Called at the top of every render: start any airport loads still
+  // missing. The render carries on with what is in hand.
+  function ensureOriginData() {
+    if (!SLIM) return;
+    originsNeeded().forEach(loadOrigin);
+  }
+  function stampLabel() {
+    if (!GENERATED || !$("chfsStamp")) return;
+    var d = new Date(GENERATED);
+    $("chfsStamp").textContent = " Last updated " + fmt(GENERATED) + ", " +
+      ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ".";
+  }
+
   // The same parameters writeUrl would put in the address bar, as a
   // query string, for the "see all" link out of the embedded widget.
   function searchQuery() {
@@ -579,6 +630,7 @@
 
   function render() {
     writeUrl();
+    ensureOriginData();
     renderLiveBar();
     var rows = build();
     var grid = $("chfsGrid");
@@ -1239,12 +1291,9 @@
   fetch(dataUrl(), { cache: "default" })
     .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
     .then(function (j) {
-      FARES = j.fares || [];
-      if (j.generated) {
-        var d = new Date(j.generated);
-        $("chfsStamp").textContent = " Last updated " + fmt(j.generated) + ", " +
-          ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ".";
-      }
+      SLIM = j.fares || [];
+      FARES = SLIM;
+      if (j.generated) { GENERATED = j.generated; stampLabel(); }
       var today = isoToday();
       $("chfsFrom2").min = today;
       $("chfsTo2").min = today;
