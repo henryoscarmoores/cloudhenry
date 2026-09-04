@@ -5,10 +5,10 @@
 .DESCRIPTION
   Runs the whole chain in the right order:
 
-    1. fetch-fares.ps1   -> city-directions for 12 airports, then the
-                            month matrix for dated one-way options
-    2. add-returns.ps1   -> round trips, which the month matrix never
-                            returns (it always comes back one-way)
+    1. build-fares.ps1   -> every destination from 12 airports, dated
+                            one-ways, returns, weekends, Christmas; one
+                            file per airport plus the slim fares.json
+    2. name-places.ps1   -> names any destination places.js lacks
     3. commit + push     -> GitHub
     4. purge the CDN     -> so the site sees it now rather than in hours
 
@@ -53,6 +53,10 @@ try {
   & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "build-fares.ps1") -MonthsAhead 3
   if ($LASTEXITCODE -ne 0) { throw "build-fares.ps1 exited $LASTEXITCODE" }
 
+  # Name any destination the feed found that places.js does not know.
+  Log "step 1b: naming new destinations"
+  try { & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "name-places.ps1") } catch { Log "name-places failed: $_" "WARN" }
+
   # --- 3. sanity check before anything is published ---------------------
   if (-not (Test-Path $Fares)) { throw "fares.json is missing after the run" }
   $after = (Get-Item $Fares).Length
@@ -72,8 +76,8 @@ try {
   # --- 4. publish -------------------------------------------------------
   Push-Location $RepoDir
   try {
-    git add fares.json fares-*.json | Out-Null
-    $changed = git status --porcelain fares.json fares-*.json
+    git add fares.json fares-*.json places.js | Out-Null
+    $changed = git status --porcelain fares.json fares-*.json places.js
     if ([string]::IsNullOrWhiteSpace($changed)) {
       Log "no change since the last run - nothing to publish"
       exit 0
@@ -96,7 +100,7 @@ try {
   }
 
   try {
-    foreach ($f in @("fares.json") + @(Get-ChildItem (Join-Path $RepoDir "fares-*.json") | ForEach-Object { $_.Name })) {
+    foreach ($f in @("fares.json", "places.js") + @(Get-ChildItem (Join-Path $RepoDir "fares-*.json") | ForEach-Object { $_.Name })) {
       Invoke-WebRequest -Uri "https://purge.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/$f" -UseBasicParsing -TimeoutSec 60 | Out-Null
     }
     Log "CDN purged"

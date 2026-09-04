@@ -274,6 +274,23 @@
     if (!SLIM) return;
     originsNeeded().forEach(loadOrigin);
   }
+
+  // places.js is the shared name list, and the daily job adds to it
+  // whenever the feed finds a destination nobody has named. The copy
+  // above stays as the base (its spellings win); anything new is merged
+  // in, so a city the job named this morning shows up here today.
+  function mergePlaces(next) {
+    var s = document.createElement("script");
+    s.src = FILE_BASE + "places.js?v=" + stamp();
+    s.onload = function () {
+      var extra = window.CH_PLACES || {};
+      Object.keys(extra).forEach(function (code) { if (!PLACES[code]) PLACES[code] = extra[code]; });
+      COUNTRIES = null;
+      next();
+    };
+    s.onerror = next;
+    document.head.appendChild(s);
+  }
   function stampLabel() {
     if (!GENERATED || !$("chfsStamp")) return;
     var d = new Date(GENERATED);
@@ -1287,6 +1304,8 @@
     s.className = "chfs-skel";
     g.appendChild(s);
   }
+
+  mergePlaces(function () { if (SLIM) { buildMonths(); render(); } });
 
   fetch(dataUrl(), { cache: "default" })
     .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })

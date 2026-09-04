@@ -51,6 +51,13 @@ jobs:
         shell: powershell
         run: .\build-fares.ps1 -MonthsAhead 3
 
+      # A destination the site cannot name is hidden, so name the new ones
+      # from Travelpayouts' own city list before publishing.
+      - name: Name new destinations
+        shell: powershell
+        continue-on-error: true
+        run: .\name-places.ps1
+
       - name: Check the result before publishing
         shell: pwsh
         run: |
@@ -80,20 +87,22 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add fares.json fares-*.json
-          if (-not (git status --porcelain fares.json fares-*.json)) {
+          git add fares.json fares-*.json places.js
+          if (-not (git status --porcelain fares.json fares-*.json places.js)) {
             Write-Host "no change since the last run"
             exit 0
           }
           $count = @((Get-Content "fares.json" -Raw | ConvertFrom-Json).fares).Count
           git commit -m "Refresh fares $(Get-Date -Format 'yyyy-MM-dd')" -m "$count routes across 12 UK airports." -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          # The run takes the best part of an hour; main may have moved.
+          git pull --rebase origin main
           git push
 
       - name: Clear the CDN cache
         shell: pwsh
         continue-on-error: true
         run: |
-          foreach ($f in @("fares.json") + @(Get-ChildItem "fares-*.json" | ForEach-Object { $_.Name })) {
+          foreach ($f in @("fares.json", "places.js") + @(Get-ChildItem "fares-*.json" | ForEach-Object { $_.Name })) {
             Invoke-WebRequest -Uri "https://purge.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/$f" -UseBasicParsing -TimeoutSec 60 | Out-Null
           }
           Write-Host "purged"
