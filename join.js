@@ -42,7 +42,8 @@
     var st = document.createElement("style");
     st.id = "ch-join-css";
     st.textContent =
-      ".ch-join{display:grid;gap:10px;justify-items:center;text-align:center;margin:6px auto 0;max-width:420px}" +
+      /* The site's scroll-reveal script tags new elements and never gets round to revealing them */
+      ".ch-join,.ch-join.ch-reveal{display:grid;gap:10px;justify-items:center;text-align:center;margin:6px auto 0;max-width:420px;opacity:1!important;transform:none!important}" +
       ".ch-join-row{display:flex;gap:8px;width:100%}" +
       ".ch-join input{flex:1 1 auto;min-width:0;font:inherit;font-size:15px;font-weight:600;color:#0E3550;background:#fff;border:1px solid rgba(14,53,80,.16);border-radius:999px;padding:13px 16px;box-shadow:0 2px 8px rgba(14,53,80,.12)}" +
       ".ch-join input:focus{outline:none;border-color:#0E6FB6;box-shadow:0 0 0 4px rgba(14,111,182,.25)}" +
