@@ -247,7 +247,7 @@
     var wrap = document.createElement("div");
     wrap.id = "ch-home-plan";
     wrap.innerHTML =
-      '<span class="ch-hp-lab">&#10024; Or tell us what you fancy</span>' +
+      '<span class="ch-hp-lab">&#10024; Tell us what you fancy</span>' +
       '<form class="ch-hp" action="/search/" method="get">' +
         '<input type="text" name="plan" maxlength="300" autocomplete="off" aria-label="Describe your trip" ' +
                'placeholder="Somewhere warm in November under £60">' +
