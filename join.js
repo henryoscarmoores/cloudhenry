@@ -119,9 +119,18 @@
 
   function escapeHtml(s) { return String(s || "").replace(/[&<>"]/g, function (c) { return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]; }); }
 
+  var done = false;
   function go() {
-    var cta = document.querySelector('a[href="#/portal/signup"], a[href$="#/portal/signup"]');
-    if (!cta || cta.closest("header, .gh-head, nav, footer")) return false;
+    if (done) return true;
+    // The header carries a Subscribe link too; the one to replace is the
+    // button in the page itself.
+    var all = document.querySelectorAll('a[href="#/portal/signup"], a[href$="#/portal/signup"]');
+    var cta = null;
+    for (var i = 0; i < all.length; i++) {
+      if (!all[i].closest("header, .gh-head, nav, footer, .gh-foot")) { cta = all[i]; break; }
+    }
+    if (!cta) return false;
+    done = true;
     member().then(function (mm) { build(cta, mm); });
     return true;
   }
