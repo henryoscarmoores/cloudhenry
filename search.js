@@ -201,6 +201,13 @@
 
   if (!$("chfsGrid")) { return; }   // widget not on this page
 
+  // On the homepage the widget stands in for the old fares box. It shows
+  // a handful of results and hands over to the full page for the rest,
+  // and it leaves the homepage address bar alone.
+  var ROOT  = $("chfsGrid").closest(".chfs");
+  var EMBED = !!(ROOT && ROOT.getAttribute("data-embed"));
+  var LIMIT = EMBED ? (parseInt(ROOT.getAttribute("data-limit"), 10) || 6) : 120;
+
   var FARES = [], state = { from:"MAN", q:"", from2:"", to2:"", month:"", flex:3, trip:"any", sort:"price", direct:false, budget:600, theme:"" };
 
   // A search is worth sharing and worth linking to from an email, so the
@@ -220,11 +227,26 @@
   // Read the address bar once, before anything renders. The first render
   // happens while the controls are being wired up, and it must not wipe
   // a shared link's parameters before the fares have loaded.
-  var INITIAL = readUrl();
+  var INITIAL = EMBED ? {} : readUrl();
   var READY = false;
 
+  // The same parameters writeUrl would put in the address bar, as a
+  // query string, for the "see all" link out of the embedded widget.
+  function searchQuery() {
+    var parts = [];
+    if (state.from !== "MAN") parts.push("from=" + state.from);
+    if (!isEverywhere(state.q)) parts.push("to=" + encodeURIComponent(state.q.trim()));
+    if (state.trip !== "any") parts.push("trip=" + state.trip);
+    if (state.month) parts.push("month=" + state.month);
+    if (state.from2) parts.push("dep=" + state.from2);
+    if (state.to2) parts.push("ret=" + state.to2);
+    if (state.theme) parts.push("theme=" + state.theme);
+    if (state.budget < 600) parts.push("max=" + state.budget);
+    return parts.length ? "?" + parts.join("&") : "";
+  }
+
   function writeUrl() {
-    if (!READY) return;
+    if (!READY || EMBED) return;
     if (!window.history || !history.replaceState) return;
     var parts = [];
     if (state.from !== "MAN") parts.push("from=" + state.from);
@@ -558,7 +580,7 @@
       : (anyMode ? "Flights from any UK airport" : "Flights from " + fromCity);
     var noun = browsing ? "destination" : "flight";
     $("chfsCount").textContent = rows.length
-      ? (rows.length > 120 ? "showing 120 of " + rows.length + " " + noun + "s"
+      ? (rows.length > LIMIT ? "showing " + LIMIT + " of " + rows.length + " " + noun + "s"
                            : rows.length + " " + noun + (rows.length === 1 ? "" : "s"))
       : "";
 
@@ -601,7 +623,7 @@
       return;
     }
 
-    rows.slice(0, 120).forEach(function (r) {
+    rows.slice(0, LIMIT).forEach(function (r) {
       var p = place(r.dest);
       var b = document.createElement("button");
       b.type = "button";
@@ -628,6 +650,16 @@
       b.addEventListener("click", function () { openSheet(r); });
       grid.appendChild(b);
     });
+
+    // Embedded on the homepage: hand over to the full page for the rest,
+    // carrying the search across so nobody starts again.
+    if (EMBED && rows.length > LIMIT) {
+      var more = document.createElement("a");
+      more.className = "chfs-more";
+      more.href = "/search/" + searchQuery();
+      more.innerHTML = "See all " + rows.length + " " + noun + "s on the full search <span aria-hidden=\"true\">&rarr;</span>";
+      grid.appendChild(more);
+    }
 
     applyGate(grid);
   }
