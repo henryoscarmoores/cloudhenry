@@ -71,8 +71,33 @@ select.chfs-ctl{padding-right:34px;background-image:linear-gradient(45deg,transp
 .chfs-quick[hidden],.chfs-themes[hidden]{display:none!important}
 .chfs-more{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;padding:16px 18px;border-radius:16px;border:2px dashed rgba(14,111,182,.35);background:rgba(255,255,255,.7);color:var(--chfs-sky);font-weight:800;font-size:15px;text-decoration:none;transition:all .25s var(--chfs-ease)}
 .chfs-more:hover{background:var(--chfs-sky);color:#fff;border-color:var(--chfs-sky)}
-/* Embedded on the homepage: break out of the narrow hero column */
-.chfs[data-embed]{width:min(1040px,calc(100vw - 32px));position:relative;z-index:6;left:50%;transform:translateX(-50%);margin-top:6px}
+/* Embedded on the homepage, inside the hero's fares box. It stays in the
+   column the old box sat in and drops the controls that earn their
+   place on the full page but not here: the price slider, the date mode
+   toggle, and on phones the example chips. Tap targets stay full size. */
+.chfs[data-embed]{width:100%;max-width:none;position:relative;z-index:6;margin:0;text-align:left}
+.chfs[data-embed] .chfs-panel{padding:12px;border-radius:16px}
+.chfs[data-embed] .chfs-row.chfs-main{grid-template-columns:1fr 1fr!important;gap:8px;align-items:end}
+.chfs[data-embed] .chfs-row.chfs-main .chfs-f:nth-child(2){grid-column:1/-1}
+.chfs[data-embed] .chfs-go{width:100%!important;padding:12px 18px}
+.chfs[data-embed] .chfs-budget,.chfs[data-embed] .chfs-datemode,.chfs[data-embed] .chfs-quick{display:none!important}
+.chfs[data-embed] .chfs-sub{grid-template-columns:1fr!important;gap:10px;margin-top:10px;padding-top:10px}
+.chfs[data-embed] .chfs-sub>.chfs-seg{grid-column:1!important;grid-row:auto!important;justify-self:start!important;flex-wrap:wrap;border-radius:18px;overflow:visible}
+.chfs[data-embed] .chfs-sub>.chfs-themes{grid-column:1!important;grid-row:auto!important;margin-top:0}
+.chfs[data-embed] .chfs-plan{padding-bottom:10px;margin-bottom:10px}
+.chfs[data-embed] .chfs-plan-row{grid-template-columns:1fr auto}
+.chfs[data-embed] .chfs-plan-go{width:auto;padding:0 16px}
+.chfs[data-embed] .chfs-grid{grid-template-columns:1fr!important;gap:8px}
+.chfs[data-embed] .chfs-head{margin:16px 2px 8px}
+.chfs[data-embed] .chfs-head h3{font-size:16px}
+.chfs[data-embed] .chfs-tease{margin-top:14px;padding:14px 16px}
+.chfs[data-embed] .chfs-note{font-size:11.5px;margin-top:10px}
+@media(max-width:699px){
+  .chfs[data-embed] .chfs-plan-eg{display:none}
+  .chfs[data-embed] .chfs-plan-row{grid-template-columns:1fr auto}
+  .chfs[data-embed] .chfs-plan-go{width:auto;padding:0 14px}
+  .chfs[data-embed] .chfs-ctl{padding:11px 12px;font-size:15px}
+}
 .chfs-ac li.ac-every{font-weight:800;color:var(--chfs-sky)}
 .chfs-ac .ac-globe{display:inline-block;width:20px;text-align:center;font-size:16px;line-height:1}
 .chfs-plan{padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--chfs-line)}
