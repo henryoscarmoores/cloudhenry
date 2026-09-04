@@ -34,7 +34,12 @@
   function $(sel) { return root.querySelector(sel); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]; }); }
   function fmt(iso) { var p = String(iso || "").slice(0, 10).split("-"); return p.length === 3 ? parseInt(p[2], 10) + " " + MON[parseInt(p[1], 10) - 1] : ""; }
-  function fmtLong(iso) { var d = new Date(iso); return isNaN(d) ? "" : d.getDate() + " " + MONTHS[d.getMonth()] + " " + d.getFullYear(); }
+  function fmtLong(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d) || d.getFullYear() < 2000) return "";   // Stripe's epoch placeholder is not a date anyone renews on
+    return d.getDate() + " " + MONTHS[d.getMonth()] + " " + d.getFullYear();
+  }
   function airportByCode(code) { for (var i = 0; i < AIRPORTS.length; i++) if (AIRPORTS[i][0] === code) return AIRPORTS[i]; return null; }
   function stamp() { var d = new Date(); return d.getUTCFullYear() + ("0" + (d.getUTCMonth() + 1)).slice(-2) + ("0" + d.getUTCDate()).slice(-2); }
 
@@ -161,10 +166,16 @@
     var subs = (m.subscriptions || []).filter(function (s) { return s.status === "active" || s.status === "trialing" || s.status === "past_due"; });
     if (!subs.length) return { line: m.status === "comped" ? "Complimentary membership" : "Free member", paid: m.status === "paid" || m.status === "comped", since: "", next: "" };
     var s = subs[0];
-    var price = s.price ? ((s.price.amount / 100).toFixed(2).replace(/\.00$/, "") + " a " + (s.price.interval === "year" ? "year" : "month")) : "";
+    var amount = s.price && s.price.amount ? s.price.amount / 100 : 0;
+    // Staff and gifted members carry a £0 subscription with no real dates.
+    if (!amount || m.status === "comped") {
+      return { line: "Complimentary membership", paid: true, since: s.start_date ? fmtLong(s.start_date) : "", next: "" };
+    }
+    var price = amount.toFixed(2).replace(/\.00$/, "") + " a " + (s.price.interval === "year" ? "year" : "month");
+    var end = fmtLong(s.current_period_end);
     var trial = s.status === "trialing" && s.trial_end_at ? "Free trial until " + fmtLong(s.trial_end_at) : "";
     return {
-      line: trial || ("£" + price + (s.cancel_at_period_end ? " · ends " + fmtLong(s.current_period_end) : " · renews " + fmtLong(s.current_period_end))),
+      line: trial || ("£" + price + (end ? (s.cancel_at_period_end ? " · ends " + end : " · renews " + end) : "")),
       paid: true,
       since: s.start_date ? fmtLong(s.start_date) : "",
       next: s.current_period_end || ""
