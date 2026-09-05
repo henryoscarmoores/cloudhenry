@@ -73,7 +73,7 @@
               '<h1>Check your inbox</h1>' +
               '<p class="chs-lead">We have sent a sign-in link to <b>' + escapeHtml(email) + '</b>. Tap it and you land in My CloudHenry.</p>' +
               '<p class="chs-alt">Nothing arrived? Check spam, or <a href="/sign-in/?email=' + encodeURIComponent(email) + '">try again</a>.<br>' +
-              'Not joined yet? That email has no account, so <a href="' + joinHref(email) + '">pick your airport to join &rarr;</a></p>' +
+              'Not a member yet? Then no link will arrive. <a href="' + joinHref(email) + '">Pick your airport to join &rarr;</a></p>' +
             '</div>';
         } else {
           return r.text().then(function (t) {
