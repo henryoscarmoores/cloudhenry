@@ -1,0 +1,134 @@
+<title>Monday Teaser, Brighter</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap">
+<style>
+:root{--ink:#0E3550;--soft:#46607A;--faint:#7A90A5;--line:rgba(14,53,80,.12);--paper:#F3F8FC;--sun:#F5C242;--sky:#0E6FB6;--sky2:#3E9BE0;--skysoft:#D7EDFA;--good:#1B7F53;--coral:#FF6B4A;--mint:#2ED3A5;--grape:#7C5CFF}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.5}
+*{box-sizing:border-box}
+.wrap{max-width:980px;margin:0 auto;padding:26px 18px 50px}
+h1{font-size:clamp(24px,3.4vw,30px);font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
+.lede{color:var(--soft);margin:0 0 22px;font-size:17px;max-width:70ch}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:26px;align-items:start}
+.lab{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--ink);border-radius:6px;padding:4px 10px;margin-bottom:10px}
+.lab.new{background:var(--good)}
+
+.mail{max-width:400px;margin:0 auto;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 14px 40px rgba(14,53,80,.16)}
+.subj{padding:12px 16px;border-bottom:1px solid var(--line);font-size:13px;color:var(--soft)}
+.subj b{display:block;color:var(--ink);font-size:14.5px}
+
+/* the sky, with the pixel clouds and sun from the site */
+.hero{position:relative;background:linear-gradient(180deg,#0E6FB6 0%,#3E9BE0 70%,#7CC3F2 100%);color:#fff;padding:24px 18px 22px;text-align:center;overflow:hidden}
+.px{position:absolute;image-rendering:pixelated;opacity:.95}
+.cloud{width:64px;height:28px;background:
+  linear-gradient(#fff,#fff) 8px 0/48px 8px no-repeat,
+  linear-gradient(#fff,#fff) 0 8px/64px 12px no-repeat,
+  linear-gradient(#fff,#fff) 8px 20px/48px 8px no-repeat}
+.sun{width:44px;height:44px;background:
+  linear-gradient(var(--sun),var(--sun)) 12px 0/20px 44px no-repeat,
+  linear-gradient(var(--sun),var(--sun)) 0 12px/44px 20px no-repeat,
+  linear-gradient(var(--sun),var(--sun)) 6px 6px/32px 32px no-repeat}
+.eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#FFE071;margin:0 0 8px;position:relative}
+.hero h2{margin:0;font-size:30px;font-weight:900;letter-spacing:-.035em;line-height:1;position:relative}
+.hero h2 span{color:#FFE071}
+.hero p{margin:10px 0 0;font-size:13.5px;color:var(--skysoft);position:relative}
+.stats{display:flex;gap:8px;justify-content:center;margin:14px 0 0;position:relative}
+.stat{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:8px 10px;min-width:86px}
+.stat b{display:block;font-size:20px;font-weight:900;letter-spacing:-.03em;line-height:1}
+.stat small{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--skysoft)}
+
+.body{padding:16px 16px 18px}
+.k{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 8px}
+.fare{display:grid;grid-template-columns:6px 34px 1fr auto;gap:10px;align-items:center;padding:10px 10px 10px 0;border-radius:12px;margin-bottom:8px;background:#F7FBFE}
+.fare .bar{width:6px;height:100%;border-radius:12px 0 0 12px;align-self:stretch}
+.fare .f{font-size:22px;line-height:1}
+.fare .n{font-weight:800;font-size:15px;letter-spacing:-.01em}.fare .n small{display:block;font-weight:500;color:var(--soft);font-size:11.5px}
+.fare .p{font-weight:900;font-size:20px;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:-.02em;padding-right:10px}.fare .p small{display:block;font-weight:600;color:var(--faint);font-size:10.5px;text-decoration:line-through;letter-spacing:0}
+.chip{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:4px;padding:2px 6px;margin-left:6px;vertical-align:middle;color:#fff}
+.c1{background:var(--coral)}.c2{background:var(--mint);color:#063}.c3{background:var(--grape)}
+.b1{background:var(--coral)}.b2{background:var(--mint)}.b3{background:var(--grape)}
+
+.locked{position:relative;margin-top:10px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#F7FBFE,#EAF3FA)}
+.locked .fare{filter:blur(4px);background:transparent;margin:0}
+.veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.9) 40%,#fff 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:0 12px 14px}
+.veil .lock{width:38px;height:38px;border-radius:50%;background:var(--sun);color:#12384F;font-size:18px;line-height:38px;font-weight:900;margin-bottom:6px;box-shadow:0 6px 16px rgba(197,140,20,.35)}
+.veil b{font-size:17px;letter-spacing:-.02em}
+.veil span{font-size:13px;color:var(--soft);margin:2px 0 10px;max-width:30ch}
+.btn{display:inline-block;background:var(--sun);color:#12384F;border-radius:999px;padding:13px 24px;font-weight:900;font-size:15px;text-decoration:none;box-shadow:0 8px 20px rgba(197,140,20,.35)}
+.tiny{font-size:11.5px;color:var(--faint);text-align:center;margin:8px 0 0}
+.proof{margin:16px 0 0;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,#FFF4D1,#FFE9AE);font-size:13px;color:#5A4210}
+.proof b{color:#3A2A08}
+.sig{margin:16px 0 0;font-size:13.5px;color:var(--soft)}
+.sig b{color:var(--ink)}
+.foot{padding:12px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);text-align:center}
+.note{margin-top:14px;font-size:14px;color:var(--soft)}
+</style>
+<div class="wrap">
+  <h1>The Monday email, with the colour turned up</h1>
+  <p class="lede">Same structure as before. The sky, the pixel clouds and sun from the site, three big numbers up top, a colour stripe per fare, a golden lock on what they can't see. Left is the list member's version. Nothing here is live.</p>
+
+  <div class="two">
+    <div>
+      <span class="lab new">List member</span>
+      <div class="mail">
+        <div class="subj">CloudHenry · Monday 8 Sep<b>Manchester: 40 fares this week, from £16 ✈️</b></div>
+        <div class="hero">
+          <div class="px cloud" style="left:-8px;top:14px;transform:scale(.8)"></div>
+          <div class="px cloud" style="right:-14px;bottom:18px;transform:scale(1.1);opacity:.85"></div>
+          <div class="px sun" style="right:22px;top:12px"></div>
+          <p class="eyebrow">Manchester · week of 8 September</p>
+          <h2>40 cheap fares.<br><span>You get 3.</span></h2>
+          <p>Checked this morning, with what people usually pay beside each one.</p>
+          <div class="stats"><div class="stat"><b>40</b><small>fares found</small></div><div class="stat"><b>£16</b><small>cheapest</small></div><div class="stat"><b>52%</b><small>avg saving</small></div></div>
+        </div>
+        <div class="body">
+          <p class="k">This week's best from Manchester</p>
+          <div class="fare"><span class="bar b1"></span><span class="f">🇩🇰</span><span class="n">Copenhagen<span class="chip c1">50% off</span><small>Tue 9 Sep · one way</small></span><span class="p">£16<small>usually £32</small></span></div>
+          <div class="fare"><span class="bar b2"></span><span class="f">🇮🇪</span><span class="n">Dublin<span class="chip c2">weekend</span><small>Sun 7 to Sat 13 Sep · return</small></span><span class="p">£28</span></div>
+          <div class="fare"><span class="bar b3"></span><span class="f">🇮🇹</span><span class="n">Pisa<span class="chip c3">return</span><small>Mon 19 to Thu 22 Oct</small></span><span class="p">£34<small>usually £71</small></span></div>
+          <div class="locked">
+            <div class="fare"><span class="bar b1"></span><span class="f">🇪🇸</span><span class="n">Barcelona<small>Sat 4 Oct · one way</small></span><span class="p">£16</span></div>
+            <div class="fare"><span class="bar b2"></span><span class="f">🇫🇷</span><span class="n">Paris<small>Tue 21 Oct · one way</small></span><span class="p">£16</span></div>
+            <div class="fare"><span class="bar b3"></span><span class="f">🇮🇹</span><span class="n">Milan<small>Wed 7 to Tue 13 Oct · return</small></span><span class="p">£39</span></div>
+            <div class="fare"><span class="bar b1"></span><span class="f">🇪🇸</span><span class="n">Palma<small>Mon 21 Sep to Thu 1 Oct · return</small></span><span class="p">£45</span></div>
+            <div class="veil"><div class="lock">🔒</div><b>37 more fares from Manchester</b><span>Including 6 returns under £50 and 4 weekend breaks.</span><a class="btn" href="#">See all 40, 40 days free →</a></div>
+          </div>
+          <p class="tiny">Then £2.99 a month. Cancel any time, no contract. One tap, no password.</p>
+          <div class="proof"><b>Last week</b> members from Manchester booked Rome for £51 return and Copenhagen for £16. The cheapest fares usually last about three days.</div>
+          <p class="sig">See you Monday,<br><b>Henry</b><br>@henryoscarmoores</p>
+        </div>
+        <div class="foot">You're getting this because you joined CloudHenry from Manchester. Unsubscribe · Change airport</div>
+      </div>
+    </div>
+
+    <div>
+      <span class="lab">Member</span>
+      <div class="mail">
+        <div class="subj">CloudHenry · Monday 8 Sep<b>Manchester: 40 fares this week, from £16 ✈️</b></div>
+        <div class="hero">
+          <div class="px cloud" style="left:-8px;top:14px;transform:scale(.8)"></div>
+          <div class="px cloud" style="right:-14px;bottom:18px;transform:scale(1.1);opacity:.85"></div>
+          <div class="px sun" style="right:22px;top:12px"></div>
+          <p class="eyebrow">Manchester · week of 8 September</p>
+          <h2>40 cheap fares.<br><span>All yours.</span></h2>
+          <p>Checked this morning. Tap any fare to book it.</p>
+          <div class="stats"><div class="stat"><b>40</b><small>fares</small></div><div class="stat"><b>£16</b><small>cheapest</small></div><div class="stat"><b>6</b><small>returns under £50</small></div></div>
+        </div>
+        <div class="body">
+          <p class="k">One way</p>
+          <div class="fare"><span class="bar b1"></span><span class="f">🇩🇰</span><span class="n">Copenhagen<span class="chip c1">50% off</span><small>Tue 9 Sep</small></span><span class="p">£16<small>usually £32</small></span></div>
+          <div class="fare"><span class="bar b2"></span><span class="f">🇪🇸</span><span class="n">Barcelona<small>Sat 4 Oct</small></span><span class="p">£16<small>usually £31</small></span></div>
+          <div class="fare"><span class="bar b3"></span><span class="f">🇫🇷</span><span class="n">Paris<small>Tue 21 Oct</small></span><span class="p">£16<small>usually £23</small></span></div>
+          <p class="k" style="margin-top:14px">Returns</p>
+          <div class="fare"><span class="bar b2"></span><span class="f">🇮🇪</span><span class="n">Dublin<span class="chip c2">weekend</span><small>Sun 7 to Sat 13 Sep</small></span><span class="p">£28</span></div>
+          <div class="fare"><span class="bar b3"></span><span class="f">🇮🇹</span><span class="n">Pisa<small>Mon 19 to Thu 22 Oct</small></span><span class="p">£34<small>usually £71</small></span></div>
+          <div class="fare"><span class="bar b1"></span><span class="f">🇮🇹</span><span class="n">Milan<small>Wed 7 to Tue 13 Oct</small></span><span class="p">£39</span></div>
+          <p class="tiny" style="margin-top:10px">and 34 more, each with a Book button</p>
+          <div class="proof"><b>Book fast.</b> The three cheapest here are the kind that go within three days.</div>
+          <p class="sig">See you Monday,<br><b>Henry</b></p>
+        </div>
+        <div class="foot">Manchester member · Manage account · Change airport</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">Email apps allow less styling than a website, so the real thing will be a touch simpler than this: the pixel clouds and sun stay, the gradient and colour stripes stay, the blur becomes a fade. Yes or no?</p>
+</div>
