@@ -493,8 +493,51 @@
     return !!COUNTRIES[t];
   }
 
+  // Returns built for the dates asked for, from an outbound single and an
+  // inbound single. The cached returns only cover date pairs someone has
+  // searched, so a Friday to Sunday from Manchester in November came back
+  // with seven destinations while 22 outbound singles existed that
+  // Friday. The airport files now carry the inbound singles too (route
+  // .inbound), so any pair can be priced. Only runs when dates or a month
+  // are chosen; browsing "Everywhere" keeps to the cached list.
+  function assembleReturns(existing) {
+    if (state.trip === "one") return [];
+    if (!state.to2 && !state.month) return [];
+    var today = isoToday(), out = [], have = {};
+    existing.forEach(function (r) { if (r.ret) have[r.origin + r.dest + r.dep + r.ret] = 1; });
+    FARES.forEach(function (f) {
+      if (!fromMatches(f) || !f.inbound || !f.inbound.length || UK[f.destination] || !PLACES[f.destination]) return;
+      var outs = (f.options || []).filter(function (o) {
+        if (o.r || !o.d || o.d < today) return false;
+        if (state.from2) return Math.abs(dayDiff(o.d, state.from2)) <= state.flex;
+        return monthKey(o.d) === state.month;
+      });
+      if (!outs.length) return;
+      var ins = f.inbound.filter(function (i) {
+        if (!i.d || i.d < today) return false;
+        if (state.to2) return Math.abs(dayDiff(i.d, state.to2)) <= state.flex;
+        return true;
+      });
+      if (!ins.length) return;
+      var rt = (f.options || []).filter(function (o) { return o.r; }).map(function (o) { return o.p; });
+      var rtAvg = rt.length ? Math.round(rt.reduce(function (a, b) { return a + b; }, 0) / rt.length) : 0;
+      var combos = [];
+      outs.forEach(function (o) {
+        ins.forEach(function (i) {
+          var nights = dayDiff(i.d, o.d);
+          if (nights < 1 || (!state.to2 && nights > 14)) return;
+          if (have[f.origin + f.destination + o.d + i.d]) return;
+          combos.push({ origin:f.origin, dest:f.destination, price:o.p + i.p, dep:o.d, ret:i.d, stops:Math.max(o.s || 0, i.s || 0), pair:true, typical: rtAvg || null });
+        });
+      });
+      combos.sort(function (a, b) { return a.price - b.price; }).slice(0, 20).forEach(function (c) { out.push(c); });
+    });
+    return out;
+  }
+
   function build() {
     var rows = flatten();
+    rows = rows.concat(assembleReturns(rows));
     var q = isEverywhere(state.q) ? "" : state.q.trim().toLowerCase();
 
     if (q) {
