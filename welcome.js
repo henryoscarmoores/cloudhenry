@@ -127,5 +127,6 @@
     });
   }
 
-  window.CH_WELCOME = { render: render, NAMES: NAMES };
+  // fares/places/flagCode/fmt are shared with the homepage member hero (home-join.js).
+  window.CH_WELCOME = { render: render, NAMES: NAMES, fares: fares, places: places, flagCode: flagCode, fmt: fmt };
 })();

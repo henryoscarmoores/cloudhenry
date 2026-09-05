@@ -157,7 +157,7 @@
 
   function membership(m) {
     var subs = (m.subscriptions || []).filter(function (s) { return s.status === "active" || s.status === "trialing" || s.status === "past_due"; });
-    if (!subs.length) return { line: m.status === "comped" ? "Complimentary membership" : "On the list", paid: m.status === "paid" || m.status === "comped", since: m.created_at ? fmtLong(m.created_at) : "", next: "" };
+    if (!subs.length) return { line: m.status === "comped" ? "Complimentary membership" : "Freemium", paid: m.status === "paid" || m.status === "comped", since: m.created_at ? fmtLong(m.created_at) : "", next: "" };
     var s = subs[0];
     var amount = s.price && s.price.amount ? s.price.amount / 100 : 0;
     // Staff and gifted members carry a £0 subscription with no real dates.
@@ -218,7 +218,7 @@
       '</div>' +
       '<div class="chm-stats">' +
         '<div class="chm-stat"><small>Membership</small><b>' + esc(ms.line) + '</b></div>' +
-        '<div class="chm-stat"><small>' + (ms.paid ? "Member since" : "On the list since") + '</small><b>' + esc(ms.since || "today") + '</b></div>' +
+        '<div class="chm-stat"><small>' + (ms.paid ? "Member since" : "Freemium since") + '</small><b>' + esc(ms.since || "today") + '</b></div>' +
         '<div class="chm-stat"><small>' + (ms.paid ? "Emails kept for you" : "Member emails this month") + '</small><b>' + emails.length + '</b></div>' +
         '<div class="chm-stat"><small>Cheapest this week</small><b>' + (fares.length ? "£" + fares[0].price + " to " + esc(placeName(fares[0].dest)) : "pick an airport") + '</b></div>' +
       '</div>' +
