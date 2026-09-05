@@ -61,6 +61,14 @@
       .then(function (r) { return r.status === 200 ? r.json() : null; })
       .catch(function () { return null; });
   }
+  // Ghost refuses a magic-link request that does not carry a fresh
+  // integrity token ("The request could not be understood"). Portal
+  // fetches one before every send; so do we.
+  function integrity() {
+    return fetch("/members/api/integrity-token/", { credentials: "include" })
+      .then(function (r) { return r.ok ? r.text() : ""; })
+      .catch(function () { return ""; });
+  }
   function isPaid(mm) {
     if (!mm) return false;
     if (mm.status === "paid" || mm.status === "comped") return true;
@@ -97,9 +105,11 @@
         var email = input.value.trim();
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "That email does not look right."; err.hidden = false; input.focus(); return; }
         err.hidden = true; btn.disabled = true; btn.textContent = "Sending";
-        fetch("/members/api/send-magic-link/", {
-          method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email, emailType: "signup", labels: [label], name: "", honeypot: "", autoRedirect: true, redirect: location.origin + location.pathname })
+        integrity().then(function (tok) {
+          return fetch("/members/api/send-magic-link/", {
+            method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email, emailType: "signup", labels: [label], name: "", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + location.pathname })
+          });
         }).then(function (r) {
           if (r.ok) {
             box.innerHTML = '<div class="ch-join-note"><b>Check your inbox.</b> We have sent a link to ' + escapeHtml(email) +
