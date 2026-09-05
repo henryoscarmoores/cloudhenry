@@ -394,11 +394,12 @@
   function isWeekendBreak(r) {
     if (!r.ret) return false;
     var out = dow(r.dep), back = dow(r.ret);
-    if (!((out === 5 || out === 6) && back === 0)) return false;
-    // Friday to Sunday sixteen nights later is not a weekend. Only a
-    // genuine short break counts: one or two nights away.
+    // Out Friday or Saturday, back Sunday or Monday (the bank holiday
+    // and pull-a-sickie long weekend counts). Friday to Sunday sixteen
+    // nights later is not a weekend: one to three nights away.
+    if (!((out === 5 || out === 6) && (back === 0 || back === 1))) return false;
     var nights = dayDiff(r.ret, r.dep);
-    return nights >= 1 && nights <= 2;
+    return nights >= 1 && nights <= 3;
   }
 
   // Every booking link goes through Travelpayouts' own redirect. A link
@@ -449,7 +450,7 @@
         var owAvg = f.typical || mean(ow), rtAvg = mean(rt);
         opts.forEach(function (o) {
           if (o.d && o.d < today) return;   // already departed
-          out.push({ origin:f.origin, dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0,
+          out.push({ origin:f.origin, dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0, pair:!!o.c,
                      typical: o.r ? rtAvg : owAvg });
         });
       } else if (!f.departure || String(f.departure).slice(0, 10) >= today) {
@@ -722,7 +723,7 @@
       b.className = "chfs-card";
       var when = fmt(r.dep) + (r.ret ? " – " + fmt(r.ret) : "");
       var trip = r.ret ? "return" : "one way";
-      var stops = r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops");
+      var stops = (r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops")) + (r.pair ? " · two single tickets" : "");
       var nights = r.ret ? dayDiff(r.ret, r.dep) : 0;
       var extra = nights > 0 ? " · " + nights + (nights === 1 ? " night" : " nights") : "";
       var from = anyMode ? '<span class="chfs-from">from ' + (ORIGIN_SHORT[r.origin] || r.origin) + '</span>' : "";
@@ -799,7 +800,7 @@
       row.className = "chfs-opt";
       row.innerHTML =
         '<span><span class="d">' + fmt(a.dep) + (a.ret ? " – " + fmt(a.ret) : "") + '</span>' +
-        '<span class="s">' + (a.ret ? "return" : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + '</span></span>' +
+        '<span class="s">' + (a.ret ? "return" : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + (a.pair ? " · two singles" : "") + '</span></span>' +
         '<span><span class="p">£' + a.price + '</span>' +
         '<a class="chfs-book" target="_blank" rel="noopener sponsored" href="' + bookUrl(a.origin, a.dest, a.dep, a.ret) + '">Book</a></span>';
       o.appendChild(row);

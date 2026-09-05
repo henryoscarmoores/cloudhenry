@@ -12,7 +12,7 @@
   hundred), then fills in the dates for each route.
 
   Per route it gathers:
-    - one-way fares, one per day, for the next few months (month-matrix)
+    - every one-way date the cache holds for the route (latest, one call)
     - return fares the cache has seen this year (prices/latest)
     - weekend breaks, Friday or Saturday out and Sunday home (Europe only)
     - Christmas market long weekends, mid November to Christmas Eve
@@ -42,8 +42,8 @@
 [CmdletBinding()]
 param(
   [int]      $MonthsAhead = 3,
-  [int]      $MaxOneWay = 40,
-  [int]      $MaxReturn = 24,
+  [int]      $MaxOneWay = 120,
+  [int]      $MaxReturn = 80,
   [switch]   $SkipWeekends,
   [switch]   $SkipXmas,
   [string[]] $OnlyOrigins,
@@ -186,23 +186,25 @@ foreach ($origin in $ORIGINS) {
   foreach ($t in $list) {
     $opts = @()
 
-    # The London airports each know seven hundred destinations, and the
-    # long tail of those took the first full build to an hour and three
-    # quarters. Routes beyond the cheapest 150 get one month fewer and no
-    # weekend pass; they are still in the search with real dates.
-    $deep = ($n -lt 150)
-    $routeMonths = if ($deep -or $months.Count -le 1) { $months } else { $months[0..($months.Count - 2)] }
-
-    # One-way, a price per day, for the months ahead.
-    foreach ($mon in $routeMonths) {
-      $m = Invoke-TP -Path "/v2/prices/month-matrix" -Query @{ origin = $origin; destination = $t.destination; month = $mon; currency = $Currency }
-      $calls++
-      if ($m -and $m.success -and $m.data) {
-        foreach ($row in @($m.data)) {
-          $p = [int]$row.value
-          if ($p -le 0 -or -not $row.depart_date) { continue }
-          $opts += [pscustomobject]@{ d = [string]$row.depart_date; r = ""; p = $p; s = [int]$row.number_of_changes }
-        }
+    # Every date the cache holds for the route, one call each way. The
+    # month-matrix endpoint used before returns the cheapest fare per day
+    # for one month and, for most routes, only a handful of days: it gave
+    # Manchester to Dublin 33 dates over three calls where a single
+    # latest call over the year gives 61 and reaches further ahead.
+    # Returns come the same way, and weekends are simply the returns
+    # that fall Friday or Saturday to Sunday or Monday, so the three
+    # extra weekend calls per route are gone too.
+    $deep = $true
+    $lo = Invoke-TP -Path "/v2/prices/latest" -Query @{
+      origin = $origin; destination = $t.destination; one_way = "true"; limit = 1000
+      period_type = "year"; show_to_affiliates = "true"; currency = $Currency
+    }
+    $calls++
+    if ($lo -and $lo.success -and $lo.data) {
+      foreach ($row in @($lo.data)) {
+        $p = [int]$row.value
+        if ($p -le 0 -or -not $row.depart_date) { continue }
+        $opts += [pscustomobject]@{ d = ([string]$row.depart_date).Substring(0, 10); r = ""; p = $p; s = [int]$row.number_of_changes }
       }
     }
     $owPrices = @($opts | ForEach-Object { $_.p })
@@ -210,43 +212,76 @@ foreach ($origin in $ORIGINS) {
 
     # Returns the cache has seen this year.
     $lr = Invoke-TP -Path "/v2/prices/latest" -Query @{
-      origin = $origin; destination = $t.destination; one_way = "false"; limit = 60
+      origin = $origin; destination = $t.destination; one_way = "false"; limit = 1000
       period_type = "year"; show_to_affiliates = "true"; currency = $Currency
     }
     $calls++
+    $special = @()
+    $country = if ($COUNTRY_OF.ContainsKey($t.destination)) { $COUNTRY_OF[$t.destination] } else { "" }
     if ($lr -and $lr.success -and $lr.data) {
       foreach ($row in @($lr.data)) {
         $p = [int]$row.value
         if ($p -le 0 -or -not $row.depart_date -or -not $row.return_date) { continue }
-        $opts += [pscustomobject]@{ d = [string]$row.depart_date; r = [string]$row.return_date; p = $p; s = [int]$row.number_of_changes }
+        $o = [pscustomobject]@{ d = ([string]$row.depart_date).Substring(0, 10); r = ([string]$row.return_date).Substring(0, 10); p = $p; s = [int]$row.number_of_changes }
+        $isWk = $false
+        if (-not $SkipWeekends -and -not $UK.ContainsKey($t.destination) -and $weekendOk.ContainsKey($country)) {
+          try { $dep = [datetime]::Parse($o.d); $ret = [datetime]::Parse($o.r); $isWk = Is-Weekend -Dep $dep -Ret $ret } catch { $isWk = $false }
+        }
+        # Christmas market breaks are protected from the caps the same way.
+        $isX = $false
+        if (-not $SkipXmas -and $XMAS.ContainsKey($t.destination)) {
+          try { $dep = [datetime]::Parse($o.d); $ret = [datetime]::Parse($o.r); $nights = ($ret - $dep).Days; $isX = ($dep -ge $XmasStart -and $dep -le $XmasEnd -and $nights -ge 2 -and $nights -le 5) } catch { $isX = $false }
+        }
+        if ($isWk -or $isX) { $special += $o } else { $opts += $o }
       }
     }
-
-    # Weekends, Europe and the near neighbours only.
-    $special = @()
-    $country = if ($COUNTRY_OF.ContainsKey($t.destination)) { $COUNTRY_OF[$t.destination] } else { "" }
-    if ($deep -and -not $SkipWeekends -and -not $UK.ContainsKey($t.destination) -and $weekendOk.ContainsKey($country)) {
-      foreach ($dur in 1, 2, 3) {
-        $w = Invoke-TP -Path "/v2/prices/latest" -Query @{
-          origin = $origin; destination = $t.destination; one_way = "false"; trip_duration = $dur; limit = 500
-          period_type = "year"; show_to_affiliates = "true"; currency = $Currency
+    # Christmas markets.
+    # Weekends built from two singles. The return cache is thin (Barcelona
+    # from Manchester: 14 returns for the year) but the one-way cache is
+    # deep both ways, and Ryanair, easyJet, Jet2 and Wizz sell singles, so
+    # a Friday out and a Sunday back is two real fares. One more call per
+    # route for the inbound dates, then pair them: Friday or Saturday out,
+    # Sunday or Monday back, one to three nights. Christmas market breaks
+    # (two to five nights in the window) are assembled the same way.
+    # Marked c = 1 so the site can say "two one-way tickets".
+    if (-not $SkipWeekends -and -not $UK.ContainsKey($t.destination) -and $weekendOk.ContainsKey($country) -and $owPrices.Count -gt 0) {
+      $li = Invoke-TP -Path "/v2/prices/latest" -Query @{
+        origin = $t.destination; destination = $origin; one_way = "true"; limit = 1000
+        period_type = "year"; show_to_affiliates = "true"; currency = $Currency
+      }
+      $calls++
+      if ($li -and $li.success -and $li.data) {
+        $inbound = @{}
+        foreach ($row in @($li.data)) {
+          $p = [int]$row.value
+          if ($p -le 0 -or -not $row.depart_date) { continue }
+          $k = ([string]$row.depart_date).Substring(0, 10)
+          if (-not $inbound.ContainsKey($k) -or $p -lt $inbound[$k].p) { $inbound[$k] = [pscustomobject]@{ p = $p; s = [int]$row.number_of_changes } }
         }
-        $calls++
-        if ($w -and $w.success -and $w.data) {
-          foreach ($row in @($w.data)) {
-            $p = [int]$row.value
-            if ($p -le 0 -or -not $row.return_date) { continue }
-            try { $dep = [datetime]::Parse($row.depart_date); $ret = [datetime]::Parse($row.return_date) } catch { continue }
-            if (Is-Weekend -Dep $dep -Ret $ret) {
-              $special += [pscustomobject]@{ d = [string]$row.depart_date; r = [string]$row.return_date; p = $p; s = [int]$row.number_of_changes }
-            }
+        $have = @{}
+        foreach ($o in $special) { $have["$($o.d)|$($o.r)"] = 1 }
+        foreach ($out in ($opts | Where-Object { -not $_.r })) {
+          try { $dep = [datetime]::Parse($out.d) } catch { continue }
+          $isXmasDep = ($XMAS.ContainsKey($t.destination) -and $dep -ge $XmasStart -and $dep -le $XmasEnd)
+          if (-not ($dep.DayOfWeek -eq 'Friday' -or $dep.DayOfWeek -eq 'Saturday') -and -not $isXmasDep) { continue }
+          foreach ($nights in 1, 2, 3, 4, 5) {
+            $ret = $dep.AddDays($nights)
+            $wk = (($dep.DayOfWeek -eq 'Friday' -or $dep.DayOfWeek -eq 'Saturday') -and ($ret.DayOfWeek -eq 'Sunday' -or $ret.DayOfWeek -eq 'Monday') -and $nights -le 3)
+            $xm = ($isXmasDep -and $nights -ge 2 -and $nights -le 5)
+            if (-not $wk -and -not $xm) { continue }
+            $rk = $ret.ToString('yyyy-MM-dd')
+            if (-not $inbound.ContainsKey($rk)) { continue }
+            $key = "$($out.d)|$rk"
+            if ($have.ContainsKey($key)) { continue }
+            $have[$key] = 1
+            $special += [pscustomobject]@{ d = $out.d; r = $rk; p = ($out.p + $inbound[$rk].p); s = [math]::Max($out.s, $inbound[$rk].s); c = 1 }
           }
         }
       }
     }
-
-    # Christmas markets.
-    if (-not $SkipXmas -and $XMAS.ContainsKey($t.destination)) {
+    # Only needed when the year query was cut off at its 1000 row limit.
+    $rtFull = ($lr -and $lr.success -and $lr.data -and @($lr.data).Count -ge 1000)
+    if ($rtFull -and -not $SkipXmas -and $XMAS.ContainsKey($t.destination)) {
       foreach ($month in "2026-11-01", "2026-12-01") {
         $x = Invoke-TP -Path "/v2/prices/latest" -Query @{
           origin = $origin; destination = $t.destination; one_way = "false"; beginning_of_period = $month
@@ -271,9 +306,15 @@ foreach ($origin in $ORIGINS) {
     # always keep the weekend and Christmas ones: they are few and they
     # are the whole point of two of the search's tabs.
     $seen = @{}; $ow = @(); $rt = @(); $sp = @()
+    # Real cached returns are kept whole; assembled pairs are capped at the
+    # thirty cheapest per route so the London files stay a sane size.
+    $paired = 0
     foreach ($o in ($special | Sort-Object p)) {
       $k = "$($o.d)|$($o.r)"
-      if (-not $seen.ContainsKey($k)) { $seen[$k] = 1; $sp += $o }
+      if ($seen.ContainsKey($k)) { continue }
+      $isPair = ($o.PSObject.Properties['c'] -ne $null)
+      if ($isPair) { if ($paired -ge 30) { continue }; $paired++ }
+      $seen[$k] = 1; $sp += $o
     }
     foreach ($o in ($opts | Sort-Object p)) {
       $k = "$($o.d)|$($o.r)"
