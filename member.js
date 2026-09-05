@@ -50,38 +50,31 @@
       .catch(function () { return null; });
   }
 
-  // Airport: an airport newsletter the member is on wins; otherwise what
-  // they told this browser; otherwise nothing yet.
+  // Airport: the loc- label on the member is the truth, because that is
+  // what the Monday email is sent by. Members cannot read their own
+  // labels through Ghost, so the Worker looks it up. This browser's
+  // remembered airport is the fallback if the Worker cannot be reached.
+  var WORKER = "https://cloudhenry.henryswalk.workers.dev";
   function airportOf(m) {
-    var news = (m && m.newsletters) || [];
-    for (var i = 0; i < news.length; i++) {
-      var n = (news[i].name || "").toLowerCase();
-      for (var j = 0; j < AIRPORTS.length; j++) {
-        if (n.indexOf(AIRPORTS[j][1].toLowerCase()) > -1 || n.indexOf(AIRPORTS[j][0].toLowerCase()) > -1) return AIRPORTS[j][0];
-      }
-    }
-    try { var s = localStorage.getItem("ch-airport"); if (s && airportByCode(s)) return s; } catch (e) {}
-    return "";
+    var local = "";
+    try { local = localStorage.getItem("ch-airport") || ""; } catch (e) {}
+    if (!m || !m.uuid) return Promise.resolve(airportByCode(local) ? local : "");
+    return fetch(WORKER + "/airport?uuid=" + encodeURIComponent(m.uuid))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        var code = j && j.code && airportByCode(j.code) ? j.code : "";
+        if (code) { try { localStorage.setItem("ch-airport", code); } catch (e) {} return code; }
+        return airportByCode(local) ? local : "";
+      })
+      .catch(function () { return airportByCode(local) ? local : ""; });
   }
 
+  // Changing airport changes the label, so next Monday's email follows.
   function saveAirport(m, code) {
     try { localStorage.setItem("ch-airport", code); } catch (e) {}
-    // If the site has one newsletter per airport, move the member onto
-    // the right one so the Monday email follows. Best effort: Ghost only
-    // allows this when the newsletters exist.
-    var all = window.__chNewsletters || [];
-    var target = null;
-    var name = airportByCode(code)[1].toLowerCase();
-    all.forEach(function (n) { if ((n.name || "").toLowerCase().indexOf(name) > -1) target = n; });
-    if (!target) return Promise.resolve(false);
-    var keep = (m.newsletters || []).filter(function (n) {
-      var ln = (n.name || "").toLowerCase();
-      return !AIRPORTS.some(function (a) { return ln.indexOf(a[1].toLowerCase()) > -1; });
-    }).map(function (n) { return { id: n.id }; });
-    keep.push({ id: target.id });
-    return fetch("/members/api/member/", {
-      method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ newsletters: keep })
+    return fetch(WORKER + "/airport", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ uuid: m.uuid, email: m.email, code: code })
     }).then(function (r) { return r.ok; }).catch(function () { return false; });
   }
 
@@ -164,7 +157,7 @@
 
   function membership(m) {
     var subs = (m.subscriptions || []).filter(function (s) { return s.status === "active" || s.status === "trialing" || s.status === "past_due"; });
-    if (!subs.length) return { line: m.status === "comped" ? "Complimentary membership" : "Free member", paid: m.status === "paid" || m.status === "comped", since: "", next: "" };
+    if (!subs.length) return { line: m.status === "comped" ? "Complimentary membership" : "On the list", paid: m.status === "paid" || m.status === "comped", since: m.created_at ? fmtLong(m.created_at) : "", next: "" };
     var s = subs[0];
     var amount = s.price && s.price.amount ? s.price.amount / 100 : 0;
     // Staff and gifted members carry a £0 subscription with no real dates.
@@ -184,10 +177,11 @@
 
   function render(m, code, emails, fares) {
     var ap = code ? airportByCode(code) : null;
-    var first = (m.name || m.firstname || m.email || "there").split(" ")[0];
+    // A name if Ghost has one; never the email address as a name.
+    var first = String(m.firstname || m.name || "").trim().split(" ")[0];
     var ms = membership(m);
     var hour = new Date().getHours();
-    var hello = hour < 12 ? "Morning" : hour < 18 ? "Afternoon" : "Evening";
+    var hello = (hour < 12 ? "Morning" : hour < 18 ? "Afternoon" : "Evening") + (first ? ", " + esc(first) : "") + ".";
 
     var opts = AIRPORTS.map(function (a) {
       return '<option value="' + a[0] + '"' + (a[0] === code ? " selected" : "") + ">" + a[1] + " (" + a[0] + ")</option>";
@@ -195,7 +189,7 @@
 
     var emailHtml = emails.length
       ? emails.slice(0, 12).map(function (e) {
-          return '<a class="chm-mail" href="' + esc(e.href) + '"><span><b>' + esc(e.title) + '</b><small>' + esc(fmtLong(e.date) || e.date) + '</small></span><span class="chm-open">Open &rarr;</span></a>';
+          return '<a class="chm-mail" href="' + esc(e.href) + '"><span><b>' + esc(e.title) + '</b><small>' + esc(fmtLong(e.date) || e.date) + '</small></span><span class="chm-open">' + (ms.paid ? "Open &rarr;" : "Members only") + '</span></a>';
         }).join("")
       : '<p class="chm-empty">' + (ap ? "No emails for " + esc(ap[1]) + " yet. Your first one lands on Monday." : "Pick your airport above and your emails will show here.") + '</p>';
 
@@ -209,19 +203,19 @@
 
     root.innerHTML =
       '<div class="chm-hero">' +
-        '<div class="chm-hi"><h1>' + hello + ", " + esc(first) + ".</h1>" +
+        '<div class="chm-hi"><h1>' + hello + '</h1>' +
         '<p>' + (ap ? "Your airport is <b>" + esc(ap[1]) + "</b>. " : "Tell us your airport and everything on this page follows it. ") +
           (ms.paid ? "Every email we send you is kept here." : 'Members get the full list every Monday and can book any fare. <a href="#/portal/account/plans"><b>Try 40 days free &rarr;</b></a>') + '</p></div>' +
         '<label class="chm-pick"><span>Home airport</span><select id="chmAirport"><option value="">Choose your airport</option>' + opts + '</select></label>' +
       '</div>' +
       '<div class="chm-stats">' +
         '<div class="chm-stat"><small>Membership</small><b>' + esc(ms.line) + '</b></div>' +
-        '<div class="chm-stat"><small>Member since</small><b>' + esc(ms.since || "Free member") + '</b></div>' +
-        '<div class="chm-stat"><small>Emails kept for you</small><b>' + emails.length + '</b></div>' +
+        '<div class="chm-stat"><small>' + (ms.paid ? "Member since" : "On the list since") + '</small><b>' + esc(ms.since || "today") + '</b></div>' +
+        '<div class="chm-stat"><small>' + (ms.paid ? "Emails kept for you" : "Member emails this month") + '</small><b>' + emails.length + '</b></div>' +
         '<div class="chm-stat"><small>Cheapest this week</small><b>' + (fares.length ? "£" + fares[0].price + " to " + esc(placeName(fares[0].dest)) : "pick an airport") + '</b></div>' +
       '</div>' +
       '<div class="chm-cols">' +
-        '<section class="chm-card"><div class="chm-hd"><h2>Your emails</h2>' + (ap ? '<span>' + esc(ap[1]) + '</span>' : '') + '</div>' + emailHtml + '</section>' +
+        '<section class="chm-card"><div class="chm-hd"><h2>' + (ms.paid ? "Your emails" : "What members got") + '</h2>' + (ap ? '<span>' + esc(ap[1]) + '</span>' : '') + '</div>' + emailHtml + '</section>' +
         '<div>' +
           '<section class="chm-card"><div class="chm-hd"><h2>This week from ' + (ap ? esc(ap[1]) : "your airport") + '</h2><a href="/search/' + (code ? "?from=" + code : "") + '">Search every fare &rarr;</a></div>' + fareHtml +
             '<form class="chm-plan" action="/search/" method="get">' + (code ? '<input type="hidden" name="from" value="' + code + '">' : '') +
@@ -256,10 +250,11 @@
     skeleton();
     getMember().then(function (m) {
       if (!m) { signedOut(); return; }
-      var code = airportOf(m);
-      loadPlaces(function () {
-        Promise.all([getEmails(code), getFares(code)]).then(function (res) {
-          render(m, code, res[0], res[1]);
+      airportOf(m).then(function (code) {
+        loadPlaces(function () {
+          Promise.all([getEmails(code), getFares(code)]).then(function (res) {
+            render(m, code, res[0], res[1]);
+          });
         });
       });
     });

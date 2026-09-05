@@ -176,6 +176,54 @@ async function handleJoin(request, env, origin) {
   return json({ error: "Something went wrong on our side. Please try again." }, 502, origin);
 }
 
+/* ---- /airport --------------------------------------------------------
+ * Members cannot read or change their own labels through Ghost, and the
+ * loc-<airport> label is what the Monday email is sent by. The member
+ * area asks here instead. The browser proves who it is with the uuid
+ * and email that Ghost's own member endpoint gave it; both must match.
+ */
+
+const CODE_TO_LABEL = { MAN:"loc-manchester", BHX:"loc-birmingham", LBA:"loc-leeds", STN:"loc-london-stansted", LTN:"loc-london-luton",
+  BRS:"loc-bristol", NCL:"loc-newcastle", GLA:"loc-glasgow", EDI:"loc-edinburgh", LGW:"loc-london-gatwick", LPL:"loc-liverpool", BFS:"loc-belfast" };
+const LABEL_TO_CODE = Object.fromEntries(Object.entries(CODE_TO_LABEL).map(([c, l]) => [l, c]));
+
+async function memberByUuid(env, uuid) {
+  if (!/^[0-9a-f-]{20,40}$/i.test(uuid)) return null;
+  const r = await ghost(env, "GET", "/members/?limit=1&include=labels&filter=" + encodeURIComponent("uuid:'" + uuid + "'"));
+  return (r.data && r.data.members && r.data.members[0]) || null;
+}
+function airportOfMember(m) {
+  for (const l of (m.labels || [])) { if (LABEL_TO_CODE[l.slug]) return LABEL_TO_CODE[l.slug]; }
+  return "";
+}
+
+async function handleAirport(request, env, origin) {
+  if (!env.GHOST_ADMIN_KEY) return json({ error: "not configured" }, 500, origin);
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  if (throttled("airport:" + ip, 60)) return json({ error: "slow down a little" }, 429, origin);
+
+  if (request.method === "GET") {
+    const uuid = new URL(request.url).searchParams.get("uuid") || "";
+    const m = await memberByUuid(env, uuid);
+    if (!m) return json({ error: "unknown member" }, 404, origin);
+    return json({ code: airportOfMember(m) }, 200, origin);
+  }
+
+  let body;
+  try { body = await request.json(); } catch (e) { return json({ error: "bad request" }, 400, origin); }
+  const code = String(body.code || "").toUpperCase();
+  const label = CODE_TO_LABEL[code];
+  if (!label) return json({ error: "Pick an airport from the list." }, 400, origin);
+  const m = await memberByUuid(env, String(body.uuid || ""));
+  if (!m || String(body.email || "").toLowerCase() !== String(m.email || "").toLowerCase()) return json({ error: "unknown member" }, 404, origin);
+
+  const keep = (m.labels || []).filter(l => !LABEL_TO_CODE[l.slug] && l.name !== "No Airport Selected").map(l => ({ name: l.name }));
+  keep.push({ name: label });
+  const r = await ghost(env, "PUT", "/members/" + m.id + "/", { members: [{ labels: keep }] });
+  if (r.status !== 200) return json({ error: "Could not save that. Please try again." }, 502, origin);
+  return json({ ok: true, code }, 200, origin);
+}
+
 /* ---- /plan ---------------------------------------------------------- */
 
 const SCHEMA = {
@@ -316,8 +364,9 @@ export default {
     if (path === "/health" && request.method === "GET") {
       return json({ ok: true, join: !!env.GHOST_ADMIN_KEY, plan: !!env.ANTHROPIC_API_KEY }, 200, origin);
     }
-    if (request.method !== "POST") return json({ error: "POST only" }, 405, origin);
     if (!ALLOWED_ORIGINS.includes(origin)) return json({ error: "origin not allowed" }, 403, origin);
+    if (path === "/airport" && (request.method === "GET" || request.method === "POST")) return handleAirport(request, env, origin);
+    if (request.method !== "POST") return json({ error: "POST only" }, 405, origin);
 
     if (path === "/join") return handleJoin(request, env, origin);
     if (path === "/plan") return handlePlan(request, env, origin);
