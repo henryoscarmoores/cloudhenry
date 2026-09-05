@@ -177,8 +177,16 @@
 
   function render(m, code, emails, fares) {
     var ap = code ? airportByCode(code) : null;
-    // A name if Ghost has one; never the email address as a name.
+    // A name if Ghost has one. Failing that, an email like jemma.hillyer@
+    // or tom_smith@ gives it away and is safe to use; jemmahillyer@ is
+    // not, and a wrong guess is worse than none. Never the whole address.
     var first = String(m.firstname || m.name || "").trim().split(" ")[0];
+    if (!first) {
+      var local = String(m.email || "").split("@")[0].toLowerCase();
+      var parts = local.split(/[._-]/);
+      var STOP = { info:1, hello:1, admin:1, contact:1, mail:1, me:1, hi:1, team:1, sales:1, office:1, enquiries:1, test:1 };
+      if (parts.length >= 2 && /^[a-z]{2,12}$/.test(parts[0]) && !STOP[parts[0]]) first = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+    }
     var ms = membership(m);
     var hour = new Date().getHours();
     var hello = (hour < 12 ? "Morning" : hour < 18 ? "Afternoon" : "Evening") + (first ? ", " + esc(first) : "") + ".";
@@ -224,7 +232,9 @@
           '<section class="chm-card"><div class="chm-hd"><h2>Your account</h2></div>' +
             '<div class="chm-rows">' +
               '<div class="chm-row"><span>Email<small>' + esc(m.email) + '</small></span><a href="#/portal/account/profile">Change</a></div>' +
-              '<div class="chm-row"><span>Name<small>' + esc(m.name || "Not set") + '</small></span><a href="#/portal/account/profile">Change</a></div>' +
+              (m.name
+                ? '<div class="chm-row"><span>Name<small>' + esc(m.name) + '</small></span><a href="#/portal/account/profile">Change</a></div>'
+                : '<div class="chm-row"><span>Name<small>Not set</small></span><form class="chm-name"><input type="text" name="name" maxlength="60" placeholder="Your first name" aria-label="Your name"><button type="submit">Save</button></form></div>') +
               '<div class="chm-row"><span>Membership<small>' + esc(ms.line) + '</small></span><a href="#/portal/account">Manage</a></div>' +
               '<div class="chm-row"><span>Emails<small>' + ((m.newsletters || []).length ? "On" : "Off") + '</small></span><a href="#/portal/account/newsletters">Change</a></div>' +
               '<div class="chm-row"><span>Sign out</span><a href="#/portal/signout">Sign out</a></div>' +
@@ -239,6 +249,18 @@
       if (!v) return;
       sel.disabled = true;
       saveAirport(m, v).then(function () { start(); });
+    });
+
+    // Members can set their own name here; Ghost lets a signed-in member
+    // change name and newsletters through its own endpoint.
+    var nameForm = root.querySelector(".chm-name");
+    if (nameForm) nameForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = nameForm.querySelector("input").value.trim().slice(0, 60);
+      if (!v) return;
+      nameForm.querySelector("button").disabled = true;
+      fetch("/members/api/member/", { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: v }) })
+        .then(function () { start(); }).catch(function () { start(); });
     });
   }
 
