@@ -111,9 +111,9 @@
         if (rows) {
           html += '<p class="chw-sub">The five cheapest fares out of ' + esc(city) + ' right now, found this morning.</p>' +
                   '<div class="chw-card">' + rows + '</div>' +
-                  '<p class="chw-more">That\'s 5 of <b>' + data.destinations + ' destinations</b> from ' + esc(city) + ' today. Members see every one, get the full list each Monday, and book any fare in one tap.</p>';
+                  '<p class="chw-more">That\'s 5 of <b>' + data.destinations + ' destinations</b> from ' + esc(city) + ' today. Members see every one, get the full list each Monday, and go straight through to book any of them.</p>';
         } else {
-          html += '<p class="chw-sub">Your first ' + esc(city) + ' email lands on Monday. Members get every fare we find and book any of them in one tap.</p>';
+          html += '<p class="chw-sub">Your first ' + esc(city) + ' email lands on Monday. Members get every fare we find and go straight through to book any of them.</p>';
         }
         if (opts.signedIn) {
           html += '<a class="chw-btn" href="#/portal/account/plans">Try 40 days free &rarr;</a>' +
