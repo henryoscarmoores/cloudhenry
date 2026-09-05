@@ -79,7 +79,7 @@
     btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); go(); });
 
     var note = w.parentNode.querySelector(".ch-ap-note");
-    if (note) note.textContent = "40 days of the full club free, then £2.99 a month. Unsubscribe any time.";
+    if (note) note.textContent = "40 days free, then £2.99 a month. Unsubscribe any time, no contract.";
 
     function fail(msg) { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Send me deals →"; }
     function go() {
