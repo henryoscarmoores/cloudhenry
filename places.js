@@ -748,5 +748,14 @@ window.CH_PLACES = {
     KZO:["Kzyl-Orda","Kazakhstan","🇰🇿"],
     MHT:["Manchester","USA","🇺🇸"],
     MSO:["Missoula","USA","🇺🇸"],
-    STL:["St Louis","USA","🇺🇸"]
+    STL:["St Louis","USA","🇺🇸"],
+    ASM:["Asmara","Eritrea","🇪🇷"],
+    BLA:["Barcelona","Venezuela","🇻🇪"],
+    GPS:["Galapagos Islands","Ecuador","🇪🇨"],
+    LPB:["La Paz","Bolivia","🇧🇴"],
+    MEM:["Memphis","USA","🇺🇸"],
+    PWM:["Portland","USA","🇺🇸"],
+    RZV:["Rize","Turkiye","🇹🇷"],
+    SMA:["Santa Maria","Portugal","🇵🇹"],
+    VFA:["Victoria Falls","Zimbabwe","🇿🇼"]
 };
