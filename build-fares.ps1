@@ -166,7 +166,7 @@ foreach ($origin in $ORIGINS) {
             origin = $origin; destination = $d; price = $p
             departure = [string]$row.depart_date; ret = [string]$row.return_date
             transfers = [int]$row.number_of_changes; airline = [string]$row.gate; flight = ""
-            typical = $null; options = @()
+            typical = $null; options = @(); inbound = @()
           }
         }
       }
@@ -244,7 +244,7 @@ foreach ($origin in $ORIGINS) {
     # Sunday or Monday back, one to three nights. Christmas market breaks
     # (two to five nights in the window) are assembled the same way.
     # Marked c = 1 so the site can say "two one-way tickets".
-    if (-not $SkipWeekends -and -not $UK.ContainsKey($t.destination) -and $weekendOk.ContainsKey($country) -and $owPrices.Count -gt 0) {
+    if (-not $SkipWeekends -and -not $UK.ContainsKey($t.destination) -and $owPrices.Count -gt 0) {
       $li = Invoke-TP -Path "/v2/prices/latest" -Query @{
         origin = $t.destination; destination = $origin; one_way = "true"; limit = 1000
         period_type = "year"; show_to_affiliates = "true"; currency = $Currency
@@ -258,9 +258,13 @@ foreach ($origin in $ORIGINS) {
           $k = ([string]$row.depart_date).Substring(0, 10)
           if (-not $inbound.ContainsKey($k) -or $p -lt $inbound[$k].p) { $inbound[$k] = [pscustomobject]@{ p = $p; s = [int]$row.number_of_changes } }
         }
+        # Kept on the route so the search can assemble a return for any dates.
+        $t.inbound = @($inbound.Keys | Sort-Object | ForEach-Object { [pscustomobject]@{ d = $_; p = $inbound[$_].p; s = $inbound[$_].s } })
         $have = @{}
         foreach ($o in $special) { $have["$($o.d)|$($o.r)"] = 1 }
+        $pairHere = ($weekendOk.ContainsKey($country) -or $XMAS.ContainsKey($t.destination))
         foreach ($out in ($opts | Where-Object { -not $_.r })) {
+          if (-not $pairHere) { break }
           try { $dep = [datetime]::Parse($out.d) } catch { continue }
           $isXmasDep = ($XMAS.ContainsKey($t.destination) -and $dep -ge $XmasStart -and $dep -le $XmasEnd)
           if (-not ($dep.DayOfWeek -eq 'Friday' -or $dep.DayOfWeek -eq 'Saturday') -and -not $isXmasDep) { continue }

@@ -223,12 +223,8 @@
         '<div class="chm-stat"><small>Cheapest this week</small><b>' + (fares.length ? "£" + fares[0].price + " to " + esc(placeName(fares[0].dest)) : "pick an airport") + '</b></div>' +
       '</div>' +
       '<div class="chm-cols">' +
-        '<section class="chm-card"><div class="chm-hd"><h2>' + (ms.paid ? "Your emails" : "What members got") + '</h2>' + (ap ? '<span>' + esc(ap[1]) + '</span>' : '') + '</div>' + emailHtml + '</section>' +
         '<div>' +
-          '<section class="chm-card"><div class="chm-hd"><h2>This week from ' + (ap ? esc(ap[1]) : "your airport") + '</h2><a href="/search/' + (code ? "?from=" + code : "") + '">Search every fare &rarr;</a></div>' + fareHtml +
-            '<form class="chm-plan" action="/search/" method="get">' + (code ? '<input type="hidden" name="from" value="' + code + '">' : '') +
-            '<input type="text" name="plan" maxlength="300" placeholder="Tell us what you fancy: somewhere warm in November under £60" aria-label="Plan my trip"><button type="submit">Plan it &rarr;</button></form>' +
-          '</section>' +
+          '<section class="chm-card"><div class="chm-hd"><h2>' + (ms.paid ? "Your emails" : "What members got") + '</h2>' + (ap ? '<span>' + esc(ap[1]) + '</span>' : '') + '</div>' + emailHtml + '</section>' +
           '<section class="chm-card"><div class="chm-hd"><h2>Your account</h2></div>' +
             '<div class="chm-rows">' +
               '<div class="chm-row"><span>Email<small>' + esc(m.email) + '</small></span><a href="#/portal/account/profile">Change</a></div>' +
@@ -239,6 +235,12 @@
               '<div class="chm-row"><span>Emails<small>' + ((m.newsletters || []).length ? "On" : "Off") + '</small></span><a href="#/portal/account/newsletters">Change</a></div>' +
               '<div class="chm-row"><span>Sign out</span><a href="#/portal/signout">Sign out</a></div>' +
             '</div>' +
+          '</section>' +
+        '</div>' +
+        '<div>' +
+          '<section class="chm-card"><div class="chm-hd"><h2>This week from ' + (ap ? esc(ap[1]) : "your airport") + '</h2><a href="/search/' + (code ? "?from=" + code : "") + '">Search every fare &rarr;</a></div><div class="chm-fares">' + fareHtml + '</div>' +
+            '<form class="chm-plan" action="/search/" method="get">' + (code ? '<input type="hidden" name="from" value="' + code + '">' : '') +
+            '<input type="text" name="plan" maxlength="300" placeholder="Tell us what you fancy: somewhere warm in November under £60" aria-label="Plan my trip"><button type="submit">Plan it &rarr;</button></form>' +
           '</section>' +
         '</div>' +
       '</div>';
