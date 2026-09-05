@@ -35,7 +35,7 @@
       ".ch-hj-done{max-width:420px;margin:0 auto 12px;padding:14px 18px;border-radius:16px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;text-align:center;font-size:14.5px;line-height:1.5;opacity:1!important;transform:none!important}" +
       ".ch-hj-done b{display:block;font-size:17px;margin-bottom:4px}" +
       ".ch-hj-done a{color:#FFE9AE;font-weight:700}" +
-      ".ch-hj-done .ch-ap-btn{display:inline-block;margin-top:10px;text-decoration:none}" +
+      ".ch-hj-done .ch-ap-btn{display:inline-block;margin-top:10px;text-decoration:none;color:#12384F!important;font-weight:800}" +
       ".ch-ap-search,.ch-ap-search.ch-reveal{display:block;text-align:center;margin:2px auto 14px;font-size:13.5px;color:#fff!important;text-decoration:none;opacity:1!important;transform:none!important}" +
       ".ch-ap-search b{color:#FFE071;border-bottom:2px solid rgba(255,224,113,.6);padding-bottom:1px}" +
       "@media(max-width:640px){.ch-airportpick.ch-hj{grid-template-columns:1fr;max-width:420px}.ch-airportpick.ch-hj .ch-ap-btn{width:100%}}";
@@ -87,7 +87,7 @@
     // People who arrive wanting one specific trip should see the way to
     // the search at once, not scroll looking for it.
     var go = document.createElement("a");
-    go.className = "ch-ap-search ch-trial";
+    go.className = "ch-ap-search";
     go.href = "/search/";
     go.innerHTML = "Looking for a specific trip? <b>Search every flight &rarr;</b>";
     (note || w).parentNode.insertBefore(go, (note || w).nextSibling);
@@ -138,17 +138,23 @@
     done.className = "ch-hj-done";
     if (isPaid(m)) {
       done.innerHTML = "<b>You are a member</b>Every fare on the site is yours to book." +
-        "<br><a class=\"ch-ap-btn\" href=\"/my-cloudhenry/\">Open My CloudHenry →</a>";
+        "<br><a class=\"ch-ap-btn\" href=\"/my-cloudhenry/\">Open my deals →</a>";
     } else {
       done.innerHTML = "<b>You are on the list</b>Signed in as " + esc(m.email) + ". Every Monday's full list, and book any fare, is one step away." +
         "<br><a class=\"ch-ap-btn\" href=\"#/portal/account/plans\">Try 40 days free →</a>";
     }
     w.parentNode.replaceChild(done, w);
     if (note) note.remove();
-    // A signed-in list member with a known airport gets the full welcome:
-    // their fares and the trial button.
     var code = "";
     try { code = localStorage.getItem("ch-airport") || ""; } catch (x) {}
+    // Members want the search most of all; point at it here too.
+    var go = document.createElement("a");
+    go.className = "ch-ap-search";
+    go.href = "/search/" + (code ? "?from=" + code : "");
+    go.innerHTML = "Looking for a specific trip? <b>Search every flight &rarr;</b>";
+    done.parentNode.insertBefore(go, done.nextSibling);
+    // A signed-in list member with a known airport gets the full welcome:
+    // their fares and the trial button.
     if (!isPaid(m) && code && window.CH_WELCOME) window.CH_WELCOME.render(done, { code: code, email: m.email, signedIn: true });
   }
 
