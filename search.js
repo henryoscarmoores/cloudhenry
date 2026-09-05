@@ -51,7 +51,7 @@
       a.removeAttribute("target");
       a.removeAttribute("rel");
       a.classList.add("chfs-locked");
-      a.textContent = a.id === "chfsMain" ? "Try 30 days free to book" : "Unlock";
+      a.textContent = a.id === "chfsMain" ? "Try 40 days free to book" : "Unlock";
     });
   }
 
@@ -1360,8 +1360,8 @@
             t.id = "chfsTease";
             t.className = "chfs-tease";
             t.innerHTML = "<strong>These fares are real, and they go fast.</strong>" +
-              "<span>Browse every route for free. Members book any of them: 30 days free, then &pound;2.99 a month.</span>" +
-              "<a class=\"chfs-tease-cta\" href=\"#/portal/signup\">Try 30 days free</a>";
+              "<span>Browse every route for free. Members book any of them: 40 days free, then &pound;2.99 a month.</span>" +
+              "<a class=\"chfs-tease-cta\" href=\"#/portal/signup\">Try 40 days free</a>";
             note.parentNode.insertBefore(t, note);
           }
         }

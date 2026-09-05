@@ -7,7 +7,7 @@
  *      airport as a label (loc-manchester and so on, the labels Henry
  *      already sends by). Ghost emails a sign-in link that brings them
  *      back to this page.
- *   2. Back here, signed in: start the 30-day free trial of the paid tier
+ *   2. Back here, signed in: start the 40-day free trial of the paid tier
  *      through Ghost's own checkout. The label stays on the member.
  *
  * Someone already paid sees a link to their member area instead.
@@ -88,8 +88,8 @@
       box.innerHTML = '<a class="ch-join-cta" href="/my-cloudhenry/">You are a member. Open My CloudHenry &rarr;</a>' +
                       '<small>Signed in as ' + escapeHtml(mm.email) + '</small>';
     } else if (mm) {
-      box.innerHTML = '<a class="ch-join-cta" href="#/portal/account/plans">Try 30 days free &rarr;</a>' +
-                      '<div class="ch-join-note">Card taken now, nothing charged for 30 days. Then £2.99 a month, cancel any time. Your ' + city + ' email starts on Monday.</div>' +
+      box.innerHTML = '<a class="ch-join-cta" href="#/portal/account/plans">Try 40 days free &rarr;</a>' +
+                      '<div class="ch-join-note">Card taken now, nothing charged for 40 days. Then £2.99 a month, cancel any time. Your ' + city + ' email starts on Monday.</div>' +
                       '<small>Signed in as ' + escapeHtml(mm.email) + '</small>';
     } else {
       box.innerHTML =
@@ -97,7 +97,7 @@
           '<input type="email" name="email" required autocomplete="email" placeholder="you@example.com" aria-label="Email address" value="' + escapeHtml(params.email || "") + '">' +
           '<button type="submit">Join from ' + city + ' &rarr;</button>' +
         '</form>' +
-        '<div class="ch-join-note">Step 1 of 2. We email you a link, you come back here and start your 30 days free.</div>' +
+        '<div class="ch-join-note">Step 1 of 2. We email you a link, you come back here and start your 40 days free.</div>' +
         '<div class="ch-join-err" hidden></div>';
       var form = box.querySelector("form"), input = box.querySelector("input"), btn = box.querySelector("button"), err = box.querySelector(".ch-join-err");
       form.addEventListener("submit", function (e) {
@@ -113,7 +113,7 @@
         }).then(function (r) {
           if (r.ok) {
             box.innerHTML = '<div class="ch-join-note"><b>Check your inbox.</b> We have sent a link to ' + escapeHtml(email) +
-              '. Tap it and you land back here, signed in and ready to start your 30 days free.</div>' +
+              '. Tap it and you land back here, signed in and ready to start your 40 days free.</div>' +
               '<small>Nothing arrived? Check spam, or <a href="' + location.pathname + '">try again</a>.</small>';
           } else {
             return r.text().then(function (t) {

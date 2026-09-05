@@ -296,7 +296,7 @@
     }
     if (fine) fine.innerHTML = memberPaid
       ? 'You are a member · every fare is yours to book'
-      : '<span class="ch-hlb">30 days free</span> · then £2.99 a month · cancel anytime';
+      : '<span class="ch-hlb">40 days free</span> · then £2.99 a month · cancel anytime';
   }
 
   function paintCaption() {

@@ -5,7 +5,7 @@
  * field sits under the picker and the button does the whole job: Ghost
  * creates the member with the airport label and emails a link that
  * lands them, signed in, on their airport page, where the one button is
- * "Try 30 days free".
+ * "Try 40 days free".
  *
  * Signed-in members do not see the box: a free member gets the trial
  * button, a paying member a link to My CloudHenry.
@@ -120,7 +120,7 @@
         "<br><a class=\"ch-ap-btn\" href=\"/my-cloudhenry/\">Open My CloudHenry →</a>";
     } else {
       done.innerHTML = "<b>You are on the list</b>Signed in as " + esc(m.email) + ". Every Monday's full list, and book any fare, is one step away." +
-        "<br><a class=\"ch-ap-btn\" href=\"#/portal/account/plans\">Try 30 days free →</a>";
+        "<br><a class=\"ch-ap-btn\" href=\"#/portal/account/plans\">Try 40 days free →</a>";
     }
     w.parentNode.replaceChild(done, w);
     if (note) note.remove();
