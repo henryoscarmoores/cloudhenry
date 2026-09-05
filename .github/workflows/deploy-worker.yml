@@ -1,0 +1,48 @@
+# Deploys cloudhenry-worker.js to Cloudflare whenever it changes, and
+# pushes the two secrets it needs from GitHub's secret store. Nothing
+# secret is ever in the repository or on Henry's PC.
+#
+# Needs three repository secrets:
+#   CLOUDFLARE_API_TOKEN   an "Edit Cloudflare Workers" token
+#   GHOST_ADMIN_KEY        already present, used by the fare build too
+#   ANTHROPIC_API_KEY      for the trip planner
+
+name: Deploy Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - cloudhenry-worker.js
+      - wrangler.toml
+      - .github/workflows/deploy-worker.yml
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy the Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: deploy
+
+      - name: Push the secrets
+        uses: cloudflare/wrangler-action@v3
+        env:
+          GHOST_ADMIN_KEY: ${{ secrets.GHOST_ADMIN_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          secrets: |
+            GHOST_ADMIN_KEY
+            ANTHROPIC_API_KEY
+
+      - name: Check it answers
+        run: |
+          sleep 5
+          curl -sS --max-time 20 https://cloudhenry.henryswalk.workers.dev/health
+          echo

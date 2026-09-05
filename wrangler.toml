@@ -1,0 +1,12 @@
+# Cloudflare Worker settings for cloudhenry-worker.js.
+# Deployed by .github/workflows/deploy-worker.yml on every push that
+# touches the Worker; secrets are pushed from GitHub secrets at the same
+# time and never live in this repository.
+name = "cloudhenry"
+main = "cloudhenry-worker.js"
+compatibility_date = "2026-08-01"
+account_id = "f05a5ec3072ecd59b3149519580cdcb3"
+workers_dev = true
+
+[observability]
+enabled = true
