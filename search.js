@@ -401,11 +401,19 @@
     return nights >= 1 && nights <= 2;
   }
 
+  // Every booking link goes through Travelpayouts' own redirect. A link
+  // straight to aviasales.com with ?marker= still earns commission, but
+  // the Travelpayouts dashboard only counts clicks that pass through
+  // tp.media, so Henry's own test clicks never showed up. trs is the
+  // "Henrys-flight-club" traffic source, p is the Aviasales programme.
+  function tracked(url) {
+    return "https://tp.media/r?marker=" + MARKER + "&trs=562291&p=4114&u=" + encodeURIComponent(url);
+  }
   // Aviasales deep link. Format: ORIGIN + DDMM + DEST + [DDMM return] + pax
   function bookUrl(origin, dest, dep, ret) {
     var o = ddmm(dep);
-    if (!o) return "https://www.aviasales.com/?marker=" + MARKER;
-    return "https://www.aviasales.com/search/" + origin + o + dest + (ddmm(ret) || "") + "1?marker=" + MARKER;
+    if (!o) return tracked("https://www.aviasales.com/");
+    return tracked("https://www.aviasales.com/search/" + origin + o + dest + (ddmm(ret) || "") + "1");
   }
 
   // Flatten each route into its individual dated departures, so the list
@@ -586,7 +594,7 @@
     // be the end of the road.
     if (!state.from2 && state.trip === "weekend") {
       var wk = nextWeekend();
-      return "https://www.aviasales.com/search/" + liveOrigin() + ddmm(wk[0]) + ddmm(wk[1]) + "1?marker=" + MARKER;
+      return tracked("https://www.aviasales.com/search/" + liveOrigin() + ddmm(wk[0]) + ddmm(wk[1]) + "1");
     }
     if (!state.from2) return null;
     var destCode = "";
@@ -597,8 +605,8 @@
       }
     }
     var back = (state.trip === "one" || !state.to2) ? "" : ddmm(state.to2);
-    return "https://www.aviasales.com/search/" + liveOrigin() + ddmm(state.from2) +
-           destCode + back + "1?marker=" + MARKER;
+    return tracked("https://www.aviasales.com/search/" + liveOrigin() + ddmm(state.from2) +
+           destCode + back + "1");
   }
 
   function renderLiveBar() {
@@ -672,8 +680,8 @@
     if (!rows.length) {
       if (state.from2) {
         var dest = state.q.trim() ? state.q.trim().toUpperCase().slice(0, 3) : "";
-        var url = "https://www.aviasales.com/search/" + liveOrigin() + ddmm(state.from2) +
-                  dest + (state.to2 ? ddmm(state.to2) : "") + "1?marker=" + MARKER;
+        var url = tracked("https://www.aviasales.com/search/" + liveOrigin() + ddmm(state.from2) +
+                  dest + (state.to2 ? ddmm(state.to2) : "") + "1");
         grid.innerHTML =
           '<div class="chfs-nodata">' +
             '<strong>No cached fare for those dates yet</strong>' +
@@ -687,7 +695,7 @@
         // Telling a Leeds visitor to clear the destination is simply
         // wrong; offering all twelve airports usually solves it.
         var wk = nextWeekend();
-        var wkUrl = "https://www.aviasales.com/search/" + liveOrigin() + ddmm(wk[0]) + ddmm(wk[1]) + "1?marker=" + MARKER;
+        var wkUrl = tracked("https://www.aviasales.com/search/" + liveOrigin() + ddmm(wk[0]) + ddmm(wk[1]) + "1");
         var what = state.trip === "xmas" ? "Christmas market trips" : "weekend breaks";
         grid.innerHTML =
           '<div class="chfs-nodata">' +
