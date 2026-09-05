@@ -41,8 +41,12 @@ function Call([string] $Method, [string] $Path, $Body) {
 }
 
 # join-leeds carries the label loc-leeds; every other page's slug is its label.
+# Whoever cannot be placed gets "No Airport Selected" instead, so Henry can
+# find them in one click in Ghost and ask. That label comes off the moment
+# an airport label goes on.
+$NONE = "No Airport Selected"
 $members = @((Call GET "/members/?limit=all&include=labels").members)
-$already = 0; $labelled = 0; $noPage = 0; $notJoin = 0; $failed = 0
+$already = 0; $labelled = 0; $noPage = 0; $notJoin = 0; $flagged = 0; $failed = 0
 foreach ($m in $members) {
   $names = @($m.labels | ForEach-Object { $_.name })
   if (@($m.labels | Where-Object { $_.slug -like "loc-*" }).Count -gt 0) { $already++; continue }
@@ -50,19 +54,29 @@ foreach ($m in $members) {
     $one = (Call GET "/members/$($m.id)/?include=attribution,labels").members[0]
     $url = ""
     if ($one.attribution -and $one.attribution.url) { $url = [string]$one.attribution.url }
-    if (-not $url) { $noPage++; continue }
-    if ($url -notmatch '/join-([a-z-]+)/') { $notJoin++; continue }
-    $loc = "loc-" + $Matches[1]
-    $keep = @($names | Where-Object { $_ -ne "No Airport Selected" } | ForEach-Object { @{ name = $_ } })
-    $keep += @{ name = $loc }
-    Call PUT "/members/$($m.id)/" @{ members = @(@{ labels = $keep }) } | Out-Null
-    $labelled++
-    Write-Host "  labelled $loc"
+    $loc = ""
+    if (-not $url) { $noPage++ }
+    elseif ($url -notmatch '/join-([a-z-]+)/') { $notJoin++ }
+    else { $loc = "loc-" + $Matches[1] }
+
+    if ($loc) {
+      $keep = @($names | Where-Object { $_ -ne $NONE } | ForEach-Object { @{ name = $_ } })
+      $keep += @{ name = $loc }
+      Call PUT "/members/$($m.id)/" @{ members = @(@{ labels = $keep }) } | Out-Null
+      $labelled++
+      Write-Host "  labelled $loc"
+    } elseif ($names -notcontains $NONE) {
+      $keep = @($names | ForEach-Object { @{ name = $_ } })
+      $keep += @{ name = $NONE }
+      Call PUT "/members/$($m.id)/" @{ members = @(@{ labels = $keep }) } | Out-Null
+      $flagged++
+      Write-Host "  flagged $NONE"
+    }
   } catch {
     $failed++
     Write-Host "  could not label member $($m.id): $($_.Exception.Message)"
   }
   Start-Sleep -Milliseconds 150
 }
-Write-Host ("members {0}: already labelled {1}, labelled now {2}, no signup page on record {3}, signed up off an airport page {4}, failed {5}" -f $members.Count, $already, $labelled, $noPage, $notJoin, $failed)
+Write-Host ("members {0}: already labelled {1}, labelled now {2}, no signup page on record {3}, signed up off an airport page {4}, newly flagged '{5}' {6}, failed {7}" -f $members.Count, $already, $labelled, $noPage, $notJoin, $NONE, $flagged, $failed)
 exit 0
