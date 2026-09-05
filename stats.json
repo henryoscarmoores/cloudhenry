@@ -1,17 +1,17 @@
 ﻿{
-    "updated":  "2026-09-05T19:35:34Z",
+    "updated":  "2026-09-05T21:21:15Z",
     "days":  [
                  {
                      "date":  "2026-09-05",
-                     "total":  66,
-                     "free":  5,
-                     "paid":  60,
+                     "total":  89,
+                     "free":  23,
+                     "paid":  65,
                      "comped":  1,
-                     "trialing":  0,
-                     "new_24h":  6,
-                     "new_7d":  47,
-                     "via_homepage":  3,
-                     "via_airport_page":  0,
+                     "trialing":  5,
+                     "new_24h":  28,
+                     "new_7d":  70,
+                     "via_homepage":  23,
+                     "via_airport_page":  3,
                      "no_airport":  16
                  }
              ]

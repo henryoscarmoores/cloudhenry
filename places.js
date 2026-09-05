@@ -794,5 +794,8 @@ window.CH_PLACES = {
     VTE:["Vientiane","Laos","🇱🇦"],
     YAO:["Yaounde","Cameroon","🇨🇲"],
     YEI:["Bursa","Turkiye","🇹🇷"],
-    YIW:["Yiwu","China","🇨🇳"]
+    YIW:["Yiwu","China","🇨🇳"],
+    GNY:["Golgen","Turkiye","🇹🇷"],
+    SFT:["Skelleftea","Sweden","🇸🇪"],
+    XSC:["South Caicos","Turks and Caicos Islands","🇹🇨"]
 };
