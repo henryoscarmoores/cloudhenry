@@ -506,7 +506,7 @@
     var today = isoToday(), out = [], have = {};
     existing.forEach(function (r) { if (r.ret) have[r.origin + r.dest + r.dep + r.ret] = 1; });
     FARES.forEach(function (f) {
-      if (!fromMatches(f) || !f.inbound || !f.inbound.length || UK[f.destination] || !PLACES[f.destination]) return;
+      if (!fromMatches(f) || !f.inbound || !f.inbound.length || UK[f.destination] || BOGUS[f.destination] || !PLACES[f.destination]) return;
       var outs = (f.options || []).filter(function (o) {
         if (o.r || !o.d || o.d < today) return false;
         if (state.from2) return Math.abs(dayDiff(o.d, state.from2)) <= state.flex;
