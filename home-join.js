@@ -36,6 +36,8 @@
       ".ch-hj-done b{display:block;font-size:17px;margin-bottom:4px}" +
       ".ch-hj-done a{color:#FFE9AE;font-weight:700}" +
       ".ch-hj-done .ch-ap-btn{display:inline-block;margin-top:10px;text-decoration:none}" +
+      ".ch-ap-search,.ch-ap-search.ch-reveal{display:block;text-align:center;margin:2px auto 14px;font-size:13.5px;color:#fff!important;text-decoration:none;opacity:1!important;transform:none!important}" +
+      ".ch-ap-search b{color:#FFE071;border-bottom:2px solid rgba(255,224,113,.6);padding-bottom:1px}" +
       "@media(max-width:640px){.ch-airportpick.ch-hj{grid-template-columns:1fr;max-width:420px}.ch-airportpick.ch-hj .ch-ap-btn{width:100%}}";
     document.head.appendChild(st);
   }
@@ -81,6 +83,16 @@
 
     var note = w.parentNode.querySelector(".ch-ap-note");
     if (note) note.textContent = "40 days free, then £2.99 a month. Unsubscribe any time, no contract.";
+
+    // People who arrive wanting one specific trip should see the way to
+    // the search at once, not scroll looking for it.
+    var go = document.createElement("a");
+    go.className = "ch-ap-search ch-trial";
+    go.href = "/search/";
+    go.innerHTML = "Looking for a specific trip? <b>Search every flight &rarr;</b>";
+    (note || w).parentNode.insertBefore(go, (note || w).nextSibling);
+    function pointSearch() { go.href = "/search/" + (sel.value && CODES[sel.value] ? "?from=" + CODES[sel.value] : ""); }
+    sel.addEventListener("change", pointSearch); pointSearch();
 
     function fail(msg) { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Send me deals →"; }
     function go() {
