@@ -31,7 +31,8 @@
     var st = document.createElement("style");
     st.id = "ch-welcome-css";
     st.textContent =
-      ".chw,.chw.ch-reveal{max-width:440px;margin:0 auto;text-align:center;color:#fff;opacity:1!important;transform:none!important}" +
+      /* Its own blue panel, so the white text reads on any page background, not only the sky. */
+      ".chw,.chw.ch-reveal{max-width:460px;margin:0 auto;text-align:center;color:#fff;opacity:1!important;transform:none!important;background:linear-gradient(180deg,#0E6FB6 0%,#3E9BE0 100%);border-radius:22px;padding:22px 18px 20px;box-shadow:0 12px 30px rgba(11,85,140,.28)}" +
       ".chw-pill{display:inline-block;background:#F5C242;color:#12384F;font-weight:800;font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:6px 14px;border-radius:999px}" +
       ".chw h3{margin:10px 0 6px;font-size:26px;font-weight:800;line-height:1.1;letter-spacing:-.03em;color:#fff}" +
       ".chw-sub{font-size:14px;color:#D7EDFA;margin:0 auto 14px;max-width:36ch;line-height:1.45}" +
