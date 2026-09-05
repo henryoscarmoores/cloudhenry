@@ -150,13 +150,14 @@ function FareRow($f, [int] $i, [bool] $blur) {
   $subColor  = if ($blur) { "#D9E3EC" } else { "#46607A" }
   $flagCell = if ($fc -and -not $blur) { "<img src=`"https://flagcdn.com/w40/$fc.png`" width=`"26`" height=`"20`" alt=`"`" style=`"display:block;border-radius:3px;`">" } else { "<div style=`"width:26px;height:20px;background:#E6EEF5;border-radius:3px;`"></div>" }
   $usualHtml = if ($blur) { "" } else { $usual }
-  $book = if (-not $blur -and $f.book) { "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"right`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$($f.book)`" style=`"display:inline-block;color:#12384F;font-weight:800;font-size:11px;padding:6px 10px;text-decoration:none;$FONT`">Book</a></td></tr></table>" } else { "" }
-  $bookHtml = if ($book) { "<div style=`"margin-top:4px;`">$book</div>" } else { "" }
+  # Its own fixed-width column beside the price. Ghost's phone stylesheet forces links to 16px and lets them wrap between letters, so the size and nowrap are inline with !important. Colour on the anchor and again on an inner span, which is what stops Gmail restyling it as a blue link in dark mode.
+  $book = if (-not $blur -and $f.book) { "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$($f.book)`" style=`"display:block;color:#12384F;font-weight:800;font-size:12px!important;line-height:16px!important;padding:8px 14px;text-decoration:none;white-space:nowrap!important;overflow-wrap:normal!important;word-break:keep-all!important;$FONT`"><span style=`"color:#12384F;text-decoration:none;font-size:12px!important;`">Book</span></a></td></tr></table>" } else { "" }
+  $bookCell = if ($book) { "<td width=`"66`" style=`"width:66px;padding:10px 10px 10px 0;vertical-align:middle;`">$book</td>" } else { "" }
   return "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:#F7FBFE;border-radius:12px;margin-bottom:8px;`"><tr>" +
     "<td style=`"width:6px;background:$stripe;border-radius:12px 0 0 12px;`"></td>" +
     "<td style=`"width:34px;padding:10px 4px 10px 10px;vertical-align:middle;`">$flagCell</td>" +
     "<td style=`"padding:10px 6px;vertical-align:middle;$FONT`"><div style=`"font-size:15px;font-weight:800;color:$textColor;letter-spacing:-.2px;`">$(Esc $name)$(if (-not $blur) { $tag })</div><div style=`"font-size:11.5px;color:$subColor;`">$when</div></td>" +
-    "<td style=`"padding:10px 10px 10px 6px;text-align:right;vertical-align:middle;white-space:nowrap;$FONT`"><div style=`"font-size:20px;font-weight:900;color:$textColor;letter-spacing:-.5px;`">$([char]0xA3)$($f.price)</div>$usualHtml$bookHtml</td>" +
+    "<td style=`"padding:10px 10px 10px 6px;text-align:right;vertical-align:middle;white-space:nowrap;$FONT`"><div style=`"font-size:20px;font-weight:900;color:$textColor;letter-spacing:-.5px;`">$([char]0xA3)$($f.price)</div>$usualHtml</td>" + $bookCell +
     "</tr></table>"
 }
 
