@@ -104,7 +104,7 @@
           '<input type="email" name="email" required autocomplete="email" placeholder="you@example.com" aria-label="Email address" value="' + escapeHtml(params.email || "") + '">' +
           '<button type="submit">Join from ' + city + ' &rarr;</button>' +
         '</form>' +
-        '<div class="ch-join-note">Step 1 of 2. We email you a link, you come back here and start your 40 days free.</div>' +
+        '<div class="ch-join-note">You are on the list the moment you press. We also email you a link to start your 40 days free.</div>' +
         '<div class="ch-join-err" hidden></div>';
       var form = box.querySelector("form"), input = box.querySelector("input"), btn = box.querySelector("button"), err = box.querySelector(".ch-join-err");
       form.addEventListener("submit", function (e) {
