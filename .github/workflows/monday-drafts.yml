@@ -1,0 +1,41 @@
+# Every Monday morning, after the 05:00 fare build has finished, writes
+# twelve email drafts into Ghost, one per airport, from that morning's
+# fares. Henry opens each, adds his "last week members booked" line if he
+# wants to, picks the airport label as the audience, and presses Send.
+#
+# Drafts are rebuilt fresh each Monday (-Replace), so edit after 08:20 UK.
+# Henry's twelve standing paid-draft posts are never touched.
+
+name: Monday email drafts
+
+on:
+  schedule:
+    - cron: "15 7 * * 1"     # 07:15 UTC every Monday (08:15 BST, 07:15 GMT)
+  workflow_dispatch:
+    inputs:
+      origins:
+        description: "Airport codes, comma separated (blank = all twelve)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  drafts:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the drafts in Ghost
+        shell: powershell
+        env:
+          GHOST_ADMIN_KEY: ${{ secrets.GHOST_ADMIN_KEY }}
+          ORIGINS: ${{ github.event.inputs.origins }}
+        run: |
+          if ($env:ORIGINS) {
+            .\build-monday.ps1 -Replace -OnlyOrigins ($env:ORIGINS -split ",")
+          } else {
+            .\build-monday.ps1 -Replace
+          }
