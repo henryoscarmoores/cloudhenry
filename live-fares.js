@@ -199,6 +199,20 @@
   // means the best from all twelve.
   var homeOrigin = "";
 
+  // Paying members should not be sold the free trial they already paid
+  // for. The check is quiet and late; until it answers, the visitor copy
+  // shows, which is right for the many and harmless for the few.
+  var memberPaid = false;
+  fetch("/members/api/member/", { credentials: "include" })
+    .then(function (r) { return r.status === 200 ? r.json() : null; })
+    .then(function (m) {
+      if (!m) return;
+      var paid = m.status === "paid" || m.status === "comped" ||
+        !!(m.subscriptions && m.subscriptions.some(function (s) { return s.status === "active" || s.status === "trialing"; }));
+      if (paid) { memberPaid = true; if (window.__chHomeRepaint) window.__chHomeRepaint(); }
+    })
+    .catch(function () {});
+
   function searchLink(origin, dest) {
     var parts = [];
     if (origin) parts.push("from=" + origin);
@@ -280,7 +294,9 @@
       cta.textContent = "Search flights →";
       cta.setAttribute("href", searchLink(homeOrigin, ""));
     }
-    if (fine) fine.innerHTML = '<span class="ch-hlb">£2.99 a month</span> · cancel anytime';
+    if (fine) fine.innerHTML = memberPaid
+      ? 'You are a member · every fare is yours to book'
+      : '<span class="ch-hlb">30 days free</span> · then £2.99 a month · cancel anytime';
   }
 
   function paintCaption() {

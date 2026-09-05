@@ -158,7 +158,7 @@
       '<div class="chm-card chm-gate">' +
         '<h2>This page is for members</h2>' +
         '<p>Sign in to see every email we have sent you, your airport, and this week&rsquo;s fares.</p>' +
-        '<a class="chm-btn" href="#/portal/signin">Sign in</a> <a class="chm-btn chm-ghost" href="#/portal/signup">Join for £2.99 a month</a>' +
+        '<a class="chm-btn" href="/sign-in/">Sign in</a> <a class="chm-btn chm-ghost" href="/choose-city/">Join free</a>' +
       '</div>';
   }
 
@@ -211,7 +211,7 @@
       '<div class="chm-hero">' +
         '<div class="chm-hi"><h1>' + hello + ", " + esc(first) + ".</h1>" +
         '<p>' + (ap ? "Your airport is <b>" + esc(ap[1]) + "</b>. " : "Tell us your airport and everything on this page follows it. ") +
-          (ms.paid ? "Every email we send you is kept here." : "Members get the full list every Monday and can book any fare.") + '</p></div>' +
+          (ms.paid ? "Every email we send you is kept here." : 'Members get the full list every Monday and can book any fare. <a href="#/portal/account/plans"><b>Try 30 days free &rarr;</b></a>') + '</p></div>' +
         '<label class="chm-pick"><span>Home airport</span><select id="chmAirport"><option value="">Choose your airport</option>' + opts + '</select></label>' +
       '</div>' +
       '<div class="chm-stats">' +
