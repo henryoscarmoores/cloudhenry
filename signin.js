@@ -42,7 +42,6 @@
     root.innerHTML =
       '<div class="chs-card">' +
         '<div class="chs-mark" aria-hidden="true">&#9992;</div>' +
-        '<h1>Sign in</h1>' +
         '<p class="chs-lead">Enter the email you joined with. We send you a link, no password needed.</p>' +
         '<form class="chs-form" novalidate>' +
           '<input type="email" name="email" required autocomplete="email" placeholder="you@example.com" aria-label="Email address" value="' + escapeHtml(q.email || "") + '">' +
