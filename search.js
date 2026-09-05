@@ -1140,7 +1140,7 @@
   // sentence goes to Claude; until then, and whenever the Worker cannot
   // be reached, a small parser here does a plain-English best effort so
   // the box always does something.
-  var PLANNER_URL = "";   // e.g. "https://cloudhenry-planner.<account>.workers.dev"
+  var PLANNER_URL = "https://cloudhenry.henryswalk.workers.dev/plan";   // the Worker; empty falls back to the built-in parser
 
   var MONTH_WORDS = { january:1, jan:1, february:2, feb:2, march:3, mar:3, april:4, apr:4, may:5,
                       june:6, jun:6, july:7, jul:7, august:8, aug:8, september:9, sep:9, sept:9,
