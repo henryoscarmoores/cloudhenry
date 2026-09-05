@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Member hero mockup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap">
+<style>
+:root{--y:#F5C242}
+body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#C9E9F8}
+.ch-hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#0B67AC 0%,#1D8CCB 24%,#4FB3E8 48%,#93D6F2 66%,#C9E9F8 78%);padding:64px 20px 120px;text-align:center;box-sizing:border-box;min-height:560px}
+.ch-inner{position:relative;z-index:8;max-width:760px;margin:0 auto}
+.ch-eyebrow{display:inline-block;color:#FFE9AE;font-size:12px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase;margin-bottom:22px}
+.ch-h1{color:#fff;font-size:62px;line-height:1.03;font-weight:800;letter-spacing:-2px;margin:0 0 20px;text-shadow:0 3px 22px rgba(4,45,80,.32)}
+.ch-sub{color:#F0F9FE;font-size:17px;line-height:1.6;max-width:540px;margin:0 auto 26px;text-shadow:0 1px 12px rgba(4,45,80,.3)}
+.ch-hl{color:#F5C242;font-weight:800}
+
+/* ===== member launchpad ===== */
+.chmh{max-width:640px;margin:0 auto}
+.chmh-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 14px}
+.chmh-tile{display:block;background:#fff;border-radius:16px;padding:12px 12px 11px;text-align:left;text-decoration:none;color:#0E3550;box-shadow:0 10px 24px rgba(4,45,80,.18);transition:transform .15s}
+.chmh-tile:hover{transform:translateY(-2px)}
+.chmh-tile img{width:26px;height:19.5px;border-radius:3px;display:block;margin-bottom:8px}
+.chmh-tile .c{font-weight:800;font-size:14.5px;line-height:1.15;letter-spacing:-.2px}
+.chmh-tile .d{font-size:11.5px;color:#5A7488;font-weight:600;margin-top:2px}
+.chmh-tile .p{font-size:22px;font-weight:900;letter-spacing:-.6px;margin-top:8px;line-height:1;font-variant-numeric:tabular-nums}
+.chmh-tile .p small{font-size:11px;font-weight:600;color:#7A90A5;text-decoration:line-through;margin-left:6px;letter-spacing:0}
+.chmh-tile.more{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;box-shadow:none;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.chmh-tile.more .n{font-size:26px;font-weight:900;letter-spacing:-1px;line-height:1;color:#FFE071}
+.chmh-tile.more .l{font-size:11.5px;font-weight:700;margin-top:6px;line-height:1.3}
+.chmh-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.chmh-btn{display:inline-block;border-radius:999px;padding:13px 24px;font-weight:800;font-size:15px;text-decoration:none;white-space:nowrap}
+.chmh-btn.y{background:var(--y);color:#12384F;box-shadow:0 8px 20px rgba(4,45,80,.3)}
+.chmh-btn.g{background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.55);color:#fff}
+.chmh-foot{color:#D7EDFA;font-size:13px;margin:14px 0 0}
+.chmh-foot a{color:#FFE9AE;font-weight:700;text-decoration:none;border-bottom:1.5px solid rgba(255,224,113,.5)}
+
+@media(max-width:640px){
+  .ch-hero{padding:34px 18px 90px}
+  .ch-eyebrow{font-size:9.5px;letter-spacing:1.8px;margin-bottom:9px}
+  .ch-h1{font-size:36px;letter-spacing:-1.2px;margin-bottom:12px}
+  .ch-sub{font-size:15px;margin-bottom:18px}
+  .chmh-strip{grid-template-columns:repeat(2,1fr);gap:8px}
+  .chmh-tile{padding:11px 11px 10px}
+  .chmh-tile .p{font-size:20px}
+  .chmh-btn{flex:1 1 100%;text-align:center}
+}
+</style></head><body>
+<section class="ch-hero"><div class="ch-inner">
+  <div class="ch-eyebrow">Manchester &middot; member &middot; next email Monday</div>
+  <h1 class="ch-h1">Cheaper flights<br>Heavier wallets</h1>
+  <p class="ch-sub">Evening, Henry. <span class="ch-hl">254 destinations</span> from Manchester were checked this morning. The cheapest right now:</p>
+  <div class="chmh">
+    <div class="chmh-strip">
+      <a class="chmh-tile" href="#"><img alt="" src="https://flagcdn.com/w40/dk.png"><div class="c">Copenhagen</div><div class="d">Wed 9 Sep</div><div class="p">£15<small>£73</small></div></a>
+      <a class="chmh-tile" href="#"><img alt="" src="https://flagcdn.com/w40/it.png"><div class="c">Milan</div><div class="d">Tue 8 Sep</div><div class="p">£16<small>£27</small></div></a>
+      <a class="chmh-tile" href="#"><img alt="" src="https://flagcdn.com/w40/no.png"><div class="c">Oslo</div><div class="d">Mon 19 Oct</div><div class="p">£16<small>£70</small></div></a>
+      <a class="chmh-tile more" href="#"><div class="n">+251</div><div class="l">more places<br>from £16</div></a>
+    </div>
+    <div class="chmh-btns">
+      <a class="chmh-btn y" href="#">Open my deals &rarr;</a>
+      <a class="chmh-btn g" href="#">Search every flight</a>
+    </div>
+    <p class="chmh-foot">Wrong airport? <a href="#">Change it in your account</a></p>
+  </div>
+</div></section>
+</body></html>
