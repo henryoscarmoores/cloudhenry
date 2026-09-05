@@ -1249,14 +1249,17 @@
     }
     setTrip(["any", "one", "ret", "weekend", "xmas"].indexOf(p.trip) > -1 ? p.trip : "any");   // renders
 
+    // The reply and ideas come back from the planner, which starts from
+    // whatever the visitor typed. Treat them as text, never as markup.
+    function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]; }); }
     var box = $("chfsPlanReply");
     var html = "";
-    if (p.error) html += '<span class="chfs-plan-err">' + p.error + "</span>";
-    else if (p.reply) html += p.reply;
+    if (p.error) html += '<span class="chfs-plan-err">' + esc(p.error) + "</span>";
+    else if (p.reply) html += esc(p.reply);
     if (p.ideas && p.ideas.length) {
-      html += '<div class="chfs-plan-ideas">' + p.ideas.map(function (n) {
-        var city = String(n).split(" (")[0];
-        return '<button type="button" data-city="' + city.replace(/"/g, "") + '">' + city + "</button>";
+      html += '<div class="chfs-plan-ideas">' + p.ideas.slice(0, 3).map(function (n) {
+        var city = String(n).split(" (")[0].slice(0, 60);
+        return '<button type="button" data-city="' + esc(city) + '">' + esc(city) + "</button>";
       }).join("") + "</div>";
     }
     box.innerHTML = html;
