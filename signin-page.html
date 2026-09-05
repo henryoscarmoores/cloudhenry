@@ -1,0 +1,27 @@
+<!-- CloudHenry sign-in. The HTML card on /sign-in/.
+     Namespaced .chs- so it cannot affect the rest of the site. The form is
+     built by signin.js; this card only carries the styling and a holder. -->
+<style>
+#ch-signin{--sky:#0E6FB6;--ink:#0E3550;--soft:#46607A;--faint:#7A90A5;--sun:#F5C242;--line:rgba(14,53,80,.12);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:440px;margin:0 auto;text-align:center}
+#ch-signin *,#ch-signin *::before,#ch-signin *::after{box-sizing:border-box}
+#ch-signin,#ch-signin .ch-reveal{opacity:1!important;transform:none!important}
+.chs-card{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 4px 10px rgba(14,53,80,.08),0 18px 40px rgba(14,53,80,.14);padding:30px 26px 26px}
+.chs-mark{width:56px;height:56px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg,var(--sun),#F9D774);color:#16324A;font-size:26px;line-height:56px}
+.chs-card h1{margin:0;font-size:clamp(26px,5vw,32px);font-weight:800;letter-spacing:-.02em;line-height:1.1;color:var(--ink)}
+.chs-lead{margin:10px auto 18px;color:var(--soft);font-size:15px;line-height:1.5;max-width:34ch}
+.chs-lead b{color:var(--ink)}
+.chs-form{display:flex;gap:8px}
+.chs-form input{flex:1 1 auto;min-width:0;font:inherit;font-size:15px;font-weight:600;color:var(--ink);background:#fff;border:1px solid rgba(14,53,80,.18);border-radius:999px;padding:13px 16px;box-shadow:inset 0 1px 2px rgba(14,53,80,.06)}
+.chs-form input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 4px rgba(14,111,182,.22)}
+.chs-form button{flex:0 0 auto;border:0;border-radius:999px;background:var(--sun);color:#16324A;font:inherit;font-weight:800;font-size:15px;padding:13px 20px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(14,53,80,.16)}
+.chs-form button[disabled]{opacity:.6;cursor:wait}
+.chs-err{margin:12px 0 0;color:#B42318;font-weight:700;font-size:13.5px}
+.chs-alt{margin:18px 0 0;font-size:14px;line-height:1.55;color:var(--soft)}
+.chs-alt a{color:var(--sky);font-weight:700;text-decoration:none}
+.chs-alt a:hover{text-decoration:underline}
+.chs-loading{color:var(--soft);padding:40px 20px}
+.gh-content #ch-signin a{text-decoration:none}
+@media(max-width:480px){.chs-form{flex-direction:column}.chs-form button{width:100%}.chs-card{padding:26px 20px 22px}}
+</style>
+<div id="ch-signin"><div class="chs-card chs-loading">One moment</div></div>
+<script src="https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@ff1a238ecaa9aa071eda54876bf7e1f1020f3890/signin.js" defer></script>
