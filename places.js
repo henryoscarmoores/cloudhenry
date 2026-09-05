@@ -742,5 +742,11 @@ window.CH_PLACES = {
     ZAZ:["Zaragoza","Spain","🇪🇸"],
     ZNZ:["Zanzibar","Tanzania","🇹🇿"],
     ZQN:["Queenstown","New Zealand","🇳🇿"],
-    ZYL:["Sylhet","Bangladesh","🇧🇩"]
+    ZYL:["Sylhet","Bangladesh","🇧🇩"],
+    DKR:["Dakar","Senegal","🇸🇳"],
+    HPH:["Haiphong","Vietnam","🇻🇳"],
+    KZO:["Kzyl-Orda","Kazakhstan","🇰🇿"],
+    MHT:["Manchester","USA","🇺🇸"],
+    MSO:["Missoula","USA","🇺🇸"],
+    STL:["St Louis","USA","🇺🇸"]
 };
