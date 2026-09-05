@@ -31,6 +31,7 @@
   var city = NAMES[slug];
   if (!city) return;
   var label = "loc-" + (slug === "leeds-bradford" ? "leeds" : slug);
+  var JOIN_URL = "https://cloudhenry.henryswalk.workers.dev/join";
   var code = CODES[slug];
 
   // Remember the airport on this device, for the member area.
@@ -91,6 +92,12 @@
       box.innerHTML = '<a class="ch-join-cta" href="#/portal/account/plans">Try 40 days free &rarr;</a>' +
                       '<div class="ch-join-note">Card taken now, nothing charged for 40 days. Then £2.99 a month, cancel any time. Your ' + city + ' email starts on Monday.</div>' +
                       '<small>Signed in as ' + escapeHtml(mm.email) + '</small>';
+      // Signed in, on the list, not yet paying: the welcome screen with
+      // their fares. Arriving from the sign-in email with ?intent=trial
+      // means they pressed "want all of them" on the homepage, so open
+      // the plan chooser for them straight away.
+      if (window.CH_WELCOME) window.CH_WELCOME.render(box, { code: code, email: mm.email, signedIn: true, slug: slug });
+      if (params.intent === "trial" && !/#\/portal/.test(location.hash)) setTimeout(function () { location.hash = "#/portal/account/plans"; }, 400);
     } else {
       box.innerHTML =
         '<form class="ch-join-row" novalidate>' +
@@ -105,28 +112,26 @@
         var email = input.value.trim();
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "That email does not look right."; err.hidden = false; input.focus(); return; }
         err.hidden = true; btn.disabled = true; btn.textContent = "Sending";
-        // Visit history for Ghost's attribution, and a label naming this
-        // box, so homepage and airport-page sign-ups can be compared.
-        var history = [];
-        try { history = JSON.parse(sessionStorage.getItem("ghost-history") || "[]"); } catch (x) {}
-        integrity().then(function (tok) {
-          return fetch("/members/api/send-magic-link/", {
-            method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: email, emailType: "signup", labels: [label, "via-airport-page"], name: "", honeypot: "", autoRedirect: true, integrityToken: tok, urlHistory: history, redirect: location.origin + location.pathname })
-          });
+        function fail(msg) { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Join from " + city + " →"; }
+        // The Worker creates the member instantly with the airport label.
+        // Ghost will not start a checkout for someone not signed in, so a
+        // sign-in link goes out too; the welcome screen says so.
+        fetch(JOIN_URL, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, airport: slug, source: "airport-page", website: "" })
         }).then(function (r) {
-          if (r.ok) {
-            box.innerHTML = '<div class="ch-join-note"><b>Check your inbox.</b> We have sent a link to ' + escapeHtml(email) +
-              '. Tap it and you land back here, signed in and ready to start your 40 days free.</div>' +
-              '<small>Nothing arrived? Check spam, or <a href="' + location.pathname + '">try again</a>.</small>';
-          } else {
-            return r.text().then(function (t) {
-              var msg = "Something went wrong. Please try again.";
-              try { var j = JSON.parse(t); if (j.errors && j.errors[0] && j.errors[0].message) msg = j.errors[0].message; } catch (x) {}
-              err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Join from " + city + " →";
+          return r.json().then(function (j) { return { ok: r.ok && j && j.ok, msg: j && j.error }; });
+        }).then(function (res) {
+          if (!res.ok) { fail(res.msg || "Something went wrong. Please try again."); return; }
+          integrity().then(function (tok) {
+            return fetch("/members/api/send-magic-link/", {
+              method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: email, emailType: "signin", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + location.pathname + "?intent=trial" })
             });
-          }
-        }).catch(function () { err.textContent = "Could not reach the server. Please try again."; err.hidden = false; btn.disabled = false; btn.textContent = "Join from " + city + " →"; });
+          }).catch(function () {});
+          if (window.CH_WELCOME) window.CH_WELCOME.render(box, { code: code, email: email, signedIn: false, slug: slug });
+          else box.innerHTML = '<div class="ch-join-note"><b>You are in.</b> Your first ' + city + ' email lands on Monday.</div>';
+        }).catch(function () { fail("Could not reach the server. Please try again."); });
       });
     }
     cta.parentNode.replaceChild(box, cta);

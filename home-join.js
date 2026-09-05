@@ -16,6 +16,7 @@
   "use strict";
   if (location.pathname.replace(/\/+$/, "") !== "") return;
 
+  var JOIN_URL = "https://cloudhenry.henryswalk.workers.dev/join";
   var CODES = { "join-manchester":"MAN", "join-birmingham":"BHX", "join-leeds":"LBA", "join-london-stansted":"STN",
                 "join-london-luton":"LTN", "join-bristol":"BRS", "join-newcastle":"NCL", "join-glasgow":"GLA",
                 "join-edinburgh":"EDI", "join-london-gatwick":"LGW", "join-liverpool":"LPL", "join-belfast":"BFS" };
@@ -87,31 +88,33 @@
       if (!slug) { fail("Pick your airport first."); sel.focus(); return; }
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(addr)) { fail("That email does not look right."); email.focus(); return; }
       err.hidden = true; btn.disabled = true; btn.textContent = "Sending";
-      var label = "loc-" + slug.replace(/^join-/, "");
-      try { localStorage.setItem("ch-airport", CODES[slug] || ""); } catch (x) {}
-      // Ghost's own attribution script keeps the visit history in session
-      // storage; Portal sends it along so Ghost can say "came from
-      // Instagram, joined on the homepage". Send it the same way, plus a
-      // label naming this box, so the two can be compared in Members.
-      var history = [];
-      try { history = JSON.parse(sessionStorage.getItem("ghost-history") || "[]"); } catch (x) {}
-      integrity().then(function (tok) {
-        return fetch("/members/api/send-magic-link/", {
-          method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: addr, emailType: "signup", labels: [label, "via-homepage"], name: "", honeypot: "", autoRedirect: true, integrityToken: tok, urlHistory: history, redirect: location.origin + "/" + slug + "/" })
-        });
+      var code = CODES[slug] || "";
+      try { localStorage.setItem("ch-airport", code); } catch (x) {}
+
+      // The Worker creates the member on the spot, airport attached, so
+      // they are on the list before this function returns. Ghost will not
+      // start a paid checkout for someone who is not signed in, so a
+      // sign-in link goes out as well; the welcome screen explains that
+      // the trial is one tap away after it.
+      fetch(JOIN_URL, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: addr, airport: slug, source: "homepage", website: "" })
       }).then(function (r) {
-        if (!r.ok) return r.text().then(function (t) {
-          var msg = "Something went wrong. Please try again.";
-          try { var j = JSON.parse(t); if (j.errors && j.errors[0] && j.errors[0].message) msg = j.errors[0].message; } catch (x) {}
-          fail(msg);
-        });
+        return r.json().then(function (j) { return { ok: r.ok && j && j.ok, msg: j && j.error }; });
+      }).then(function (res) {
+        if (!res.ok) { fail(res.msg || "Something went wrong. Please try again."); return; }
+        integrity().then(function (tok) {
+          return fetch("/members/api/send-magic-link/", {
+            method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: addr, emailType: "signin", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + "/" + slug + "/?intent=trial" })
+          });
+        }).catch(function () {});
         var done = document.createElement("div");
         done.className = "ch-hj-done";
-        done.innerHTML = "<b>Check your inbox</b>We have sent a link to " + esc(addr) + ". Tap it and your first deals are on the way." +
-          "<br><small>Nothing arrived? Check spam, or <a href=\"/\">try again</a>.</small>";
         w.parentNode.replaceChild(done, w);
         if (note) note.remove();
+        if (window.CH_WELCOME) window.CH_WELCOME.render(done, { code: code, email: addr, signedIn: false, slug: slug });
+        else done.innerHTML = "<b>You are in</b>Your first deals from " + esc(slug.replace(/^join-/, "").replace(/-/g, " ")) + " land on Monday.";
       }).catch(function () { fail("Could not reach the server. Please try again."); });
     }
   }
@@ -130,6 +133,11 @@
     }
     w.parentNode.replaceChild(done, w);
     if (note) note.remove();
+    // A signed-in list member with a known airport gets the full welcome:
+    // their fares and the trial button.
+    var code = "";
+    try { code = localStorage.getItem("ch-airport") || ""; } catch (x) {}
+    if (!isPaid(m) && code && window.CH_WELCOME) window.CH_WELCOME.render(done, { code: code, email: m.email, signedIn: true });
   }
 
   var done = false;
