@@ -89,7 +89,7 @@ $BOGUS = @{ BSZ=1; DSE=1 }
 
 # Names and flags from places.js.
 $PLACES = @{}
-$src = Get-Content (Join-Path $RepoDir "places.js") -Raw
+$src = Get-Content (Join-Path $RepoDir "places.js") -Raw -Encoding UTF8
 foreach ($m in [regex]::Matches($src, '([A-Z]{3}):\["([^"]*)","([^"]*)","([^"]*)"\]')) {
   $PLACES[$m.Groups[1].Value] = @{ name = $m.Groups[2].Value; country = $m.Groups[3].Value; flag = $m.Groups[4].Value }
 }
@@ -150,7 +150,7 @@ function FareRow($f, [int] $i, [bool] $blur) {
   $subColor  = if ($blur) { "#D9E3EC" } else { "#46607A" }
   $flagCell = if ($fc -and -not $blur) { "<img src=`"https://flagcdn.com/w40/$fc.png`" width=`"26`" height=`"20`" alt=`"`" style=`"display:block;border-radius:3px;`">" } else { "<div style=`"width:26px;height:20px;background:#E6EEF5;border-radius:3px;`"></div>" }
   $usualHtml = if ($blur) { "" } else { $usual }
-  $book = if (-not $blur -and $f.book) { "<a href=`"$($f.book)`" style=`"display:inline-block;background:#F5C242;color:#12384F;font-weight:800;font-size:11px;padding:6px 10px;border-radius:999px;text-decoration:none;$FONT`">Book</a>" } else { "" }
+  $book = if (-not $blur -and $f.book) { "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"right`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$($f.book)`" style=`"display:inline-block;color:#12384F;font-weight:800;font-size:11px;padding:6px 10px;text-decoration:none;$FONT`">Book</a></td></tr></table>" } else { "" }
   $bookHtml = if ($book) { "<div style=`"margin-top:4px;`">$book</div>" } else { "" }
   return "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:#F7FBFE;border-radius:12px;margin-bottom:8px;`"><tr>" +
     "<td style=`"width:6px;background:$stripe;border-radius:12px 0 0 12px;`"></td>" +
@@ -161,7 +161,7 @@ function FareRow($f, [int] $i, [bool] $blur) {
 }
 
 function Stat([string] $big, [string] $small) {
-  return "<td style=`"padding:0 4px;`"><table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.35);border-radius:12px;`"><tr><td style=`"padding:8px 12px;text-align:center;$FONT`"><div style=`"font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:-.5px;line-height:1;`">$big</div><div style=`"font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#D7EDFA;margin-top:3px;`">$small</div></td></tr></table></td>"
+  return "<td style=`"padding:0 4px;`"><table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:#EAF6FD;border:1px solid #D7EDFA;border-radius:12px;`"><tr><td style=`"padding:8px 12px;text-align:center;$FONT`"><div style=`"font-size:20px;font-weight:900;color:#0E3550;letter-spacing:-.5px;line-height:1;`">$big</div><div style=`"font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#46607A;margin-top:3px;`">$small</div></td></tr></table></td>"
 }
 
 $created = 0; $skipped = 0
@@ -193,8 +193,19 @@ foreach ($a in $AIRPORTS) {
   $withTyp = @($fares | Where-Object { $_.typical -gt 0 -and $_.typical -gt $_.price })
   $avgSave = if ($withTyp.Count) { [math]::Round((($withTyp | ForEach-Object { 1 - $_.price / $_.typical } | Measure-Object -Average).Average) * 100) } else { 0 }
   $returnsUnder50 = @($fares | Where-Object { $_.ret -and $_.price -le 50 }).Count
-  $top = @($fares | Select-Object -First 3)
-  $locked = @($fares | Select-Object -Skip 3 -First 4)
+  # A mix, not just the three cheapest singles: the cheapest one-way, the
+  # cheapest return, then the biggest saving. The blurred four: two of each.
+  $owAll = @($fares | Where-Object { -not $_.ret }); $rtAll = @($fares | Where-Object { $_.ret })
+  $bySave = @($fares | Where-Object { $_.typical -gt 0 } | Sort-Object { $_.price / $_.typical })
+  $top = @()
+  if ($owAll.Count) { $top += $owAll[0] }
+  if ($rtAll.Count) { $top += $rtAll[0] }
+  foreach ($c in ($bySave + $fares)) { if ($top.Count -ge 3) { break }; if (-not ($top | Where-Object { $_.dest -eq $c.dest })) { $top += $c } }
+  $used = @{}; foreach ($c in $top) { $used[$c.dest] = 1 }
+  $locked = @()
+  $locked += @($owAll | Where-Object { -not $used.ContainsKey($_.dest) } | Select-Object -First 2)
+  $locked += @($rtAll | Where-Object { -not $used.ContainsKey($_.dest) } | Select-Object -First 2)
+  if ($locked.Count -lt 4) { $locked += @($fares | Where-Object { -not $used.ContainsKey($_.dest) -and -not ($locked | Where-Object { $_.dest -eq $_.dest }) } | Select-Object -First (4 - $locked.Count)) }
   $rest = $n - 3
 
   $title = "$($a.name): $n fares this week, from $([char]0xA3)$cheapest"
@@ -210,13 +221,20 @@ foreach ($a in $AIRPORTS) {
   $goLink = "$Worker/go?u=%%{uuid}%%&to=" + [uri]::EscapeDataString("/join-" + $a.slug + "/?intent=trial")
 
   # 1 + 2: header and top three, for everyone.
-  $hero = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:#0E6FB6;background-image:linear-gradient(180deg,#0E6FB6 0%,#3E9BE0 75%,#7CC3F2 100%);border-radius:18px;`">" +
-    "<tr><td style=`"padding:14px 16px 0 16px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`"><tr><td style=`"width:60px;`">$(PixelCloud 'left')</td><td></td><td style=`"width:44px;`">$(PixelSun)</td></tr></table></td></tr>" +
-    "<tr><td style=`"padding:6px 18px 0 18px;text-align:center;$FONT`"><div style=`"font-size:10.5px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;color:#FFE071;`">$(Esc $a.name) · week of $weekLabel</div>" +
-    "<div style=`"font-size:30px;font-weight:900;letter-spacing:-1px;line-height:1.05;color:#FFFFFF;margin-top:8px;`">$n cheap fares.<br><span style=`"color:#FFE071;`">Checked this morning.</span></div>" +
-    "<div style=`"font-size:13.5px;color:#D7EDFA;margin-top:8px;`">Every one with what people usually pay beside it.</div></td></tr>" +
-    "<tr><td style=`"padding:14px 12px 18px 12px;`"><table align=`"center`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`"><tr>$(Stat "$n" "fares found")$(Stat "$([char]0xA3)$cheapest" "cheapest")$(Stat "$avgSave%" "avg saving")</tr></table></td></tr>" +
-    "<tr><td style=`"padding:0 12px 6px 12px;`">$(PixelCloud 'right')</td></tr></table>"
+  # The header. Phone mail apps in dark mode darken light colours, so the
+  # words sit in a white card inside the sky: inverted, that becomes light
+  # text on a dark card and still reads. The cloud and sun are images,
+  # which dark mode leaves alone.
+  $CDNA = "https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/assets/"
+  $hero = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#1F7FC4`" style=`"border-collapse:separate;background:#1F7FC4;background-image:linear-gradient(180deg,#0E6FB6 0%,#3E9BE0 75%,#7CC3F2 100%);border-radius:18px;`">" +
+    "<tr><td style=`"padding:12px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`"><tr><td align=`"left`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td><td></td><td align=`"right`" style=`"width:40px;`"><img src=`"$($CDNA)email-sun.png`" width=`"40`" height=`"40`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr>" +
+    "<tr><td style=`"padding:6px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#FFFFFF`" style=`"border-collapse:separate;background:#FFFFFF;border-radius:14px;`"><tr><td style=`"padding:16px 16px 14px 16px;text-align:center;$FONT`">" +
+    "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;color:#0E6FB6;`">$(Esc $a.name) · week of $weekLabel</div>" +
+    "<div style=`"font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1.05;color:#0E3550;margin-top:8px;`">$n cheap fares.<br><span style=`"color:#0E6FB6;`">Checked this morning.</span></div>" +
+    "<div style=`"font-size:13.5px;color:#46607A;margin-top:8px;`">Every one with what people usually pay beside it.</div>" +
+    "<table align=`"center`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"margin-top:14px;`"><tr>$(Stat "$n" "fares found")$(Stat "$([char]0xA3)$cheapest" "cheapest")$(Stat "$avgSave%" "avg saving")</tr></table>" +
+    "</td></tr></table></td></tr>" +
+    "<tr><td style=`"padding:8px 14px 12px 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`"><tr><td></td><td align=`"right`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr></table>"
 
   $topHtml = "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:18px 0 8px;$FONT`">This week's best from $(Esc $a.name)</div>"
   for ($i = 0; $i -lt $top.Count; $i++) { $topHtml += FareRow $top[$i] $i $false }
@@ -224,20 +242,21 @@ foreach ($a in $AIRPORTS) {
   # 3: the locked list and the button, list members only, email only.
   $lockedHtml = ""
   for ($i = 0; $i -lt $locked.Count; $i++) { $lockedHtml += FareRow $locked[$i] ($i + 3) $true }
-  $tease = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:#F0F6FB;border-radius:14px;margin-top:6px;`"><tr><td style=`"padding:8px 8px 0 8px;`">$lockedHtml</td></tr>" +
+  $nudge = "<div style=`"text-align:center;margin:4px 0 12px;$FONT`"><span style=`"font-size:13.5px;color:#46607A;`">That is 3 of <b style=`"color:#0E3550;`">$n fares</b> from $(Esc $a.name) this week. </span><a href=`"$goLink`" style=`"font-size:13.5px;font-weight:800;color:#0E6FB6;text-decoration:none;border-bottom:2px solid #F5C242;`">See them all, 40 days free &rarr;</a></div>"
+  $tease = $nudge + "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:#F0F6FB;border-radius:14px;margin-top:6px;`"><tr><td style=`"padding:8px 8px 0 8px;`">$lockedHtml</td></tr>" +
     "<tr><td style=`"padding:4px 16px 18px 16px;text-align:center;$FONT`">" +
     "<div style=`"width:38px;height:38px;line-height:38px;border-radius:50%;background:#F5C242;margin:0 auto 6px auto;font-size:18px;text-align:center;`">&#128274;</div>" +
     "<div style=`"font-size:17px;font-weight:800;color:#0E3550;letter-spacing:-.3px;`">$rest more fares from $(Esc $a.name)</div>" +
     "<div style=`"font-size:13px;color:#46607A;margin:2px 0 12px;`">$(if ($returnsUnder50) { "Including $returnsUnder50 returns under $([char]0xA3)50." } else { "One way and return, with the exact dates." })</div>" +
-    "<a href=`"$goLink`" style=`"display:inline-block;background:#F5C242;color:#12384F;font-weight:900;font-size:15px;padding:13px 24px;border-radius:999px;text-decoration:none;$FONT`">See all $n, 40 days free &rarr;</a>" +
+    "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$goLink`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:16px 32px;text-decoration:none;$FONT`">See all $n, 40 days free &rarr;</a></td></tr></table>" +
     "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">Then $([char]0xA3)2.99 a month. Cancel any time, no contract. One tap, no password.</div>" +
     "</td></tr></table>"
 
   # 5: everything, members only.
   $ows = @($fares | Where-Object { -not $_.ret }); $rts = @($fares | Where-Object { $_.ret })
   $full = ""
-  # Gmail clips anything over about 100KB, so the email carries the best sixteen after the top three and links to the rest.
-  $ows = @($ows | Select-Object -First 10); $rts = @($rts | Select-Object -First 6)
+  # Gmail clips anything over about 100KB, so the email carries the best thirteen after the top three and links to the rest.
+  $ows = @($ows | Select-Object -First 8); $rts = @($rts | Select-Object -First 5)
   if ($ows.Count) { $full += "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:16px 0 8px;$FONT`">One way</div>"; $i = 0; foreach ($f in $ows) { $full += FareRow $f $i $false; $i++ } }
   if ($rts.Count) { $full += "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:16px 0 8px;$FONT`">Returns</div>"; $i = 0; foreach ($f in $rts) { $full += FareRow $f $i $false; $i++ } }
   $full += "<div style=`"text-align:center;margin-top:14px;$FONT`"><a href=`"$Site/search/?from=$($a.code)`" style=`"display:inline-block;background:#0E6FB6;color:#FFFFFF;font-weight:800;font-size:14px;padding:12px 22px;border-radius:999px;text-decoration:none;`">All $n fares from $(Esc $a.name), searchable &rarr;</a></div>"
@@ -250,9 +269,9 @@ foreach ($a in $AIRPORTS) {
   $cardTease = @{ type = "html"; version = 1; html = $tease; visibility = @{ web = @{ nonMember = $false; memberSegment = "" }; email = @{ memberSegment = "status:free" } } }
   $proofPara = @{ type = "paragraph"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @(@{ type = "extended-text"; version = 1; detail = 0; format = 0; mode = "normal"; style = ""; text = "Last week members from $($a.name) booked: (Henry, add one or two real ones here, or delete this line)." }) }
   $paywall   = @{ type = "paywall"; version = 1 }
-  $cardFull  = @{ type = "html"; version = 1; html = $full }
+  $cardFull  = @{ type = "html"; version = 1; html = $full; visibility = @{ web = @{ nonMember = $false; memberSegment = "status:-free" }; email = @{ memberSegment = "status:-free" } } }
   $cardSign  = @{ type = "html"; version = 1; html = $signoff }
-  $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($cardAll, $cardTease, $proofPara, $paywall, $cardFull, $cardSign) } } | ConvertTo-Json -Depth 12 -Compress
+  $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($cardAll, $cardTease, $proofPara, $cardFull, $cardSign) } } | ConvertTo-Json -Depth 12 -Compress
 
   $post = @{ posts = @(@{
     title = $title; slug = $slugBase; lexical = $lexical; status = "draft"; visibility = "paid"
