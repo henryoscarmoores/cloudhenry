@@ -224,6 +224,32 @@ async function handleAirport(request, env, origin) {
   return json({ ok: true, code }, 200, origin);
 }
 
+/* ---- /go ---------------------------------------------------------------
+ * One tap from an email to a signed-in page. Ghost puts the member's
+ * uuid into every email (%%{uuid}%%); this swaps it for a sign-in link
+ * and sends them on to the page asked for, so the Monday email's button
+ * lands them signed in with the plan chooser open. Only paths on the
+ * site are allowed as destinations.
+ */
+async function handleGo(request, env) {
+  if (!env.GHOST_ADMIN_KEY) return new Response("not configured", { status: 500 });
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  if (throttled("go:" + ip, 40)) return new Response("slow down a little", { status: 429 });
+  const u = new URL(request.url);
+  const uuid = u.searchParams.get("u") || "";
+  let to = u.searchParams.get("to") || "/my-cloudhenry/";
+  if (!/^\/[A-Za-z0-9\-_\/]*\/?(\?[A-Za-z0-9=&%\-_]*)?$/.test(to)) to = "/my-cloudhenry/";
+  const site = "https://www.cloudhenry.com";
+  const m = await memberByUuid(env, uuid);
+  if (!m) return Response.redirect(site + "/sign-in/", 302);   // unknown or expired: the normal sign-in page
+  const r = await ghost(env, "GET", "/members/" + m.id + "/signin_urls/");
+  const link = r.data && r.data.member_signin_urls && r.data.member_signin_urls[0] && r.data.member_signin_urls[0].url;
+  if (!link) return Response.redirect(site + "/sign-in/", 302);
+  const target = new URL(link);
+  target.searchParams.set("r", site + to);
+  return Response.redirect(target.toString(), 302);
+}
+
 /* ---- /plan ---------------------------------------------------------- */
 
 const SCHEMA = {
@@ -364,6 +390,7 @@ export default {
     if (path === "/health" && request.method === "GET") {
       return json({ ok: true, join: !!env.GHOST_ADMIN_KEY, plan: !!env.ANTHROPIC_API_KEY }, 200, origin);
     }
+    if (path === "/go" && request.method === "GET") return handleGo(request, env);   // opened from an email, no Origin header
     if (!ALLOWED_ORIGINS.includes(origin)) return json({ error: "origin not allowed" }, 403, origin);
     if (path === "/airport" && (request.method === "GET" || request.method === "POST")) return handleAirport(request, env, origin);
     if (request.method !== "POST") return json({ error: "POST only" }, 405, origin);
