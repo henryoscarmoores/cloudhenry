@@ -89,10 +89,16 @@
       err.hidden = true; btn.disabled = true; btn.textContent = "Sending";
       var label = "loc-" + slug.replace(/^join-/, "");
       try { localStorage.setItem("ch-airport", CODES[slug] || ""); } catch (x) {}
+      // Ghost's own attribution script keeps the visit history in session
+      // storage; Portal sends it along so Ghost can say "came from
+      // Instagram, joined on the homepage". Send it the same way, plus a
+      // label naming this box, so the two can be compared in Members.
+      var history = [];
+      try { history = JSON.parse(sessionStorage.getItem("ghost-history") || "[]"); } catch (x) {}
       integrity().then(function (tok) {
         return fetch("/members/api/send-magic-link/", {
           method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: addr, emailType: "signup", labels: [label], name: "", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + "/" + slug + "/" })
+          body: JSON.stringify({ email: addr, emailType: "signup", labels: [label, "via-homepage"], name: "", honeypot: "", autoRedirect: true, integrityToken: tok, urlHistory: history, redirect: location.origin + "/" + slug + "/" })
         });
       }).then(function (r) {
         if (!r.ok) return r.text().then(function (t) {

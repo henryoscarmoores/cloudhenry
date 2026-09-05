@@ -105,10 +105,14 @@
         var email = input.value.trim();
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "That email does not look right."; err.hidden = false; input.focus(); return; }
         err.hidden = true; btn.disabled = true; btn.textContent = "Sending";
+        // Visit history for Ghost's attribution, and a label naming this
+        // box, so homepage and airport-page sign-ups can be compared.
+        var history = [];
+        try { history = JSON.parse(sessionStorage.getItem("ghost-history") || "[]"); } catch (x) {}
         integrity().then(function (tok) {
           return fetch("/members/api/send-magic-link/", {
             method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: email, emailType: "signup", labels: [label], name: "", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + location.pathname })
+            body: JSON.stringify({ email: email, emailType: "signup", labels: [label, "via-airport-page"], name: "", honeypot: "", autoRedirect: true, integrityToken: tok, urlHistory: history, redirect: location.origin + location.pathname })
           });
         }).then(function (r) {
           if (r.ok) {

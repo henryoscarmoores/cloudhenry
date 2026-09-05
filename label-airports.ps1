@@ -79,4 +79,37 @@ foreach ($m in $members) {
   Start-Sleep -Milliseconds 150
 }
 Write-Host ("members {0}: already labelled {1}, labelled now {2}, no signup page on record {3}, signed up off an airport page {4}, newly flagged '{5}' {6}, failed {7}" -f $members.Count, $already, $labelled, $noPage, $notJoin, $NONE, $flagged, $failed)
+
+# Growth numbers for the morning check. Aggregates only, no names or
+# emails: the repository is public. stats.json keeps one row per day so
+# the trend is there to read; today's row is replaced on the evening run.
+try {
+  $all = @((Call GET "/members/?limit=all&include=labels,subscriptions").members)
+  $now = [DateTime]::UtcNow
+  function Since([int] $days) { $t = $now.AddDays(-$days); return @($all | Where-Object { [DateTime]::Parse($_.created_at).ToUniversalTime() -gt $t }).Count }
+  function HasLabel([string] $name) { return @($all | Where-Object { @($_.labels | Where-Object { $_.name -eq $name }).Count -gt 0 }).Count }
+  $trialing = @($all | Where-Object { @($_.subscriptions | Where-Object { $_.status -eq "trialing" }).Count -gt 0 }).Count
+  $row = [ordered]@{
+    date        = $now.ToString("yyyy-MM-dd")
+    total       = $all.Count
+    free        = @($all | Where-Object { $_.status -eq "free" }).Count
+    paid        = @($all | Where-Object { $_.status -eq "paid" }).Count
+    comped      = @($all | Where-Object { $_.status -eq "comped" }).Count
+    trialing    = $trialing
+    new_24h     = Since 1
+    new_7d      = Since 7
+    via_homepage     = HasLabel "via-homepage"
+    via_airport_page = HasLabel "via-airport-page"
+    no_airport       = HasLabel $NONE
+  }
+  $path = Join-Path $RepoDir "stats.json"
+  $rows = @()
+  if (Test-Path $path) { $rows = @((Get-Content $path -Raw | ConvertFrom-Json).days | Where-Object { $_.date -ne $row.date }) }
+  $rows += [pscustomobject]$row
+  $doc = [ordered]@{ updated = $now.ToString("yyyy-MM-ddTHH:mm:ssZ"); days = @($rows | Sort-Object date) }
+  Set-Content -Path $path -Value ($doc | ConvertTo-Json -Depth 4) -Encoding utf8
+  Write-Host ("stats: total {0}, free {1}, paid {2}, trialing {3}, new 24h {4}, new 7d {5}, via homepage {6}, via airport page {7}" -f $row.total, $row.free, $row.paid, $row.trialing, $row.new_24h, $row.new_7d, $row.via_homepage, $row.via_airport_page)
+} catch {
+  Write-Host "stats: could not write ($($_.Exception.Message))"
+}
 exit 0
