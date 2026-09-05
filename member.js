@@ -158,7 +158,7 @@
       '<div class="chm-card chm-gate">' +
         '<h2>This page is for members</h2>' +
         '<p>Sign in to see every email we have sent you, your airport, and this week&rsquo;s fares.</p>' +
-        '<a class="chm-btn" href="/sign-in/">Sign in</a> <a class="chm-btn chm-ghost" href="/choose-city/">Join free</a>' +
+        '<a class="chm-btn" href="/sign-in/">Sign in</a> <a class="chm-btn chm-ghost" href="/choose-city/">Try 30 days free</a>' +
       '</div>';
   }
 

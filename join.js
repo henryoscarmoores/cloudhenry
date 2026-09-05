@@ -97,7 +97,7 @@
           '<input type="email" name="email" required autocomplete="email" placeholder="you@example.com" aria-label="Email address" value="' + escapeHtml(params.email || "") + '">' +
           '<button type="submit">Join from ' + city + ' &rarr;</button>' +
         '</form>' +
-        '<div class="ch-join-note">Step 1 of 2. Free to join, no card. We email you a link, you come back here and can try the full club 30 days free.</div>' +
+        '<div class="ch-join-note">Step 1 of 2. We email you a link, you come back here and start your 30 days free.</div>' +
         '<div class="ch-join-err" hidden></div>';
       var form = box.querySelector("form"), input = box.querySelector("input"), btn = box.querySelector("button"), err = box.querySelector(".ch-join-err");
       form.addEventListener("submit", function (e) {
@@ -113,7 +113,7 @@
         }).then(function (r) {
           if (r.ok) {
             box.innerHTML = '<div class="ch-join-note"><b>Check your inbox.</b> We have sent a link to ' + escapeHtml(email) +
-              '. Tap it and you land back here, signed in. You are on the list, and you can try the full club 30 days free.</div>' +
+              '. Tap it and you land back here, signed in and ready to start your 30 days free.</div>' +
               '<small>Nothing arrived? Check spam, or <a href="' + location.pathname + '">try again</a>.</small>';
           } else {
             return r.text().then(function (t) {
