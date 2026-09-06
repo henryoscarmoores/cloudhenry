@@ -1421,9 +1421,15 @@
     if (head && head.scrollIntoView && window.innerWidth < 700) head.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  // Usage count only, no Claude involved: Henry wants to know in a few
+  // days whether anyone uses this box, and whether they type or tap a
+  // chip. The Worker just writes "planner used" to its log.
+  var planSource = "typed";
   function plan() {
     var q = $("chfsPlanQ").value.trim();
     if (!q) { $("chfsPlanQ").focus(); return; }
+    var src = planSource; planSource = "typed";
+    try { navigator.sendBeacon("https://cloudhenry.henryswalk.workers.dev/tick?e=planner-" + src); } catch (e) {}
     var btn = $("chfsPlanGo");
     btn.disabled = true; btn.textContent = "Thinking";
 
@@ -1449,7 +1455,7 @@
     $("chfsPlanGo").addEventListener("click", plan);
     $("chfsPlanQ").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); plan(); } });
     Array.prototype.forEach.call(document.querySelectorAll(".chfs-plan-eg button"), function (b) {
-      b.addEventListener("click", function () { $("chfsPlanQ").value = b.textContent; plan(); });
+      b.addEventListener("click", function () { $("chfsPlanQ").value = b.textContent; planSource = "chip"; plan(); });
     });
   }
 

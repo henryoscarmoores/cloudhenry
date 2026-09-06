@@ -470,6 +470,14 @@ export default {
     if (path === "/go" && request.method === "GET") return handleGo(request, env);   // opened from an email, no Origin header
     if (!ALLOWED_ORIGINS.includes(origin)) return json({ error: "origin not allowed" }, 403, origin);
     if (path === "/airport" && (request.method === "GET" || request.method === "POST")) return handleAirport(request, env, origin);
+    // Usage pings from the site's own pages (navigator.sendBeacon): one
+    // log line each, nothing stored, nothing charged. Count them in
+    // Workers Logs with the search word "tick".
+    if (path === "/tick") {
+      const e = String(new URL(request.url).searchParams.get("e") || "").replace(/[^a-z-]/g, "").slice(0, 24);
+      console.log("tick: " + (e || "unknown"));
+      return new Response(null, { status: 204, headers: cors(origin) });
+    }
     if (request.method !== "POST") return json({ error: "POST only" }, 405, origin);
 
     if (path === "/join") return handleJoin(request, env, origin);
