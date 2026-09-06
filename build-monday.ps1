@@ -183,9 +183,12 @@ foreach ($a in $AIRPORTS) {
       $url = "https://www.aviasales.com/search/" + $a.code + (& $ddmm $o.d) + $r.destination + $(if ($isRet) { & $ddmm $o.r } else { "" }) + "1"
       $book = "https://tp.media/r?marker=764584&trs=562291&p=4114&u=" + [uri]::EscapeDataString($url)
       # Fares from the Ryanair feed link straight to Ryanair, same as the search does.
-      if ($o.PSObject.Properties['a'] -and $o.a -eq 'FR') {
+      $air = if ($o.PSObject.Properties['a']) { [string]$o.a } else { "" }
+      if ($air) {
         $rin = $(if ($isRet) { [string]$o.r } else { "" })
-        $book = "https://www.ryanair.com/gb/en/trip/flights/select?adults=1&teens=0&children=0&infants=0&dateOut=$($o.d)&dateIn=$rin&isReturn=$(if ($isRet) { 'true' } else { 'false' })&originIata=$($a.code)&destinationIata=$($r.destination)"
+        if ($air -eq 'FR') { $book = "https://www.ryanair.com/gb/en/trip/flights/select?adults=1&teens=0&children=0&infants=0&dateOut=$($o.d)&dateIn=$rin&isReturn=$(if ($isRet) { 'true' } else { 'false' })&originIata=$($a.code)&destinationIata=$($r.destination)" }
+        elseif ($air -eq 'W6') { $book = "https://wizzair.com/en-gb/booking/select-flight/$($a.code)/$($r.destination)/$($o.d)/$(if ($isRet) { $rin } else { 'null' })/1/0/0/null" }
+        elseif ($air -eq 'DY') { $book = "https://www.norwegian.com/uk/booking/flight-tickets/select-flight/?AdultCount=1&D_City=$($a.code)&A_City=$($r.destination)&D_Day=$($o.d.Substring(8,2))&D_Month=$($o.d.Substring(0,4))$($o.d.Substring(5,2))&CurrencyCode=GBP" + $(if ($isRet) { "&TripType=2&R_Day=$($rin.Substring(8,2))&R_Month=$($rin.Substring(0,4))$($rin.Substring(5,2))" } else { "&TripType=1" }) }
       }
       $cand = [pscustomobject]@{ dest = $r.destination; price = [int]$o.p; dep = [string]$o.d; ret = $(if ($isRet) { [string]$o.r } else { "" }); typical = $typ; book = $book }
       if (-not $best.ContainsKey($r.destination) -or $cand.price -lt $best[$r.destination].price) { $best[$r.destination] = $cand }

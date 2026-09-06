@@ -416,8 +416,18 @@
     return "https://tp.media/r?marker=" + MARKER + "&trs=562291&p=4114&u=" + encodeURIComponent(url);
   }
   // Aviasales deep link. Format: ORIGIN + DDMM + DEST + [DDMM return] + pax
-  // Fares from the Ryanair feed link straight to Ryanair, no middleman
-  // and no commission. Everything else goes through Aviasales.
+  // Fares from the airline feeds link straight to the airline, no
+  // middleman and no commission. Everything else goes through Aviasales.
+  var AIRLINE_NAME = { FR:"Ryanair", W6:"Wizz Air", DY:"Norwegian" };
+  function airlineTag(air) { return AIRLINE_NAME[air] ? " · " + AIRLINE_NAME[air] : ""; }
+  function wizzUrl(origin, dest, dep, ret) {
+    return "https://wizzair.com/en-gb/booking/select-flight/" + origin + "/" + dest + "/" + dep + "/" + (ret || "null") + "/1/0/0/null";
+  }
+  function norwegianUrl(origin, dest, dep, ret) {
+    var q = "AdultCount=1&D_City=" + origin + "&A_City=" + dest + "&D_Day=" + dep.slice(8, 10) + "&D_Month=" + dep.slice(0, 4) + dep.slice(5, 7) + "&CurrencyCode=GBP";
+    q += ret ? "&TripType=2&R_Day=" + ret.slice(8, 10) + "&R_Month=" + ret.slice(0, 4) + ret.slice(5, 7) : "&TripType=1";
+    return "https://www.norwegian.com/uk/booking/flight-tickets/select-flight/?" + q;
+  }
   function ryanairUrl(origin, dest, dep, ret) {
     var q = "adults=1&teens=0&children=0&infants=0&dateOut=" + dep + "&dateIn=" + (ret || "") + "&isConnectedFlight=false&discount=0&isReturn=" + (ret ? "true" : "false") +
             "&promoCode=&originIata=" + origin + "&destinationIata=" + dest + "&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=" + dep + "&tpEndDate=" + (ret || "") +
@@ -425,7 +435,11 @@
     return "https://www.ryanair.com/gb/en/trip/flights/select?" + q;
   }
   function bookUrl(origin, dest, dep, ret, air) {
-    if (air === "FR" && /^\d{4}-\d\d-\d\d$/.test(dep || "")) return ryanairUrl(origin, dest, dep, ret);
+    if (/^\d{4}-\d\d-\d\d$/.test(dep || "")) {
+      if (air === "FR") return ryanairUrl(origin, dest, dep, ret);
+      if (air === "W6") return wizzUrl(origin, dest, dep, ret);
+      if (air === "DY") return norwegianUrl(origin, dest, dep, ret);
+    }
     var o = ddmm(dep);
     if (!o) return tracked("https://www.aviasales.com/");
     return tracked("https://www.aviasales.com/search/" + origin + o + dest + (ddmm(ret) || "") + "1");
@@ -780,7 +794,7 @@
       b.className = "chfs-card";
       var when = fmt(r.dep) + (r.ret ? " – " + fmt(r.ret) : "");
       var trip = r.ret ? "return" : "one way";
-      var stops = (r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops")) + (r.pair ? " · two single tickets" : "") + (r.air === "FR" ? " · Ryanair" : "");
+      var stops = (r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops")) + (r.pair ? " · two single tickets" : "") + airlineTag(r.air);
       var nights = r.ret ? dayDiff(r.ret, r.dep) : 0;
       var extra = nights > 0 ? " · " + nights + (nights === 1 ? " night" : " nights") : "";
       var from = anyMode ? '<span class="chfs-from">from ' + (ORIGIN_SHORT[r.origin] || r.origin) + '</span>' : "";
@@ -857,7 +871,7 @@
       row.className = "chfs-opt";
       row.innerHTML =
         '<span><span class="d">' + fmt(a.dep) + (a.ret ? " – " + fmt(a.ret) : "") + '</span>' +
-        '<span class="s">' + (a.ret ? "return" : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + (a.pair ? " · two singles" : "") + (a.air === "FR" ? " · Ryanair" : "") + '</span></span>' +
+        '<span class="s">' + (a.ret ? "return" : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + (a.pair ? " · two singles" : "") + airlineTag(a.air) + '</span></span>' +
         '<span><span class="p">£' + a.price + '</span>' +
         '<a class="chfs-book" target="_blank" rel="noopener sponsored" href="' + bookUrl(a.origin, a.dest, a.dep, a.ret, a.air) + '">Book</a></span>';
       o.appendChild(row);
