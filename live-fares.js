@@ -254,29 +254,9 @@
 
   // One line above the box: say what you fancy, land on the search page
   // with it already applied. No filters here; the search page has them.
-  function ensurePlanBar() {
-    if (document.getElementById("ch-home-plan")) return;
-    var box = document.querySelector(".ch-dbox");
-    if (!box || !box.parentNode) return;
-    var wrap = document.createElement("div");
-    wrap.id = "ch-home-plan";
-    wrap.innerHTML =
-      '<span class="ch-hp-lab">&#10024; Tell us what you fancy</span>' +
-      '<form class="ch-hp" action="/search/" method="get">' +
-        '<input type="text" name="plan" maxlength="300" autocomplete="off" aria-label="Describe your trip" ' +
-               'placeholder="Somewhere warm in November under £60">' +
-        '<button type="submit">Plan it →</button>' +
-      '</form>';
-    box.parentNode.insertBefore(wrap, box);
-    wrap.querySelector("form").addEventListener("submit", function (e) {
-      e.preventDefault();
-      var q = wrap.querySelector("input").value.trim();
-      var parts = [];
-      if (q) parts.push("plan=" + encodeURIComponent(q));
-      if (homeOrigin) parts.push("from=" + homeOrigin);
-      location.href = "/search/" + (parts.length ? "?" + parts.join("&") : "");
-    });
-  }
+  // The homepage used to carry a "Tell us what you fancy" planner bar
+  // above the fares. Henry had it removed on 6 Sep 2026: it served no
+  // purpose there and barely worked. The planner still lives on the search page.
 
   // The lock card under the blurred rows used to sell the subscription.
   // It now points at the search, which is where the selling happens.
@@ -379,7 +359,6 @@
     paintLocked(fares, taken);
     paintLockCard();
     paintCaption();
-    ensurePlanBar();
     stampDate();
     return true;
   }
