@@ -380,7 +380,13 @@ async function handlePlan(request, env, origin) {
   } catch (e) {
     return json({ error: "could not reach the planner" }, 502, origin);
   }
-  if (!res.ok) return json({ error: "planner error " + res.status }, 502, origin);
+  if (!res.ok) {
+    // Anthropic's error text names the bad field; it never carries the key.
+    let detail = "";
+    try { detail = String((JSON.parse(await res.text()).error || {}).message || "").slice(0, 300); } catch (e) {}
+    console.error("plan: Anthropic " + res.status + " " + detail);
+    return json({ error: "planner error " + res.status, detail: detail }, 502, origin);
+  }
 
   const msg = await res.json();
   if (msg.stop_reason === "refusal") return json({ error: "I cannot help with that one" }, 200, origin);
