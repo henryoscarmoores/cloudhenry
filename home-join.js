@@ -62,6 +62,8 @@
       ".chmh-btn.g{background:#fff;color:#12384F!important;box-shadow:0 8px 20px rgba(4,45,80,.18)}" +
       ".chmh-foot{color:#12384F;font-size:13px;font-weight:600;margin:14px 0 0}" +
       ".chmh-foot a{color:#0B4F86!important;font-weight:800;text-decoration:underline;text-underline-offset:3px}" +
+      ".chmh-guest{margin-top:4px}.chmh-guest .chmh-strip:empty{min-height:0}" +
+      ".chmh-label{font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#FFE9AE;margin:0 0 8px;text-shadow:0 1px 8px rgba(4,45,80,.3)}" +
       "html.ch-mh .ch-sub-mobile{display:none!important}" +
       "@media(max-width:900px){.chmh{margin:0 auto;text-align:center}.chmh-btns{justify-content:center}}" +
       "@media(max-width:640px){html.ch-mh .ch-sub{display:block!important;font-size:15px!important;line-height:1.5!important;max-width:none!important;margin:0 auto 16px!important}" +
@@ -120,6 +122,7 @@
     (note || w).parentNode.insertBefore(go, (note || w).nextSibling);
     function pointSearch() { go.href = "/search/" + (sel.value && CODES[sel.value] ? "?from=" + CODES[sel.value] : ""); }
     sel.addEventListener("change", pointSearch); pointSearch();
+    guestTiles(go, sel);
 
     function fail(msg) { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Send me deals →"; }
     function go() {
@@ -186,14 +189,37 @@
     return (h < 12 ? "Morning" : h < 18 ? "Afternoon" : "Evening") + (first ? ", " + esc(first) : "") + ".";
   }
 
-  // A paying member does not need the pitch. The hero becomes their
-  // launchpad: today's three cheapest fares out of their airport, how many
-  // more there are, and the two places they actually go.
-  function memberHero(w, m, code) {
+  // The launchpad: today's three cheapest fares out of an airport, a
+  // count of the rest, and the two places to go next. Paying members
+  // get it as their whole hero; Freemium members get it with the trial
+  // button; visitors get the tiles under the sign-up box the moment they
+  // pick an airport, as proof the deals are real.
+  function fareTiles(code, search, done) {
+    var W = window.CH_WELCOME;
+    if (!W || !W.fares) return done(null);
+    W.places(function (P) {
+      W.fares(code, function (data) {
+        var rows = data.rows.slice(0, 3);
+        if (!rows.length) return done(null);
+        var html = rows.map(function (r) {
+          var p = P[r.dest] || [r.dest, "", ""], fc = W.flagCode(p);
+          return '<a class="chmh-tile" href="/search/?from=' + encodeURIComponent(code) + '&to=' + encodeURIComponent(p[0]) + '">' +
+            (fc ? '<img alt="" src="https://flagcdn.com/w40/' + fc + '.png">' : '<span class="chmh-noflag"></span>') +
+            '<div class="c">' + esc(p[0]) + '</div><div class="d">' + esc(W.fmt(r.d)) + '</div>' +
+            '<div class="p">£' + r.p + (r.typ && r.typ > r.p * 1.15 ? '<small>£' + r.typ + '</small>' : '') + '</div></a>';
+        }).join("");
+        var more = data.destinations - rows.length, from = data.rows[Math.min(3, data.rows.length - 1)].p;
+        if (more > 0) html += '<a class="chmh-tile more" href="' + search + '"><div class="n">+' + more + '</div><div class="l">more places<br>from £' + from + '</div></a>';
+        done({ html: html, destinations: data.destinations });
+      });
+    });
+  }
+
+  function memberHero(w, m, code, paid) {
     css();
     var W = window.CH_WELCOME, city = (W && W.NAMES[code]) || "";
     document.documentElement.classList.add("ch-mh");
-    var eyebrow = (city ? city + " · " : "") + "member · next email Monday";
+    var eyebrow = (city ? city + " · " : "") + (paid ? "member" : "Freemium") + " · next email Monday";
     var eb = document.querySelector(".ch-eyebrow"); if (eb) eb.textContent = eyebrow;
     var sub = document.querySelector(".ch-hgrid .ch-sub") || document.querySelector(".ch-sub");
     if (sub) {
@@ -204,50 +230,45 @@
     var box = document.createElement("div");
     box.className = "chmh";
     box.innerHTML = (city ? '<div class="chmh-strip"></div>' : '') +
-      '<div class="chmh-btns"><a class="chmh-btn y" href="/my-cloudhenry/">Open my deals &rarr;</a><a class="chmh-btn g" href="' + search + '">Search every flight</a></div>' +
-      '<p class="chmh-foot">' + (city ? 'Wrong airport? <a href="/my-cloudhenry/">Change it in your account</a>' : '<a href="/my-cloudhenry/">Set your airport &rarr;</a>') + '</p>';
+      '<div class="chmh-btns">' +
+        (paid ? '<a class="chmh-btn y" href="/my-cloudhenry/">Open my deals &rarr;</a>' : '<a class="chmh-btn y" href="#/portal/account/plans">Try 40 days free &rarr;</a>') +
+        '<a class="chmh-btn g" href="' + search + '">Search every flight</a></div>' +
+      '<p class="chmh-foot">' +
+        (paid ? (city ? 'Wrong airport? <a href="/my-cloudhenry/">Change it in your account</a>' : '<a href="/my-cloudhenry/">Set your airport &rarr;</a>')
+              : 'Then £2.99 a month. Cancel any time, no contract.' + (city ? '' : ' <a href="/my-cloudhenry/">Set your airport &rarr;</a>')) + '</p>';
     var note = w.parentNode.querySelector(".ch-ap-note");
     w.parentNode.replaceChild(box, w);
     if (note) note.remove();
-    if (!city || !W || !W.fares) return;
-
-    W.places(function (P) {
-      W.fares(code, function (data) {
-        var rows = data.rows.slice(0, 3);
-        if (!rows.length) { if (sub) sub.innerHTML = greeting(m) + " Every fare from " + esc(city) + " is yours to book."; return; }
-        if (sub) sub.innerHTML = greeting(m) + ' <span class="ch-hl">' + data.destinations + " destinations</span> from " + esc(city) + " were checked this morning. The cheapest right now:";
-        var html = rows.map(function (r) {
-          var p = P[r.dest] || [r.dest, "", ""], fc = W.flagCode(p);
-          return '<a class="chmh-tile" href="/search/?from=' + encodeURIComponent(code) + '&to=' + encodeURIComponent(p[0]) + '">' +
-            (fc ? '<img alt="" src="https://flagcdn.com/w40/' + fc + '.png">' : '<span class="chmh-noflag"></span>') +
-            '<div class="c">' + esc(p[0]) + '</div><div class="d">' + esc(W.fmt(r.d)) + '</div>' +
-            '<div class="p">£' + r.p + (r.typ && r.typ > r.p * 1.15 ? '<small>£' + r.typ + '</small>' : '') + '</div></a>';
-        }).join("");
-        var more = data.destinations - rows.length, from = data.rows[Math.min(3, data.rows.length - 1)].p;
-        if (more > 0) html += '<a class="chmh-tile more" href="' + search + '"><div class="n">+' + more + '</div><div class="l">more places<br>from £' + from + '</div></a>';
-        box.querySelector(".chmh-strip").innerHTML = html;
-      });
+    if (!city) return;
+    fareTiles(code, search, function (t) {
+      if (!t) { if (sub) sub.innerHTML = greeting(m) + (paid ? " Every fare from " : " Every fare we find from ") + esc(city) + (paid ? " is yours to book." : " is one tap away."); return; }
+      if (sub) sub.innerHTML = greeting(m) + ' <span class="ch-hl">' + t.destinations + " destinations</span> from " + esc(city) + " were checked this morning. The cheapest right now:";
+      box.querySelector(".chmh-strip").innerHTML = t.html;
     });
   }
 
-  function memberBox(w, m, code) {
-    css();
-    var note = w.parentNode.querySelector(".ch-ap-note");
-    var done = document.createElement("div");
-    done.className = "ch-hj-done";
-    done.innerHTML = "<b>You are on Freemium</b>Signed in as " + esc(m.email) + ". Every Monday's full list, and the link through to book any fare, is one step away." +
-      "<br><a class=\"ch-ap-btn\" href=\"#/portal/account/plans\">Try 40 days free →</a>";
-    w.parentNode.replaceChild(done, w);
-    if (note) note.remove();
-    // Members want the search most of all; point at it here too.
-    var go = document.createElement("a");
-    go.className = "ch-ap-search";
-    go.href = "/search/" + (code ? "?from=" + code : "");
-    go.innerHTML = "Looking for a specific trip? <b>Search every flight &rarr;</b>";
-    done.parentNode.insertBefore(go, done.nextSibling);
-    // A signed-in list member with a known airport gets the full welcome:
-    // their fares and the trial button.
-    if (code && window.CH_WELCOME) window.CH_WELCOME.render(done, { code: code, email: m.email, signedIn: true });
+  // Signed-out visitors: the moment an airport is picked, its three
+  // cheapest fares appear under the box. Nothing to sign in for, nothing
+  // hidden: the tiles open the search, where booking needs the trial.
+  function guestTiles(anchor, sel) {
+    var holder = document.createElement("div");
+    holder.className = "chmh chmh-guest";
+    holder.hidden = true;
+    anchor.parentNode.insertBefore(holder, anchor.nextSibling);
+    var shown = "";
+    function paint() {
+      var code = CODES[sel.value] || "";
+      if (!code || code === shown) return;
+      shown = code;
+      var W = window.CH_WELCOME, city = (W && W.NAMES[code]) || code;
+      fareTiles(code, "/search/?from=" + encodeURIComponent(code), function (t) {
+        if (!t || shown !== code) { if (!t) holder.hidden = true; return; }
+        holder.innerHTML = '<div class="chmh-label">Today’s cheapest from ' + esc(city) + ', ' + t.destinations + ' destinations checked</div><div class="chmh-strip">' + t.html + '</div>';
+        holder.hidden = false;
+      });
+    }
+    sel.addEventListener("change", paint);
+    paint();
   }
 
   var done = false;
@@ -258,10 +279,11 @@
     done = true;
     member().then(function (m) {
       if (!m) return convert(w);
-      airportOf(m).then(function (code) { if (isPaid(m)) memberHero(w, m, code); else memberBox(w, m, code); });
+      airportOf(m).then(function (code) { memberHero(w, m, code, isPaid(m)); });
     });
     return true;
   }
+
   if (!go()) {
     var tries = 0, t = setInterval(function () { if (go() || ++tries > 40) clearInterval(t); }, 150);
   }
