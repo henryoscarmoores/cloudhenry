@@ -23,8 +23,7 @@ permissions:
 jobs:
   refresh:
     runs-on: windows-latest
-    timeout-minutes: 170
-
+    timeout-minutes: 300
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
