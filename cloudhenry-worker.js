@@ -174,10 +174,17 @@ async function handleJoin(request, env, origin) {
   const payload = {
     members: [{ email, name: "", labels, newsletters, note: "Joined via the website, " + new Date().toISOString().slice(0, 10) + (src ? ", from " + src : "") + (camp ? ", campaign " + camp : "") }]
   };
+  // Ghost(Pro) sits behind its own rate limiting, and in the traffic spike
+  // of 6 Sep 2026 it turned a few sign-ups away for seconds at a time
+  // (answered in under 100ms with something other than a member). Two
+  // more goes, spaced out, before a real person is shown an error.
   let r = await ghost(env, "POST", "/members/", payload);
-  // A momentary blip at Ghost (5xx, or a rate limit) is worth one more go
-  // before a real person is shown an error.
-  if (r.status >= 500 || r.status === 429) { await new Promise(res => setTimeout(res, 1200)); r = await ghost(env, "POST", "/members/", payload); }
+  for (const wait of [1500, 3000]) {
+    const blip = r.status >= 500 || r.status === 429 || r.status === 403 || (r.status !== 201 && r.status !== 422 && !r.data);
+    if (!blip) break;
+    await new Promise(res => setTimeout(res, wait));
+    r = await ghost(env, "POST", "/members/", payload);
+  }
 
   if (r.status === 201) return json({ ok: true, created: true, code: airport[1] }, 201, origin);
 

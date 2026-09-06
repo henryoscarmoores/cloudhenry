@@ -1433,11 +1433,11 @@
     })
       .then(function (r) { return r.json(); })
       .then(function (p) {
-        if (!p || (p.error && !p.reply)) {
-          var local = planLocal(q);
-          if (p && p.error) local.error = p.error;
-          done(local);
-        } else done(p);
+        // The Worker could not help (planner down, out of credit, too
+        // busy): the built-in parser answers instead, and nobody is shown
+        // an error code for a box that still did its job.
+        if (!p || (p.error && !p.reply)) done(planLocal(q));
+        else done(p);
       })
       .catch(function () { done(planLocal(q)); });
   }
