@@ -32,7 +32,8 @@ const AIRPORTS_BY_SLUG = {
   "leeds-bradford":["loc-leeds","LBA"], "london-stansted":["loc-london-stansted","STN"], "london-luton":["loc-london-luton","LTN"],
   "bristol":["loc-bristol","BRS"], "newcastle":["loc-newcastle","NCL"], "glasgow":["loc-glasgow","GLA"],
   "edinburgh":["loc-edinburgh","EDI"], "london-gatwick":["loc-london-gatwick","LGW"], "liverpool":["loc-liverpool","LPL"],
-  "belfast":["loc-belfast","BFS"]
+  "belfast":["loc-belfast","BFS"],
+  "bournemouth":["loc-bournemouth","BOH"]
 };
 const SOURCES = { "homepage": "via-homepage", "airport-page": "via-airport-page", "flag-game": "via-flag-game" };
 
@@ -40,7 +41,7 @@ const AIRPORTS = [
   ["ANY", "Any UK airport"], ["MAN", "Manchester"], ["BHX", "Birmingham"],
   ["LBA", "Leeds Bradford"], ["STN", "London Stansted"], ["LTN", "London Luton"],
   ["BRS", "Bristol"], ["NCL", "Newcastle"], ["GLA", "Glasgow"], ["EDI", "Edinburgh"],
-  ["LGW", "London Gatwick"], ["LPL", "Liverpool"], ["BFS", "Belfast"]
+  ["LGW", "London Gatwick"], ["LPL", "Liverpool"], ["BFS", "Belfast"], ["BOH", "Bournemouth"]
 ];
 
 /* ---- plumbing ------------------------------------------------------ */
@@ -184,7 +185,7 @@ async function handleJoin(request, env, origin) {
  */
 
 const CODE_TO_LABEL = { MAN:"loc-manchester", BHX:"loc-birmingham", LBA:"loc-leeds", STN:"loc-london-stansted", LTN:"loc-london-luton",
-  BRS:"loc-bristol", NCL:"loc-newcastle", GLA:"loc-glasgow", EDI:"loc-edinburgh", LGW:"loc-london-gatwick", LPL:"loc-liverpool", BFS:"loc-belfast" };
+  BRS:"loc-bristol", NCL:"loc-newcastle", GLA:"loc-glasgow", EDI:"loc-edinburgh", LGW:"loc-london-gatwick", LPL:"loc-liverpool", BFS:"loc-belfast", BOH:"loc-bournemouth" };
 const LABEL_TO_CODE = Object.fromEntries(Object.entries(CODE_TO_LABEL).map(([c, l]) => [l, c]));
 
 async function memberByUuid(env, uuid) {

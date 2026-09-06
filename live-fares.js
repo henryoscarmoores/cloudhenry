@@ -36,7 +36,7 @@
   var ORIGIN_NAME = {
     MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
     LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
-    EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast"
+    EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth"
   };
 
   var JOIN_ORIGIN = {
@@ -45,13 +45,13 @@
     "london-luton":"LTN", "luton":"LTN", "bristol":"BRS",
     "newcastle":"NCL", "glasgow":"GLA", "edinburgh":"EDI",
     "london-gatwick":"LGW", "gatwick":"LGW", "liverpool":"LPL",
-    "belfast":"BFS"
+    "belfast":"BFS", "bournemouth":"BOH"
   };
 
   // A hop to another UK airport is a real saving but it undersells a site
   // about getting away, so the teasers skip domestic routes.
   var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1,
-             GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, CWL:1, ILY:1, KOI:1,
+             GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, ILY:1, KOI:1,
              ABZ:1, INV:1, SOU:1, EXT:1, NQY:1, LDY:1 };
 
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -268,7 +268,7 @@
     var cta = card.querySelector(".ch-cta");
     var fine = card.querySelector(".ch-vf");
     var fromCity = homeOrigin ? ORIGIN_NAME[homeOrigin] : "";
-    if (t) t.textContent = fromCity ? "Every fare from " + fromCity + ", every date" : "Every fare, every date, all 12 airports";
+    if (t) t.textContent = fromCity ? "Every fare from " + fromCity + ", every date" : "Every fare, every date, all 13 airports";
     if (subs[0]) subs[0].textContent = "Tell us where, when and how much, and see everything we have found today. Members see every fare we find and go straight through to book it.";
     if (cta) {
       cta.textContent = "Search flights →";

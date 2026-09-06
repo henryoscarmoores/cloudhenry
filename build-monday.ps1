@@ -80,7 +80,8 @@ $AIRPORTS = @(
   @{ code="EDI"; name="Edinburgh";        slug="edinburgh" },
   @{ code="LGW"; name="London Gatwick";   slug="london-gatwick" },
   @{ code="LPL"; name="Liverpool";        slug="liverpool" },
-  @{ code="BFS"; name="Belfast";          slug="belfast" }
+  @{ code="BFS"; name="Belfast";          slug="belfast" },
+  @{ code="BOH"; name="Bournemouth";      slug="bournemouth" }
 )
 if ($OnlyOrigins) { $AIRPORTS = @($AIRPORTS | Where-Object { $OnlyOrigins -contains $_.code }) }
 
@@ -290,7 +291,7 @@ foreach ($a in $AIRPORTS) {
 
   $post = @{ posts = @(@{
     title = $title; slug = $slugBase; lexical = $lexical; status = "draft"; visibility = "public"
-    tags = @(@{ name = "paid-draft" }, @{ name = "monday-auto" })
+    tags = @(@{ name = "#paid-draft" }, @{ name = "#monday-auto" })   # internal tags (leading hash), so they never print on the page
     custom_excerpt = "$n cheap fares from $($a.name) this week, checked this morning, from $([char]0xA3)$cheapest."
     email_subject = "$($a.name): $n fares this week, from $([char]0xA3)$cheapest"
   }) }

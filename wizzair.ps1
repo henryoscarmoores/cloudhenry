@@ -21,6 +21,9 @@ function Get-WizzBase {
 }
 
 $WIZZ_HEADERS = @{ "Origin" = "https://www.wizzair.com"; "Referer" = "https://www.wizzair.com/" }
+# build-fares.ps1 runs in strict mode, which refuses to read a variable that was never set.
+$script:WizzBase = $null
+$script:WizzMap = $null
 
 # Destinations Wizz flies from an airport, from the route map.
 function Get-WizzDestinations([string] $Origin) {

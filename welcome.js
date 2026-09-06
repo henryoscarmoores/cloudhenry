@@ -18,8 +18,8 @@
   "use strict";
   var CDN = "https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/";
   var NAMES = { MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds Bradford", STN:"London Stansted", LTN:"London Luton",
-                BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow", EDI:"Edinburgh", LGW:"London Gatwick", LPL:"Liverpool", BFS:"Belfast" };
-  var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, CWL:1, ABZ:1, INV:1, SOU:1, EXT:1, NQY:1, LDY:1, ILY:1, KOI:1 };
+                BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow", EDI:"Edinburgh", LGW:"London Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth" };
+  var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, ABZ:1, INV:1, SOU:1, EXT:1, NQY:1, LDY:1, ILY:1, KOI:1 };
   var DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   function stamp() { var d = new Date(); return d.getUTCFullYear() + ("0" + (d.getUTCMonth() + 1)).slice(-2) + ("0" + d.getUTCDate()).slice(-2) + (d.getUTCHours() < 12 ? "-am" : "-pm"); }

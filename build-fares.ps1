@@ -59,7 +59,7 @@ $RepoDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $TokenFile = Join-Path $RepoDir ".token"
 $LogFile   = Join-Path $RepoDir "build-fares.log"
 
-$ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS")
+$ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH")
 if ($OnlyOrigins) { $ORIGINS = @($OnlyOrigins | ForEach-Object { $_.ToUpper() }) }
 
 # Other UK airports. Kept in the data (someone may search for them) but
@@ -185,7 +185,8 @@ foreach ($origin in $ORIGINS) {
   $list = @($routes.Values | Sort-Object price)
   Log ("{0}: {1} destinations found" -f $origin, $list.Count)
 
-  if ($list.Count -lt 40) {
+  $minRoutes = if ($origin -eq "BOH") { 15 } else { 40 }   # Bournemouth is small: 34 routes is its whole network
+  if ($list.Count -lt $minRoutes) {
     Log "$origin came back thin ($($list.Count) routes). Keeping the previous file." "WARN"
     continue
   }

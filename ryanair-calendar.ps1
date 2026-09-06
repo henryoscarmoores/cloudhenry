@@ -36,7 +36,8 @@ function Merge-RyanairCalendar([string] $Origin, [array] $List, [int] $Months = 
   $before = $script:FeedCalls
   $dests = @()
   foreach ($t in $List) {
-    if (@($t.options | Where-Object { $_.a -eq "FR" }).Count -gt 0) { $dests += [string]$t.destination }
+    # Strict mode in build-fares.ps1 objects to reading a property that is not there, so check first.
+    if (@($t.options | Where-Object { $_.PSObject.Properties["a"] -and $_.a -eq "FR" }).Count -gt 0) { $dests += [string]$t.destination }
   }
   if (-not $dests.Count) { return $List }
   $fares = @(); $inbound = @()
