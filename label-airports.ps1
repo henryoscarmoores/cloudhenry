@@ -45,7 +45,20 @@ function Call([string] $Method, [string] $Path, $Body) {
 # find them in one click in Ghost and ask. That label comes off the moment
 # an airport label goes on.
 $NONE = "No Airport Selected"
-$members = @((Call GET "/members/?limit=all&include=labels").members)
+# Ghost 6 answers limit=all with the first hundred only, so walk the pages.
+# Found on 6 Sep 2026 when the run reported 100 of 208 members.
+function AllMembers([string] $Include) {
+  $all = @(); $page = 1
+  while ($true) {
+    $r = Call GET "/members/?limit=100&page=$page&include=$Include"
+    $batch = @($r.members)
+    $all += $batch
+    if ($batch.Count -lt 100) { break }
+    $page++
+  }
+  $all   # emitted one by one; callers wrap the call in @()
+}
+$members = @(AllMembers "labels")
 $already = 0; $labelled = 0; $noPage = 0; $notJoin = 0; $flagged = 0; $failed = 0
 foreach ($m in $members) {
   $names = @($m.labels | ForEach-Object { $_.name })
@@ -84,7 +97,7 @@ Write-Host ("members {0}: already labelled {1}, labelled now {2}, no signup page
 # emails: the repository is public. stats.json keeps one row per day so
 # the trend is there to read; today's row is replaced on the evening run.
 try {
-  $all = @((Call GET "/members/?limit=all&include=labels,subscriptions").members)
+  $all = @(AllMembers "labels,subscriptions")
   $now = [DateTime]::UtcNow
   function Since([int] $days) { $t = $now.AddDays(-$days); return @($all | Where-Object { [DateTime]::Parse($_.created_at).ToUniversalTime() -gt $t }).Count }
   function HasLabel([string] $name) { return @($all | Where-Object { @($_.labels | Where-Object { $_.name -eq $name }).Count -gt 0 }).Count }
