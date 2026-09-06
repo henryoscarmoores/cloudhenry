@@ -115,14 +115,14 @@
 
     // People who arrive wanting one specific trip should see the way to
     // the search at once, not scroll looking for it.
-    var go = document.createElement("a");
-    go.className = "ch-ap-search";
-    go.href = "/search/";
-    go.innerHTML = "Looking for a specific trip? <b>Search every flight &rarr;</b>";
-    (note || w).parentNode.insertBefore(go, (note || w).nextSibling);
-    function pointSearch() { go.href = "/search/" + (sel.value && CODES[sel.value] ? "?from=" + CODES[sel.value] : ""); }
+    var searchLink = document.createElement("a");
+    searchLink.className = "ch-ap-search";
+    searchLink.href = "/search/";
+    searchLink.innerHTML = "Looking for a specific trip? <b>Search every flight &rarr;</b>";
+    (note || w).parentNode.insertBefore(searchLink, (note || w).nextSibling);
+    function pointSearch() { searchLink.href = "/search/" + (sel.value && CODES[sel.value] ? "?from=" + CODES[sel.value] : ""); }
     sel.addEventListener("change", pointSearch); pointSearch();
-    guestTiles(go, sel);
+    guestTiles(searchLink, sel);
 
     function fail(msg) { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Send me deals →"; }
     function go() {
