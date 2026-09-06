@@ -103,7 +103,7 @@ jobs:
           $count = @((Get-Content "fares.json" -Raw | ConvertFrom-Json).fares).Count
           git commit -m "Refresh fares $(Get-Date -Format 'yyyy-MM-dd')" -m "$count routes across 14 UK airports." -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
           # The run takes the best part of an hour; main may have moved.
-          git pull --rebase origin main
+          git pull --rebase -X theirs origin main   # a clash with a commit made during the run keeps the fresh fares
           git push
 
       - name: Clear the CDN cache
