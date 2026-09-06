@@ -65,11 +65,14 @@ function Merge-Wizz([string] $Origin, [array] $List, [int] $Months = 5) {
   try {
     $dests = Get-WizzDestinations $Origin
     if (-not $dests.Count) { Feed-Log ("{0}: Wizz Air flies nowhere from here (or the map was unreachable)" -f $Origin); return $List }
+    $n = 0
     foreach ($d in $dests) {
       foreach ($m in (Feed-Months $Months)) {
         $got = Get-WizzMonth $Origin $d $m.from $m.to
         $fares += $got.out; $inbound += $got.in
       }
+      $n++
+      if ($n % 10 -eq 0) { Feed-Log ("{0}: Wizz Air {1} of {2} routes, {3} fares so far" -f $Origin, $n, $dests.Count, $fares.Count) }
     }
   } catch {
     Feed-Log ("{0}: Wizz Air feed failed: {1} at {2}" -f $Origin, $_.Exception.Message, $_.ScriptStackTrace) "WARN"
