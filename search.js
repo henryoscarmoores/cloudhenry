@@ -439,7 +439,10 @@
   // these where the airline's first flight leaves before 9am and its last
   // comes back after 5pm, so every one here is a real day out.
   function isDayTrip(r) {
-    return !!r.ret && String(r.ret).slice(0, 10) === String(r.dep).slice(0, 10);
+    // Only pairs the feeds built with the hour check count. The cache
+    // also holds same-day "returns" with two or three changes, which are
+    // not a day out anywhere.
+    return !!r.ret && !!r.day && r.stops === 0 && String(r.ret).slice(0, 10) === String(r.dep).slice(0, 10);
   }
 
   function isWeekendBreak(r) {
@@ -524,7 +527,7 @@
         var owAvg = f.typical || mean(ow), rtAvg = mean(rt);
         opts.forEach(function (o) {
           if (o.d && o.d < today) return;   // already departed
-          out.push({ origin:f.origin, dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0, pair:!!o.c, air:o.a || "",
+          out.push({ origin:f.origin, dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0, pair:!!o.c, day:!!o.x, air:o.a || "",
                      typical: o.r ? rtAvg : owAvg });
         });
       } else if (!f.departure || String(f.departure).slice(0, 10) >= today) {
