@@ -213,7 +213,7 @@
       '<div class="chm-hero">' +
         '<div class="chm-hi"><h1>' + hello + '</h1>' +
         '<p>' + (ap ? "Your airport is <b>" + esc(ap[1]) + "</b>. " : "Tell us your airport and everything on this page follows it. ") +
-          (ms.paid ? "Every email we send you is kept here." : 'Members get the full list every Monday and can book any fare. <a href="#/portal/account/plans"><b>Try 40 days free &rarr;</b></a>') + '</p></div>' +
+          (ms.paid ? "Every email we send you is kept here." : 'Members get the full list every Monday and go straight through to book any fare. <a href="#/portal/account/plans"><b>Try 40 days free &rarr;</b></a>') + '</p></div>' +
         '<label class="chm-pick"><span>Home airport</span><select id="chmAirport"><option value="">Choose your airport</option>' + opts + '</select></label>' +
       '</div>' +
       '<div class="chm-stats">' +

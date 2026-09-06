@@ -109,7 +109,7 @@
     btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); go(); });
 
     var note = w.parentNode.querySelector(".ch-ap-note");
-    if (note) note.textContent = "40 days free, then £2.99 a month. Unsubscribe any time, no contract.";
+    if (note) note.textContent = "40 days free, then £2.99 a month. Cancel any time, no contract.";
 
     // People who arrive wanting one specific trip should see the way to
     // the search at once, not scroll looking for it.
@@ -235,7 +235,7 @@
     var note = w.parentNode.querySelector(".ch-ap-note");
     var done = document.createElement("div");
     done.className = "ch-hj-done";
-    done.innerHTML = "<b>You are on Freemium</b>Signed in as " + esc(m.email) + ". Every Monday's full list, and book any fare, is one step away." +
+    done.innerHTML = "<b>You are on Freemium</b>Signed in as " + esc(m.email) + ". Every Monday's full list, and the link through to book any fare, is one step away." +
       "<br><a class=\"ch-ap-btn\" href=\"#/portal/account/plans\">Try 40 days free →</a>";
     w.parentNode.replaceChild(done, w);
     if (note) note.remove();
