@@ -372,12 +372,37 @@
     var pool = bestPerDestination(candidates(fares, { origin: homeOrigin, within: 45 }))
                  .filter(function (r) { return !taken[r.dest]; });
     var picks = spread(pool, rows.length);
+    // A paying member has nothing to be teased with: the blur comes off,
+    // the lock goes, and the rows get their real price and date. Found
+    // on 6 Sep 2026 when a comped member saw three "£??" rows.
+    if (memberPaid) unlockForMember();
     for (var i = 0; i < rows.length && i < picks.length; i++) {
       var r = picks[i];
       var p = places() ? places()[r.dest] : null;
       var routeEl = rows[i].querySelector(".ch-dr");
       if (routeEl) routeEl.textContent = (ORIGIN_NAME[r.origin] || r.origin) + " → " + (p ? p[0] : r.dest);
+      if (memberPaid) {
+        var priceEl = rows[i].querySelector(".ch-dp");
+        if (priceEl) priceEl.textContent = "£" + r.price;
+        var metaEl = rows[i].querySelector(".ch-dm") || rows[i].querySelector(".ch-dl > :nth-child(2)");
+        if (metaEl && metaEl !== routeEl) metaEl.textContent = (r.ret ? "return · " : "one-way · ") + fmt(r.dep) + (r.ret ? "–" + fmt(r.ret) : "");
+      }
     }
+  }
+
+  function unlockForMember() {
+    var box = document.querySelector(".ch-dbox");
+    if (!box || box.classList.contains("ch-member")) return;
+    box.classList.add("ch-member");
+    if (document.getElementById("ch-member-css")) return;
+    var st = document.createElement("style");
+    st.id = "ch-member-css";
+    st.textContent =
+      ".ch-dbox.ch-member .ch-dlock{filter:none!important;opacity:1!important;pointer-events:auto!important;user-select:auto!important}" +
+      ".ch-dbox.ch-member .ch-lockwrap{max-height:none!important;overflow:visible!important}" +
+      ".ch-dbox.ch-member .ch-veil{position:static!important;inset:auto!important;background:none!important;padding-top:6px}" +
+      ".ch-dbox.ch-member .ch-lockicon{display:none!important}";
+    document.head.appendChild(st);
   }
 
   // "Prices correct as of ..." sits under the block with no class of its
