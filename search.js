@@ -309,7 +309,7 @@
       var st = document.createElement("style");
       st.id = "chfs-title-css";
       st.textContent =
-        ".chfs-eyebrow{display:block;color:#FFE9AE;font-size:12px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase;text-align:center;margin:0 0 14px;text-shadow:0 1px 10px rgba(4,45,80,.3)}" +
+        ".chfs-eyebrow{display:block;color:#FFE9AE;font-size:11px;font-weight:800;letter-spacing:1.9px;text-transform:uppercase;text-align:center;margin:0 0 14px;text-shadow:0 1px 10px rgba(4,45,80,.3)}" +
         "h1.gh-article-title.chfs-big{font-size:64px!important;font-weight:800!important;letter-spacing:-2px!important;line-height:1.02!important;text-shadow:0 3px 22px rgba(4,45,80,.32)!important;margin-bottom:12px!important}" +
         ".chfs-tally{display:block;text-align:center;color:#F0F9FE;font-size:17px;line-height:1.5;margin:0 auto 6px;max-width:640px;text-shadow:0 1px 12px rgba(4,45,80,.3)}" +
         ".chfs-tally b{color:#FFE071;font-weight:800}" +
