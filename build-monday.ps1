@@ -87,6 +87,10 @@ if ($OnlyOrigins) { $AIRPORTS = @($AIRPORTS | Where-Object { $OnlyOrigins -conta
 
 $UK = @{ LON=1; MAN=1; BHX=1; LBA=1; STN=1; LTN=1; BRS=1; NCL=1; GLA=1; EDI=1; LGW=1; LPL=1; BFS=1; CWL=1; ILY=1; KOI=1; ABZ=1; INV=1; SOU=1; EXT=1; NQY=1; LDY=1 }
 $BOGUS = @{ BSZ=1; DSE=1 }
+# Places a reader recognises at a glance. Used to choose the headline
+# fares in each email; everything else is still in the full list.
+$POPULAR = @{}
+foreach ($c in "DUB AMS PAR CDG ORY BCN MAD VLC SVQ LIS OPO FCO ROM MIL MXP BGY VCE NAP PSA FLR BLQ CTA PMO PMI IBZ ALC AGP FAO TFS TCI LPA ACE FUE PRG KRK BUD VIE BER CPH OSL ARN HEL NCE MRS ATH SKG CFU HER RHO SOF BEG SPU DBV ZAD TIA MLA PFO LCA IST SAW AYT DLM BJV RAK AGA DXB NYC JFK BOS BRU GVA ZRH MUC FRA HAM DUS CGN STR SZG INN WAW GDN RIX VNO TLL BOJ VAR MRS BOD TLS LYS NTE OLB CAG BRI TRN VRN".Split(" ")) { $POPULAR[$c] = 1 }
 
 # Names and flags from places.js.
 $PLACES = @{}
@@ -207,14 +211,20 @@ foreach ($a in $AIRPORTS) {
   # cheapest return, then the biggest saving. The blurred four: two of each.
   $owAll = @($fares | Where-Object { -not $_.ret }); $rtAll = @($fares | Where-Object { $_.ret })
   $bySave = @($fares | Where-Object { $_.typical -gt 0 } | Sort-Object { $_.price / $_.typical })
+  # The headline three favour places people recognise. Cheapest-of-all
+  # from Stansted came out as Klagenfurt, Iasi and Szymany, which nobody
+  # opens an email for; the obscure bargains stay in the full list.
+  $owPop = @($owAll | Where-Object { $POPULAR.ContainsKey($_.dest) }); $rtPop = @($rtAll | Where-Object { $POPULAR.ContainsKey($_.dest) })
+  $bySavePop = @($bySave | Where-Object { $POPULAR.ContainsKey($_.dest) })
   $top = @()
-  if ($owAll.Count) { $top += $owAll[0] }
-  if ($rtAll.Count) { $top += $rtAll[0] }
-  foreach ($c in ($bySave + $fares)) { if ($top.Count -ge 3) { break }; if (-not ($top | Where-Object { $_.dest -eq $c.dest })) { $top += $c } }
+  if ($owPop.Count) { $top += $owPop[0] } elseif ($owAll.Count) { $top += $owAll[0] }
+  if ($rtPop.Count) { $top += $rtPop[0] } elseif ($rtAll.Count) { $top += $rtAll[0] }
+  foreach ($c in ($bySavePop + $bySave + $fares)) { if ($top.Count -ge 3) { break }; if (-not ($top | Where-Object { $_.dest -eq $c.dest })) { $top += $c } }
   $used = @{}; foreach ($c in $top) { $used[$c.dest] = 1 }
   $locked = @()
-  $locked += @($owAll | Where-Object { -not $used.ContainsKey($_.dest) } | Select-Object -First 2)
-  $locked += @($rtAll | Where-Object { -not $used.ContainsKey($_.dest) } | Select-Object -First 2)
+  $locked += @(($owPop + $owAll) | Where-Object { -not $used.ContainsKey($_.dest) } | Select-Object -First 2)
+  foreach ($c in $locked) { $used[$c.dest] = 1 }
+  $locked += @(($rtPop + $rtAll) | Where-Object { -not $used.ContainsKey($_.dest) } | Select-Object -First 2)
   if ($locked.Count -lt 4) { $locked += @($fares | Where-Object { -not $used.ContainsKey($_.dest) -and -not ($locked | Where-Object { $_.dest -eq $_.dest }) } | Select-Object -First (4 - $locked.Count)) }
   $rest = $n - 3
 
