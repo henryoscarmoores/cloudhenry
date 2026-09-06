@@ -1,5 +1,5 @@
 ﻿{
-    "updated":  "2026-09-05T21:21:15Z",
+    "updated":  "2026-09-06T06:13:08Z",
     "days":  [
                  {
                      "date":  "2026-09-05",
@@ -12,6 +12,19 @@
                      "new_7d":  70,
                      "via_homepage":  23,
                      "via_airport_page":  3,
+                     "no_airport":  16
+                 },
+                 {
+                     "date":  "2026-09-06",
+                     "total":  100,
+                     "free":  27,
+                     "paid":  72,
+                     "comped":  1,
+                     "trialing":  11,
+                     "new_24h":  39,
+                     "new_7d":  80,
+                     "via_homepage":  23,
+                     "via_airport_page":  14,
                      "no_airport":  16
                  }
              ]

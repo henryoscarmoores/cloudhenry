@@ -797,5 +797,9 @@ window.CH_PLACES = {
     YIW:["Yiwu","China","🇨🇳"],
     GNY:["Golgen","Turkiye","🇹🇷"],
     SFT:["Skelleftea","Sweden","🇸🇪"],
-    XSC:["South Caicos","Turks and Caicos Islands","🇹🇨"]
+    XSC:["South Caicos","Turks and Caicos Islands","🇹🇨"],
+    CCJ:["Kozhikode","India","🇮🇳"],
+    DMM:["Dammam","Saudi Arabia","🇸🇦"],
+    HKD:["Hakodate","Japan","🇯🇵"],
+    VXO:["Vaxjo","Sweden","🇸🇪"]
 };
