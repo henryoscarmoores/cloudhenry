@@ -185,7 +185,7 @@ foreach ($a in $AIRPORTS) {
       # Fares from the Ryanair feed link straight to Ryanair, same as the search does.
       if ($o.PSObject.Properties['a'] -and $o.a -eq 'FR') {
         $rin = $(if ($isRet) { [string]$o.r } else { "" })
-        $book = "https://www.ryanair.com/gb/en/trip/flights/select?adults=1&teens=0&children=0&infants=0&dateOut=$($o.d)&dateIn=$rin&isConnectedFlight=false&discount=0&isReturn=$(if ($isRet) { 'true' } else { 'false' })&promoCode=&originIata=$($a.code)&destinationIata=$($r.destination)&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=$($o.d)&tpEndDate=$rin&tpDiscount=0&tpPromoCode=&tpOriginIata=$($a.code)&tpDestinationIata=$($r.destination)"
+        $book = "https://www.ryanair.com/gb/en/trip/flights/select?adults=1&teens=0&children=0&infants=0&dateOut=$($o.d)&dateIn=$rin&isReturn=$(if ($isRet) { 'true' } else { 'false' })&originIata=$($a.code)&destinationIata=$($r.destination)"
       }
       $cand = [pscustomobject]@{ dest = $r.destination; price = [int]$o.p; dep = [string]$o.d; ret = $(if ($isRet) { [string]$o.r } else { "" }); typical = $typ; book = $book }
       if (-not $best.ContainsKey($r.destination) -or $cand.price -lt $best[$r.destination].price) { $best[$r.destination] = $cand }
