@@ -823,5 +823,20 @@ window.CH_PLACES = {
     DEB:["Debrecen","Hungary","🇭🇺"],
     SUJ:["Satu Mare","Romania","🇷🇴"],
     TGM:["Tirgu Mures","Romania","🇷🇴"],
-    TLV:["Tel Aviv Yafo","Israel","🇮🇱"]
+    TLV:["Tel Aviv Yafo","Israel","🇮🇱"],
+    ABT:["Al Bahah","Saudi Arabia","🇸🇦"],
+    CGO:["Zhengzhou","China","🇨🇳"],
+    EDO:["Edremit","Turkiye","🇹🇷"],
+    FVM:["Fuvahmulah","Maldives","🇲🇻"],
+    GGW:["Glasgow","USA","🇺🇸"],
+    IQQ:["Iquique","Chile","🇨🇱"],
+    IXB:["Bagdogra","India","🇮🇳"],
+    KCM:["Kahramanmaras","Turkiye","🇹🇷"],
+    NNG:["Nanning","China","🇨🇳"],
+    OZZ:["Ouarzazate","Morocco","🇲🇦"],
+    PAS:["Paros","Greece","🇬🇷"],
+    SGD:["Sonderborg","Denmark","🇩🇰"],
+    SRQ:["Sarasota","USA","🇺🇸"],
+    TRR:["Trincomalee","Sri Lanka","🇱🇰"],
+    VIX:["Vitoria","Brazil","🇧🇷"]
 };
