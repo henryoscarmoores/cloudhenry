@@ -296,7 +296,46 @@
     s.onerror = next;
     document.head.appendChild(s);
   }
+  // The page title used to be Ghost's plain article heading, which looked
+  // weak above a busy search card. It now gets the homepage's weight, a
+  // yellow eyebrow naming the airlines, and a line with the real size of
+  // the feed from fares.json's totals.
+  var TOTALS = null;
+  function withCommas(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  function renderTitle() {
+    var h = document.querySelector("h1.gh-article-title");
+    if (!h) return;
+    if (!document.getElementById("chfs-title-css")) {
+      var st = document.createElement("style");
+      st.id = "chfs-title-css";
+      st.textContent =
+        ".chfs-eyebrow{display:block;color:#FFE9AE;font-size:12px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase;text-align:center;margin:0 0 14px;text-shadow:0 1px 10px rgba(4,45,80,.3)}" +
+        "h1.gh-article-title.chfs-big{font-size:64px!important;font-weight:800!important;letter-spacing:-2px!important;line-height:1.02!important;text-shadow:0 3px 22px rgba(4,45,80,.32)!important;margin-bottom:12px!important}" +
+        ".chfs-tally{display:block;text-align:center;color:#F0F9FE;font-size:17px;line-height:1.5;margin:0 auto 6px;max-width:640px;text-shadow:0 1px 12px rgba(4,45,80,.3)}" +
+        ".chfs-tally b{color:#FFE071;font-weight:800}" +
+        "@media(max-width:640px){h1.gh-article-title.chfs-big{font-size:40px!important;letter-spacing:-1.2px!important}.chfs-eyebrow{font-size:9.5px;letter-spacing:1.8px}.chfs-tally{font-size:14.5px}}";
+      document.head.appendChild(st);
+    }
+    h.classList.add("chfs-big");
+    if (!document.querySelector(".chfs-eyebrow")) {
+      var eb = document.createElement("span");
+      eb.className = "chfs-eyebrow";
+      eb.textContent = "12 UK airports · Ryanair, Wizz Air, Norwegian and more · checked this morning";
+      h.parentNode.insertBefore(eb, h);
+    }
+    var t = document.querySelector(".chfs-tally");
+    if (!t) { t = document.createElement("span"); t.className = "chfs-tally"; h.parentNode.insertBefore(t, h.nextSibling); }
+    var when = "";
+    if (GENERATED) { var d = new Date(GENERATED); when = " at " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+    t.innerHTML = (TOTALS && TOTALS.fares)
+      ? "<b>" + withCommas(TOTALS.fares) + " fares</b> on <b>" + withCommas(TOTALS.routes) + " routes</b>, priced this morning" + when + ". Pick an airport and go."
+      : "Every fare we can find from 12 UK airports, priced this morning" + when + ". Pick an airport and go.";
+  }
+
+  renderTitle();
+
   function stampLabel() {
+    renderTitle();
     if (!GENERATED || !$("chfsStamp")) return;
     var d = new Date(GENERATED);
     $("chfsStamp").textContent = " Last updated " + fmt(GENERATED) + ", " +
@@ -1418,6 +1457,7 @@
     .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
     .then(function (j) {
       SLIM = j.fares || [];
+      TOTALS = j.totals || null;
       FARES = SLIM;
       if (j.generated) { GENERATED = j.generated; stampLabel(); }
       var today = isoToday();

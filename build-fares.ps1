@@ -149,7 +149,7 @@ for ($i = 0; $i -lt $MonthsAhead; $i++) { $months += (Get-Date).AddMonths($i).To
 
 $generated = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $slim = New-Object System.Collections.Generic.List[object]
-$totalRoutes = 0; $totalOptions = 0; $calls = 0
+$totalRoutes = 0; $totalOptions = 0; $totalDated = 0; $calls = 0
 $runStart = Get-Date
 
 foreach ($origin in $ORIGINS) {
@@ -355,6 +355,7 @@ foreach ($origin in $ORIGINS) {
   $out = [pscustomobject]@{ generated = $generated; currency = $Currency.ToUpper(); origin = $origin; count = $withOpts.Count; fares = $withOpts }
   Write-Json -Path (Join-Path $RepoDir "fares-$origin.json") -Obj $out
   $totalRoutes += $withOpts.Count
+  foreach ($t in $withOpts) { $totalDated += @($t.options).Count }
   Log ("{0}: wrote {1} routes, {2} KB" -f $origin, $withOpts.Count, [math]::Round((Get-Item (Join-Path $RepoDir "fares-$origin.json")).Length / 1KB))
 
   # ---- 4. Slim copy for the rest of the site -------------------------
@@ -404,7 +405,9 @@ if ($OnlyOrigins -and -not $WriteSlim) {
 } else {
   try {
     $slimArr = @($slim.ToArray())
-    $slimOut = [pscustomobject]@{ generated = $generated; currency = $Currency.ToUpper(); origins = @($ORIGINS); count = $slimArr.Count; fares = $slimArr }
+    # totals cover every airport file written this run (after the airline
+    # feeds), so the search page can say how much is behind it.
+    $slimOut = [pscustomobject]@{ generated = $generated; currency = $Currency.ToUpper(); origins = @($ORIGINS); count = $slimArr.Count; totals = @{ routes = $totalRoutes; fares = $totalDated }; fares = $slimArr }
     Write-Json -Path (Join-Path $RepoDir "fares.json") -Obj $slimOut
     Log ("fares.json: {0} routes, {1} KB" -f $slimArr.Count, [math]::Round((Get-Item (Join-Path $RepoDir "fares.json")).Length / 1KB))
   } catch {
