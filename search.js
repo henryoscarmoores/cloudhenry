@@ -1228,10 +1228,12 @@
   // The day trip button is made here rather than in the Ghost page card,
   // so it ships with the script and nothing in Ghost needs editing.
   (function () {
-    var after = $("chfsXmas") || $("chfsWknd");
+    // It sits right after Weekend so it is in view without scrolling the
+    // strip; the long name went off the edge on a laptop.
+    var after = $("chfsWknd") || $("chfsXmas");
     if (!after || $("chfsDay")) return;
     var b = document.createElement("button");
-    b.type = "button"; b.id = "chfsDay"; b.className = after.className; b.textContent = "Extreme day trip";
+    b.type = "button"; b.id = "chfsDay"; b.className = after.className; b.textContent = "Day trips"; b.title = "Extreme day trips: out before 9am, back the same evening";
     b.setAttribute("aria-pressed", "false");
     after.parentNode.insertBefore(b, after.nextSibling);
     b.addEventListener("click", function () { setTrip("daytrip"); });
