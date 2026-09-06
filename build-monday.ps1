@@ -11,21 +11,21 @@
        40 days free". The button goes through the Worker's /go, which
        swaps the member's uuid for a sign-in link and opens the plan
        chooser: one tap, no password.
-    4. A paragraph Henry can edit: "Last week members from X booked...".
+    4. "Your search, one tap": four prefilled searches for the airport.
     5. Paywall marker, then for members (status:-free) the full list,
        one way then returns, every fare a Book button.
     6. Sign-off.
 
   Ghost sends the right version to each reader from the one post. Henry
-  opens the draft, edits the proof line if he likes, picks the airport
-  label as the audience, and presses Send. His twelve standing paid-draft
-  posts are never touched; these are new drafts, tagged monday-auto.
+  opens the draft, picks the airport
+  label as the audience, and presses Send. Old drafts are not touched;
+  these are new drafts, tagged monday-auto. -Replace redoes today's.
 
   Needs the Ghost Admin key: GHOST_ADMIN_KEY in the environment, or a
   gitignored .ghostkey beside this script.
 
   Usage:
-    .\build-monday.ps1                 all twelve airports
+    .\build-monday.ps1                 all fourteen airports
     .\build-monday.ps1 -OnlyOrigins MAN
     .\build-monday.ps1 -OnlyOrigins MAN -Replace   redo today's draft
 
@@ -286,19 +286,33 @@ foreach ($a in $AIRPORTS) {
     "<tr><td style=`"padding:4px 16px 18px 16px;text-align:center;$FONT`">" +
     "<div style=`"width:38px;height:38px;line-height:38px;border-radius:50%;background:#F5C242;margin:0 auto 6px auto;font-size:18px;text-align:center;`">&#128274;</div>" +
     "<div style=`"font-size:17px;font-weight:800;color:#0E3550;letter-spacing:-.3px;`">$rest more fares from $(Esc $a.name)</div>" +
-    "<div style=`"font-size:13px;color:#46607A;margin:2px 0 12px;`">$(if ($returnsUnder50) { "Including $returnsUnder50 returns under $([char]0xA3)50." } else { "One way and return, with the exact dates." })</div>" +
+    "<div style=`"font-size:13px;color:#46607A;margin:2px 0 4px;`">$(if ($returnsUnder50) { "Including $returnsUnder50 returns under $([char]0xA3)50." } else { "One way and return, with the exact dates." })</div>" +
+    "<div style=`"font-size:12.5px;color:#46607A;margin:0 0 12px;`">Plus the search: every fare from $(Esc $a.name), every date, five months ahead. Weekends, day trips, Christmas markets.</div>" +
     "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$goLink`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:16px 32px;text-decoration:none;$FONT`">See all $n, 40 days free &rarr;</a></td></tr></table>" +
     "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">Then $([char]0xA3)2.99 a month. Cancel any time, no contract. One tap, no password.</div>" +
     "</td></tr></table>"
 
   # 5: everything, members only.
   $ows = @($fares | Where-Object { -not $_.ret }); $rts = @($fares | Where-Object { $_.ret })
+  # The search is half the membership and most members never open it.
+  # Four tappable searches, prefilled for their airport, sit under the
+  # fare list every week (Henry, 6 Sep 2026: "encourage usage of our
+  # amazing search flights feature").
+  $nextMonth = (Get-Date).AddMonths(1); $mk = $nextMonth.ToString("yyyy-MM"); $mn = $nextMonth.ToString("MMMM")
+  $chip = { param($label, $qs) "<a href=`"$Site/search/?from=$($a.code)&$qs`" style=`"display:inline-block;margin:4px 3px;padding:9px 14px;border-radius:999px;background:#FFFFFF;border:1px solid #CFE0EE;color:#0E3550;font-weight:700;font-size:13px;text-decoration:none;$FONT`">$label</a>" }
+  $searchStrip = "<div style=`"margin-top:18px;padding:14px 12px 10px;border-radius:14px;background:#F0F6FB;text-align:center;$FONT`">" +
+    "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin-bottom:6px;`">Your search, one tap</div>" +
+    "<div style=`"font-size:13.5px;color:#46607A;margin-bottom:8px;`">Every fare from $(Esc $a.name), every date, five months ahead. Try one:</div>" +
+    (& $chip "Weekend breaks in $mn" "trip=weekend&month=$mk") + (& $chip "Extreme day trips" "trip=daytrip") + (& $chip "Christmas markets" "trip=xmas") + (& $chip "Sun under &pound;40" "theme=sun&max=40") +
+    "</div>"
+
   $full = ""
   # Gmail clips anything over about 100KB, so the email carries the best thirteen after the top three and links to the rest.
   $ows = @($ows | Select-Object -First 8); $rts = @($rts | Select-Object -First 5)
   if ($ows.Count) { $full += "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:16px 0 8px;$FONT`">One way</div>"; $i = 0; foreach ($f in $ows) { $full += FareRow $f $i $false; $i++ } }
   if ($rts.Count) { $full += "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:16px 0 8px;$FONT`">Returns</div>"; $i = 0; foreach ($f in $rts) { $full += FareRow $f $i $false; $i++ } }
   $full += "<div style=`"text-align:center;margin-top:14px;$FONT`"><a href=`"$Site/search/?from=$($a.code)`" style=`"display:inline-block;background:#0E6FB6;color:#FFFFFF;font-weight:800;font-size:14px;padding:12px 22px;border-radius:999px;text-decoration:none;`">All $n fares from $(Esc $a.name), searchable &rarr;</a></div>"
+  $full += $searchStrip
   $full += "<div style=`"margin-top:14px;padding:12px 14px;border-radius:12px;background:#FFF4D1;font-size:13px;color:#5A4210;$FONT`"><b style=`"color:#3A2A08;`">Book fast.</b> The cheapest fares here are the kind that go within three days. Every price was checked this morning; airlines change them without warning.</div>"
 
   $signoff = "<div style=`"margin-top:16px;font-size:13.5px;color:#46607A;$FONT`">See you Monday,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
@@ -312,11 +326,10 @@ foreach ($a in $AIRPORTS) {
   # makes the post a public teaser rather than a wall.
   $teaseWeb = $tease.Replace($goLink, "#/portal/signup")
   $cardTeaseWeb = @{ type = "html"; version = 1; html = $teaseWeb; visibility = @{ web = @{ nonMember = $true; memberSegment = "status:free" }; email = @{ memberSegment = "" } } }
-  $proofPara = @{ type = "paragraph"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @(@{ type = "extended-text"; version = 1; detail = 0; format = 0; mode = "normal"; style = ""; text = "Last week members from $($a.name) booked: (Henry, add one or two real ones here, or delete this line)." }) }
   $paywall   = @{ type = "paywall"; version = 1 }
   $cardFull  = @{ type = "html"; version = 1; html = $full; visibility = @{ web = @{ nonMember = $false; memberSegment = "status:-free" }; email = @{ memberSegment = "status:-free" } } }
   $cardSign  = @{ type = "html"; version = 1; html = $signoff }
-  $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($cardAll, $cardTease, $cardTeaseWeb, $proofPara, $cardFull, $cardSign) } } | ConvertTo-Json -Depth 12 -Compress
+  $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($cardAll, $cardTease, $cardTeaseWeb, $cardFull, $cardSign) } } | ConvertTo-Json -Depth 12 -Compress
 
   $post = @{ posts = @(@{
     title = $title; slug = $slugBase; lexical = $lexical; status = "draft"; visibility = "public"
