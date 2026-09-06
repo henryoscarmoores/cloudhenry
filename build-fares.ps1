@@ -165,7 +165,10 @@ function Cap-ByMonth($Items, [int] $PerMonth, [int] $Max) {
     $by[$m]++; $out.Add($o)
     if ($out.Count -ge $Max) { break }
   }
-  return ,@($out.ToArray())
+  # Emit the items one by one; the caller wraps the call in @(). A
+  # comma-wrapped return here nested the whole list inside options as
+  # one element, and every feed merge then choked on it.
+  $out.ToArray()
 }
 
 $generated = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
