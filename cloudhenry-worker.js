@@ -171,16 +171,26 @@ async function handleJoin(request, env, origin) {
   if (camp) labels.push({ name: "camp-" + camp });
   const newsletters = await defaultNewsletters(env);
 
-  const r = await ghost(env, "POST", "/members/", {
+  const payload = {
     members: [{ email, name: "", labels, newsletters, note: "Joined via the website, " + new Date().toISOString().slice(0, 10) + (src ? ", from " + src : "") + (camp ? ", campaign " + camp : "") }]
-  });
+  };
+  let r = await ghost(env, "POST", "/members/", payload);
+  // A momentary blip at Ghost (5xx, or a rate limit) is worth one more go
+  // before a real person is shown an error.
+  if (r.status >= 500 || r.status === 429) { await new Promise(res => setTimeout(res, 1200)); r = await ghost(env, "POST", "/members/", payload); }
 
   if (r.status === 201) return json({ ok: true, created: true, code: airport[1] }, 201, origin);
 
   // Already a member: not an error for them, and nothing to change.
   const msg = (r.data && r.data.errors && r.data.errors[0] && r.data.errors[0].message) || "";
-  if (r.status === 422 && /already exists/i.test(msg)) return json({ ok: true, created: false, code: airport[1] }, 200, origin);
+  const ctx = (r.data && r.data.errors && r.data.errors[0] && r.data.errors[0].context) || "";
+  if (r.status === 422 && /already exist|already in use|already a member/i.test(msg + " " + ctx)) return json({ ok: true, created: false, code: airport[1] }, 200, origin);
 
+  // Anything else is logged in full (Cloudflare's Worker logs) and shown
+  // to the visitor in plain words, so a refused email address is not
+  // dressed up as our fault.
+  console.error("join: Ghost refused member", JSON.stringify({ status: r.status, msg, ctx, email: email.replace(/^(.).*(@.*)$/, "$1***$2"), labels: labels.map(l => l.name) }));
+  if (r.status === 422) return json({ error: "That email address was not accepted. Try another one." }, 400, origin);
   return json({ error: "Something went wrong on our side. Please try again." }, 502, origin);
 }
 
