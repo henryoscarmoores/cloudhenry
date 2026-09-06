@@ -42,14 +42,14 @@ function Feed-Call([string] $Method, [string] $Url, $Body, [hashtable] $Headers)
   if ($Headers) { foreach ($k in $Headers.Keys) { $h[$k] = $Headers[$k] } }
   $hostName = ([uri]$Url).Host
   $delay = 2
-  for ($try = 1; $try -le 3; $try++) {
+  for ($try = 1; $try -le 4; $try++) {
     try {
       $script:FeedCalls++
       if ($script:FeedUseCurl[$hostName] -and (Test-Path $script:CurlExe)) {
         $r = Feed-Curl $Method $Url $Body $h
       } elseif ($Body) { $r = Invoke-RestMethod -Method $Method -Uri $Url -Headers $h -ContentType "application/json" -Body $Body -TimeoutSec 60 }
       else { $r = Invoke-RestMethod -Method $Method -Uri $Url -Headers $h -TimeoutSec 60 }
-      Start-Sleep -Milliseconds 250
+      Start-Sleep -Milliseconds 400
       return $r
     } catch {
       $status = $null
@@ -60,9 +60,11 @@ function Feed-Call([string] $Method, [string] $Url, $Body, [hashtable] $Headers)
         $script:FeedUseCurl[$hostName] = $true
         continue
       }
-      if ($try -eq 3) { Feed-Log "Feed gave up ($status): $Url" "WARN"; return $null }
-      Start-Sleep -Seconds $delay
-      $delay *= 3
+      if ($try -eq 4) { Feed-Log "Feed gave up ($status): $Url" "WARN"; return $null }
+      # 503 and 429 mean "slow down" (Wizz throttles a fast run), so wait
+      # properly rather than hammering: 10s, 30s, 90s.
+      if ($status -eq 503 -or $status -eq 429) { Start-Sleep -Seconds (10 * [math]::Pow(3, $try - 1)) }
+      else { Start-Sleep -Seconds $delay; $delay *= 3 }
     }
   }
 }
