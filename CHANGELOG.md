@@ -20,3 +20,6 @@
 - Worker: three goes at Ghost with waits when it answers anything but a member (spike on 6 Sep turned a few sign-ups away in under 100ms); refusals logged with status and masked email; Anthropic planner error text logged and returned as `detail`.
 - Search planner: falls back silently to the built-in parser when the Worker errors (the Anthropic account is out of credit, so every planner call has been failing).
 - Probed airports for Henry: Southampton has no readable flights; East Midlands (33+ Ryanair destinations) is the next add; Prestwick, Newquay, Cardiff, Teesside, Exeter, Aberdeen, Norwich are thin.
+- Cardiff (CWL) is the 14th airport (2dff548): every code list, Worker labels, fares-CWL.json (45 routes, minimum 5), /join-cardiff/ page with real rows, choose-city card, footer picker, loc-cardiff label, "14 UK airports" everywhere, both routines updated.
+- First full backup taken to Desktop\CloudHenry\backup\2026-09-06 (Ghost content and members exports, theme, routes, redirects, repo snapshot, restore notes).
+- Duffel researched: no monthly fee, $3 per order, easyJet/KLM/BA/Aer Lingus/Vueling/Norwegian available; Henry to create the account himself.
