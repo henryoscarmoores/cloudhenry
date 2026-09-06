@@ -9,7 +9,7 @@
  * search.js keeps its own copy so it never depends on load order.
  */
 window.CH_PLACES = {
-    BCN:["Barcelona","Spain","🇪🇸"],AYT:["Antalya","Türkiye","🇹🇷"],
+    BCN:["Barcelona","Spain","🇪🇸"],TFS:["Tenerife South","Spain","🇪🇸"],TRF:["Oslo Torp","Norway","🇳🇴"],TSF:["Venice Treviso","Italy","🇮🇹"],VST:["Stockholm Västerås","Sweden","🇸🇪"],AYT:["Antalya","Türkiye","🇹🇷"],
     IST:["Istanbul","Türkiye","🇹🇷"],MOW:["Moscow","Russia","🇷🇺"],
     LED:["St Petersburg","Russia","🇷🇺"],EDI:["Edinburgh","Scotland","🏴"],
     PAR:["Paris","France","🇫🇷"],AGP:["Málaga","Spain","🇪🇸"],
@@ -819,5 +819,9 @@ window.CH_PLACES = {
     PMF:["Parma","Italy","🇮🇹"],
     PPT:["Papeete","French Polynesia","🇵🇫"],
     REG:["Reggio Calabria","Italy","🇮🇹"],
-    WMI:["Nowy Dwor Mazowiecki","Poland","🇵🇱"]
+    WMI:["Nowy Dwor Mazowiecki","Poland","🇵🇱"],
+    DEB:["Debrecen","Hungary","🇭🇺"],
+    SUJ:["Satu Mare","Romania","🇷🇴"],
+    TGM:["Tirgu Mures","Romania","🇷🇴"],
+    TLV:["Tel Aviv Yafo","Israel","🇮🇱"]
 };
