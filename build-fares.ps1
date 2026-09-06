@@ -134,6 +134,7 @@ function Write-Json {
 # feed never touches this one.
 . (Join-Path $RepoDir "feeds-common.ps1")
 . (Join-Path $RepoDir "ryanair.ps1")
+. (Join-Path $RepoDir "ryanair-calendar.ps1")
 . (Join-Path $RepoDir "wizzair.ps1")
 . (Join-Path $RepoDir "norwegian.ps1")
 
@@ -345,6 +346,7 @@ foreach ($origin in $ORIGINS) {
   # Real dated fares straight from the airline, including proper weekend
   # returns. A failure here is a warning and the list stays as it was.
   try { $list = @(Merge-Ryanair -Origin $origin -List @($list)) } catch { Log ("{0}: Ryanair merge skipped: {1}" -f $origin, $_.Exception.Message) "WARN" }
+  try { $list = @(Merge-RyanairCalendar -Origin $origin -List @($list)) } catch { Log ("{0}: Ryanair calendar skipped: {1}" -f $origin, $_.Exception.Message) "WARN" }
   try { $list = @(Merge-Wizz -Origin $origin -List @($list)) } catch { Log ("{0}: Wizz Air merge skipped: {1}" -f $origin, $_.Exception.Message) "WARN" }
   try { $list = @(Merge-Norwegian -Origin $origin -List @($list)) } catch { Log ("{0}: Norwegian merge skipped: {1}" -f $origin, $_.Exception.Message) "WARN" }
 
