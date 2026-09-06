@@ -21,13 +21,13 @@ function Get-RyanairCalendar([string] $Origin, [string] $Dest, [string] $Month) 
     if ($f.soldOut -or $f.unavailable -or -not $f.price -or -not $f.price.value -or $f.price.currencyCode -ne "GBP") { continue }
     $d = [string]$f.day
     if ($d -le $today) { continue }
-    $out += [pscustomobject]@{ dest = $Dest; d = $d; p = (Feed-Pounds $f.price.value) }
+    $out += [pscustomobject]@{ dest = $Dest; d = $d; p = (Feed-Pounds $f.price.value); h = (Feed-Hour $f.departureDate) }
   }
   foreach ($f in @($r.inbound.fares)) {
     if ($f.soldOut -or $f.unavailable -or -not $f.price -or -not $f.price.value -or $f.price.currencyCode -ne "GBP") { continue }
     $d = [string]$f.day
     if ($d -le $today) { continue }
-    $in += [pscustomobject]@{ dest = $Dest; d = $d; p = (Feed-Pounds $f.price.value) }
+    $in += [pscustomobject]@{ dest = $Dest; d = $d; p = (Feed-Pounds $f.price.value); hl = (Feed-Hour $f.departureDate) }
   }
   return @{ out = $out; in = $in }
 }

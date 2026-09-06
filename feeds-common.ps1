@@ -1,18 +1,28 @@
-# Shared plumbing for the airline feeds (wizzair.ps1, norwegian.ps1).
+# Shared plumbing for the airline feeds (wizzair.ps1, norwegian.ps1,
+# ryanair-calendar.ps1).
 #
 # Each feed returns two lists for an airport: one-way fares out of it
-# ({dest, d, p}) and one-way fares back into it ({dest, d, p}). Feed-Merge
-# folds both into the airport's route list: outbound fares become
-# options tagged with the airline code (a = "W6", "DY"), inbound fares go
-# into the route's inbound list (which the search uses to assemble a
-# return for any dates), and Friday/Saturday out, Sunday/Monday back
-# pairs are built here so the weekend view has them straight away.
+# ({dest, d, p, h}) and one-way fares back into it ({dest, d, p, hl}),
+# where h is the earliest departure hour that day and hl the latest, when
+# the airline tells us. Feed-Merge folds both into the airport's route
+# list: outbound fares become options tagged with the airline code
+# (a = "FR", "W6", "DY"), inbound fares go into the route's inbound list
+# (which the search uses to assemble a return for any dates), and three
+# kinds of pair are built here so the search's buttons have them straight
+# away: weekends (Friday/Saturday out, Sunday/Monday back, 1 to 3
+# nights), Christmas markets (2 to 5 nights between 15 November and 24
+# December to the market cities) and extreme day trips (out before 9am,
+# back after 5pm the same day).
 #
 # ryanair.ps1 predates this file and keeps its own copy of the same
 # idea; nothing here changes it.
 
 $FEED_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 $script:FeedCalls = 0
+
+# Same list as XMAS in search.js. Change both or neither.
+$FEED_XMAS = @{ PRG=1; BER=1; VIE=1; BUD=1; KRK=1; CPH=1; HAM=1; CGN=1; DUS=1; FRA=1; AMS=1; BRU=1; GDN=1; WAW=1; RIX=1; VNO=1; HEL=1; OSL=1; GVA=1; MIL=1; VCE=1; ROM=1; NYC=1; BOS=1; YTO=1; TLL=1 }
+$FEED_XMAS_FROM = "2026-11-15"; $FEED_XMAS_TO = "2026-12-24"
 
 function Feed-Log([string] $m, [string] $lvl = "INFO") {
   if (Get-Command Log -ErrorAction SilentlyContinue) { Log $m $lvl } else { Write-Host "[$lvl] $m" }
@@ -73,6 +83,13 @@ function Feed-Pounds($amount) {
   return [int][math]::Round([double]$amount, [System.MidpointRounding]::AwayFromZero)
 }
 
+# Hour of day from an ISO timestamp like 2026-10-04T18:55:00, or -1.
+function Feed-Hour($iso) {
+  $s = [string]$iso
+  if ($s.Length -ge 13 -and $s[10] -eq 'T') { try { return [int]$s.Substring(11, 2) } catch { return -1 } }
+  return -1
+}
+
 function Feed-IsWeekend([datetime] $dep, [datetime] $ret) {
   $n = ($ret - $dep).Days
   return ($n -ge 1 -and $n -le 3 -and
@@ -81,7 +98,7 @@ function Feed-IsWeekend([datetime] $dep, [datetime] $ret) {
 }
 
 # The months to ask for: the rest of this month from tomorrow, then the
-# next $Months whole months. Returns @{from; to} pairs as yyyy-MM-dd.
+# next $Months whole months. Returns @{from; to; month} as yyyy-MM-dd.
 function Feed-Months([int] $Months = 5) {
   $out = @()
   $start = (Get-Date).Date.AddDays(1)
@@ -95,41 +112,62 @@ function Feed-Months([int] $Months = 5) {
   return $out
 }
 
-# $Fares: one-way fares out of $Origin ({dest, d, p}); $Inbound: one-way
-# fares from dest back to $Origin ({dest, d, p}). $Code is the airline's
-# IATA code, $Name its display name for the log.
+# $Fares: one-way fares out of $Origin ({dest, d, p, [h]}); $Inbound:
+# one-way fares from dest back to $Origin ({dest, d, p, [hl]}). $Code is
+# the airline's IATA code, $Name its display name for the log.
 function Feed-Merge([string] $Origin, [array] $List, [array] $Fares, [array] $Inbound, [string] $Code, [string] $Name) {
   if (-not $Fares.Count -and -not $Inbound.Count) { Feed-Log ("{0}: {1} returned nothing" -f $Origin, $Name) "WARN"; return $List }
   $byDest = @{}
   foreach ($t in $List) { $byDest[[string]$t.destination] = $t }
 
-  # Cheapest inbound per destination per date.
+  # Cheapest inbound per destination per date, with the latest hour seen.
   $inByDest = @{}
   foreach ($i in $Inbound) {
     if (-not $i.dest -or -not $i.d -or $i.p -le 0) { continue }
     if (-not $inByDest.ContainsKey($i.dest)) { $inByDest[$i.dest] = @{} }
-    if (-not $inByDest[$i.dest].ContainsKey($i.d) -or $i.p -lt $inByDest[$i.dest][$i.d]) { $inByDest[$i.dest][$i.d] = [int]$i.p }
+    $hl = if ($i.PSObject.Properties['hl']) { [int]$i.hl } else { -1 }
+    $cur = $inByDest[$i.dest][$i.d]
+    if (-not $cur) { $inByDest[$i.dest][$i.d] = @{ p = [int]$i.p; hl = $hl } }
+    else { if ($i.p -lt $cur.p) { $cur.p = [int]$i.p }; if ($hl -gt $cur.hl) { $cur.hl = $hl } }
   }
 
-  # Weekend pairs from the singles, cheapest first, at most 40 a route.
   $all = @()
-  foreach ($f in $Fares) { if ($f.dest -and $f.d -and $f.p -gt 0) { $all += [pscustomobject]@{ dest = $f.dest; d = $f.d; r = ""; p = [int]$f.p; c = 0 } } }
+  foreach ($f in $Fares) {
+    if ($f.dest -and $f.d -and $f.p -gt 0) {
+      $h = if ($f.PSObject.Properties['h']) { [int]$f.h } else { -1 }
+      $all += [pscustomobject]@{ dest = $f.dest; d = $f.d; r = ""; p = [int]$f.p; c = 0; x = 0; h = $h }
+    }
+  }
   $outByDest = @{}
   foreach ($f in $all) { if (-not $outByDest.ContainsKey($f.dest)) { $outByDest[$f.dest] = @() }; $outByDest[$f.dest] += $f }
-  $pairs = 0
+
+  # Pairs from the singles, cheapest first, at most 40 of each kind a route.
+  $weekends = 0; $xmas = 0; $days = 0
   foreach ($dest in @($outByDest.Keys)) {
     if (-not $inByDest.ContainsKey($dest)) { continue }
-    $count = 0
+    $ins = $inByDest[$dest]
+    $isXmasDest = $FEED_XMAS.ContainsKey($dest)
+    $nW = 0; $nX = 0; $nD = 0
     foreach ($o in ($outByDest[$dest] | Sort-Object { $_.p })) {
       $dep = [datetime]::ParseExact($o.d, "yyyy-MM-dd", $null)
-      foreach ($n in 1..3) {
+      # Day trip: same date, early out, late back.
+      if ($nD -lt 40 -and $o.h -ge 0 -and $o.h -le 9 -and $ins.ContainsKey($o.d) -and $ins[$o.d].hl -ge 17) {
+        $all += [pscustomobject]@{ dest = $dest; d = $o.d; r = $o.d; p = ($o.p + $ins[$o.d].p); c = 1; x = 1; h = -1 }
+        $nD++; $days++
+      }
+      $maxN = if ($isXmasDest) { 5 } else { 3 }
+      foreach ($n in 1..$maxN) {
         $back = $dep.AddDays($n); $rk = $back.ToString("yyyy-MM-dd")
-        if ($inByDest[$dest].ContainsKey($rk) -and (Feed-IsWeekend $dep $back)) {
-          $all += [pscustomobject]@{ dest = $dest; d = $o.d; r = $rk; p = ($o.p + $inByDest[$dest][$rk]); c = 1 }
-          $count++; $pairs++
+        if (-not $ins.ContainsKey($rk)) { continue }
+        $isW = ($n -le 3) -and (Feed-IsWeekend $dep $back)
+        $isX = $isXmasDest -and $n -ge 2 -and $o.d -ge $FEED_XMAS_FROM -and $o.d -le $FEED_XMAS_TO
+        if (($isW -and $nW -lt 40) -or ($isX -and $nX -lt 40)) {
+          $all += [pscustomobject]@{ dest = $dest; d = $o.d; r = $rk; p = ($o.p + $ins[$rk].p); c = 1; x = 0; h = -1 }
+          if ($isW) { $nW++; $weekends++ }
+          if ($isX) { $nX++; $xmas++ }
         }
       }
-      if ($count -ge 40) { break }
+      if ($nW -ge 40 -and $nD -ge 40 -and (-not $isXmasDest -or $nX -ge 40)) { break }
     }
   }
 
@@ -143,8 +181,11 @@ function Feed-Merge([string] $Origin, [array] $List, [array] $Fares, [array] $In
       $List += $t
       $newRoutes++
     }
-    if ($f.c) { $opt = [pscustomobject]@{ d = $f.d; r = $f.r; p = $f.p; s = 0; c = 1; a = $Code } }
-    else { $opt = [pscustomobject]@{ d = $f.d; r = $f.r; p = $f.p; s = 0; a = $Code } }
+    $opt = [ordered]@{ d = $f.d; r = $f.r; p = $f.p; s = 0 }
+    if ($f.c) { $opt.c = 1 }
+    if ($f.x) { $opt.x = 1 }
+    $opt.a = $Code
+    $opt = [pscustomobject]$opt
     $key = "$($f.d)|$($f.r)"
     $existing = $null
     foreach ($o in @($t.options)) { if ("$($o.d)|$($o.r)" -eq $key) { $existing = $o; break } }
@@ -170,12 +211,12 @@ function Feed-Merge([string] $Origin, [array] $List, [array] $Fares, [array] $In
     $have = @{}
     foreach ($x in @($t.inbound)) { if ($x -and $x.d) { $have[[string]$x.d] = $x } }
     foreach ($k in $inByDest[$dest].Keys) {
-      $p = $inByDest[$dest][$k]
+      $p = $inByDest[$dest][$k].p
       if (-not $have.ContainsKey($k) -or $p -lt [int]$have[$k].p) { $have[$k] = [pscustomobject]@{ d = $k; p = $p; s = 0 }; $inboundAdded++ }
     }
     $t.inbound = @($have.Keys | Sort-Object | ForEach-Object { $have[$_] })
   }
 
-  Feed-Log ("{0}: {1} added {2} fares ({3} weekend pairs), undercut {4}, {5} new routes, {6} inbound dates" -f $Origin, $Name, $added, $pairs, $replaced, $newRoutes, $inboundAdded)
+  Feed-Log ("{0}: {1} added {2} fares ({3} weekends, {4} Christmas, {5} day trips), undercut {6}, {7} new routes, {8} inbound dates" -f $Origin, $Name, $added, $weekends, $xmas, $days, $replaced, $newRoutes, $inboundAdded)
   return $List
 }

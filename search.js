@@ -396,6 +396,13 @@
     return nights >= 2 && nights <= 5;
   }
 
+  // Extreme day trip: out and back on the same date. The feeds only build
+  // these where the airline's first flight leaves before 9am and its last
+  // comes back after 5pm, so every one here is a real day out.
+  function isDayTrip(r) {
+    return !!r.ret && String(r.ret).slice(0, 10) === String(r.dep).slice(0, 10);
+  }
+
   function isWeekendBreak(r) {
     if (!r.ret) return false;
     var out = dow(r.dep), back = dow(r.ret);
@@ -590,6 +597,7 @@
     if (state.trip === "ret") rows = rows.filter(function (r) { return !!r.ret; });
     if (state.trip === "weekend") rows = rows.filter(isWeekendBreak);
     if (state.trip === "xmas") rows = rows.filter(isXmasMarket);
+    if (state.trip === "daytrip") rows = rows.filter(isDayTrip);
     if (state.direct) rows = rows.filter(function (r) { return r.stops === 0; });
     if (state.budget < 600) rows = rows.filter(function (r) { return r.price <= state.budget; });
     // Exact dates, with a tolerance either side. Someone asking for the
@@ -762,13 +770,13 @@
             '<a href="' + url + '" target="_blank" rel="noopener sponsored">Search these dates on Aviasales</a>' +
             tryAnyButton() +
           '</div>';
-      } else if (state.trip === "weekend" || state.trip === "xmas") {
+      } else if (state.trip === "weekend" || state.trip === "xmas" || state.trip === "daytrip") {
         // Weekend and Christmas inventory is heavily London weighted.
         // Telling a Leeds visitor to clear the destination is simply
         // wrong; offering all twelve airports usually solves it.
         var wk = nextWeekend();
         var wkUrl = tracked("https://www.aviasales.com/search/" + liveOrigin() + ddmm(wk[0]) + ddmm(wk[1]) + "1");
-        var what = state.trip === "xmas" ? "Christmas market trips" : "weekend breaks";
+        var what = state.trip === "xmas" ? "Christmas market trips" : state.trip === "daytrip" ? "day trips" : "weekend breaks";
         grid.innerHTML =
           '<div class="chfs-nodata">' +
             '<strong>No ' + what + ' cached from ' + fromCity + ' yet</strong>' +
@@ -793,10 +801,10 @@
       b.type = "button";
       b.className = "chfs-card";
       var when = fmt(r.dep) + (r.ret ? " – " + fmt(r.ret) : "");
-      var trip = r.ret ? "return" : "one way";
+      var trip = r.ret ? (isDayTrip(r) ? "day trip" : "return") : "one way";
       var stops = (r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops")) + (r.pair ? " · two single tickets" : "") + airlineTag(r.air);
       var nights = r.ret ? dayDiff(r.ret, r.dep) : 0;
-      var extra = nights > 0 ? " · " + nights + (nights === 1 ? " night" : " nights") : "";
+      var extra = nights > 0 ? " · " + nights + (nights === 1 ? " night" : " nights") : (r.ret ? " · out early, back the same evening" : "");
       var from = anyMode ? '<span class="chfs-from">from ' + (ORIGIN_SHORT[r.origin] || r.origin) + '</span>' : "";
 
       b.innerHTML =
@@ -871,7 +879,7 @@
       row.className = "chfs-opt";
       row.innerHTML =
         '<span><span class="d">' + fmt(a.dep) + (a.ret ? " – " + fmt(a.ret) : "") + '</span>' +
-        '<span class="s">' + (a.ret ? "return" : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + (a.pair ? " · two singles" : "") + airlineTag(a.air) + '</span></span>' +
+        '<span class="s">' + (a.ret ? (isDayTrip(a) ? "day trip" : "return") : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + (a.pair ? " · two singles" : "") + airlineTag(a.air) + '</span></span>' +
         '<span><span class="p">£' + a.price + '</span>' +
         '<a class="chfs-book" target="_blank" rel="noopener sponsored" href="' + bookUrl(a.origin, a.dest, a.dep, a.ret, a.air) + '">Book</a></span>';
       o.appendChild(row);
@@ -1150,6 +1158,7 @@
     $("chfsRet").setAttribute("aria-pressed", v === "ret" ? "true" : "false");
     $("chfsWknd").setAttribute("aria-pressed", v === "weekend" ? "true" : "false");
     if ($("chfsXmas")) $("chfsXmas").setAttribute("aria-pressed", v === "xmas" ? "true" : "false");
+    if ($("chfsDay")) $("chfsDay").setAttribute("aria-pressed", v === "daytrip" ? "true" : "false");
     var retField = $("fRet");
     if (retField) {
       var monthMode = $("fMonth") && !$("fMonth").hidden;
@@ -1160,10 +1169,13 @@
 
     var note = $("chfsWkndNote");
     if (note) {
-      note.hidden = (v !== "weekend" && v !== "xmas");
+      note.hidden = (v !== "weekend" && v !== "xmas" && v !== "daytrip");
       note.innerHTML = (v === "xmas")
         ? "<b>Christmas markets.</b> Long weekends between 15 November and 24 December, " +
           "to the cities that actually hold them. Prague, Berlin, Krakow, Vienna, Cologne and more, plus New York."
+        : (v === "daytrip")
+        ? "<b>Extreme day trips.</b> Out before 9am, back the same evening. Hand luggage, a full day " +
+          "somewhere else, and your own bed at night. Both flights are on the airline's own site."
         : "<b>Weekend getaways.</b> Out on a Friday or Saturday, home on the Sunday. " +
           "Nothing here needs a day off work.";
     }
@@ -1174,6 +1186,17 @@
   $("chfsRet").addEventListener("click", function () { setTrip("ret"); });
   $("chfsWknd").addEventListener("click", function () { setTrip("weekend"); });
   if ($("chfsXmas")) $("chfsXmas").addEventListener("click", function () { setTrip("xmas"); });
+  // The day trip button is made here rather than in the Ghost page card,
+  // so it ships with the script and nothing in Ghost needs editing.
+  (function () {
+    var after = $("chfsXmas") || $("chfsWknd");
+    if (!after || $("chfsDay")) return;
+    var b = document.createElement("button");
+    b.type = "button"; b.id = "chfsDay"; b.className = after.className; b.textContent = "Extreme day trip";
+    b.setAttribute("aria-pressed", "false");
+    after.parentNode.insertBefore(b, after.nextSibling);
+    b.addEventListener("click", function () { setTrip("daytrip"); });
+  })();
 
   // Sorting used to be one button that cycled through three states, and
   // nobody could tell it was a control at all. Three chips, one lit.
@@ -1254,6 +1277,7 @@
     }
 
     if (/christmas|xmas|market/.test(t)) p.trip = "xmas";
+    if (/day trip|daytrip|same day|there and back/.test(t)) p.trip = "daytrip";
     else if (/weekend/.test(t)) p.trip = "weekend";
     else if (/one way|single/.test(t)) p.trip = "one";
     else if (/return|round trip|come back|back on|nights|week away|fortnight/.test(t)) p.trip = "ret";
@@ -1319,7 +1343,7 @@
       var has = !!p.month && Array.prototype.some.call(sel.options, function (o) { return o.value === p.month; });
       state.month = has ? p.month : ""; sel.value = state.month;
     }
-    setTrip(["any", "one", "ret", "weekend", "xmas"].indexOf(p.trip) > -1 ? p.trip : "any");   // renders
+    setTrip(["any", "one", "ret", "weekend", "xmas", "daytrip"].indexOf(p.trip) > -1 ? p.trip : "any");   // renders
 
     // The reply and ideas come back from the planner, which starts from
     // whatever the visitor typed. Treat them as text, never as markup.
@@ -1425,7 +1449,7 @@
       }
       buildMonths();
       if (u.month) { state.month = u.month; $("chfsMonth").value = u.month; }
-      if (u.trip && ["any","one","ret","weekend","xmas"].indexOf(u.trip) > -1) {
+      if (u.trip && ["any","one","ret","weekend","xmas","daytrip"].indexOf(u.trip) > -1) {
         setTrip(u.trip);                       // this renders
       }
       // Sent here from the homepage's "tell us what you fancy" box.

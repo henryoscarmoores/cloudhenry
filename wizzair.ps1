@@ -46,15 +46,22 @@ function Get-WizzMonth([string] $Origin, [string] $Dest, [string] $From, [string
       @{ departureStation = $Dest; arrivalStation = $Origin; from = $From; to = $To }
     ); priceType = "regular"; adultCount = 1; childCount = 0; infantCount = 0 } | ConvertTo-Json -Depth 5 -Compress
   $r = Feed-Call POST "$base/search/timetable" $body $WIZZ_HEADERS
+  Start-Sleep -Milliseconds 700   # Wizz throttles a fast run with 503s; a slower one sails through
   $out = @(); $in = @()
   if (-not $r) { return @{ out = $out; in = $in } }
+  # departureDates lists every flight that day; the earliest out and the
+  # latest back are what make a day trip possible.
   foreach ($f in @($r.outboundFlights)) {
     if (-not $f.price -or -not $f.price.amount -or $f.price.currencyCode -ne "GBP") { continue }
-    $out += [pscustomobject]@{ dest = $Dest; d = ([string]$f.departureDate).Substring(0, 10); p = (Feed-Pounds $f.price.amount) }
+    $hours = @(@($f.departureDates) | ForEach-Object { Feed-Hour $_ } | Where-Object { $_ -ge 0 })
+    $h = if ($hours.Count) { ($hours | Measure-Object -Minimum).Minimum } else { -1 }
+    $out += [pscustomobject]@{ dest = $Dest; d = ([string]$f.departureDate).Substring(0, 10); p = (Feed-Pounds $f.price.amount); h = $h }
   }
   foreach ($f in @($r.returnFlights)) {
     if (-not $f.price -or -not $f.price.amount -or $f.price.currencyCode -ne "GBP") { continue }
-    $in += [pscustomobject]@{ dest = $Dest; d = ([string]$f.departureDate).Substring(0, 10); p = (Feed-Pounds $f.price.amount) }
+    $hours = @(@($f.departureDates) | ForEach-Object { Feed-Hour $_ } | Where-Object { $_ -ge 0 })
+    $hl = if ($hours.Count) { ($hours | Measure-Object -Maximum).Maximum } else { -1 }
+    $in += [pscustomobject]@{ dest = $Dest; d = ([string]$f.departureDate).Substring(0, 10); p = (Feed-Pounds $f.price.amount); hl = $hl }
   }
   return @{ out = $out; in = $in }
 }
