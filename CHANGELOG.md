@@ -23,3 +23,4 @@
 - Cardiff (CWL) is the 14th airport (2dff548): every code list, Worker labels, fares-CWL.json (45 routes, minimum 5), /join-cardiff/ page with real rows, choose-city card, footer picker, loc-cardiff label, "14 UK airports" everywhere, both routines updated.
 - First full backup taken to Desktop\CloudHenry\backup\2026-09-06 (Ghost content and members exports, theme, routes, redirects, repo snapshot, restore notes).
 - Duffel researched: no monthly fee, $3 per order, easyJet/KLM/BA/Aer Lingus/Vueling/Norwegian available; Henry to create the account himself.
+- Fares five months ahead (cdbc4a1, 532200b): per-month caps replace cheapest-first caps (32 one-ways, 22 returns, 14 assembled pairs, 12 weekends, 10 day trips per route per month), Ryanair per-day calendar reads six months, weekly pass 30 weeks. Birmingham January went from 282 options and 12 weekend routes to 866 options and 34 weekend routes. Prompted by a reader who found one January route.
