@@ -15,3 +15,8 @@
 - Bournemouth (BOH) is the 13th airport everywhere.
 - Homepage: planner bar removed; fare tiles for visitors and Freemium members.
 - Monday posts are public teasers; old city posts unpublished; paid-draft and monday-auto tags made internal; headline fares favour recognisable places.
+- Homepage sign-up: `var go` in home-join.js shadowed the submit function for 17 hours; renamed searchLink (78236b0). Real plus-address sign-up now tested after every change.
+- Source tracking: footer snippet keeps first-touch ref/utm in localStorage; Worker labels src-<source> and camp-<campaign>; stats.json carries `sources`.
+- Worker: three goes at Ghost with waits when it answers anything but a member (spike on 6 Sep turned a few sign-ups away in under 100ms); refusals logged with status and masked email; Anthropic planner error text logged and returned as `detail`.
+- Search planner: falls back silently to the built-in parser when the Worker errors (the Anthropic account is out of credit, so every planner call has been failing).
+- Probed airports for Henry: Southampton has no readable flights; East Midlands (33+ Ryanair destinations) is the next add; Prestwick, Newquay, Cardiff, Teesside, Exeter, Aberdeen, Norwich are thin.
