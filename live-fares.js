@@ -398,7 +398,10 @@
     var st = document.createElement("style");
     st.id = "ch-member-css";
     st.textContent =
-      ".ch-dbox.ch-member .ch-dlock{filter:none!important;opacity:1!important;pointer-events:auto!important;user-select:auto!important}" +
+      // Henry, 6 Sep 2026: unblurred, the tease rows were three big dead
+      // rows a member could not even click. Members get the grid and the
+      // search; the tease rows are for visitors only.
+      ".ch-dbox.ch-member .ch-dlock{display:none!important}" +
       ".ch-dbox.ch-member .ch-lockwrap{max-height:none!important;overflow:visible!important}" +
       ".ch-dbox.ch-member .ch-veil{position:static!important;inset:auto!important;background:none!important;padding-top:6px}" +
       ".ch-dbox.ch-member .ch-lockicon{display:none!important}";
