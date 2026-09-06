@@ -32,7 +32,7 @@ function Get-RyanairCalendar([string] $Origin, [string] $Dest, [string] $Month) 
   return @{ out = $out; in = $in }
 }
 
-function Merge-RyanairCalendar([string] $Origin, [array] $List, [int] $Months = 3) {
+function Merge-RyanairCalendar([string] $Origin, [array] $List, [int] $Months = 5) {
   $before = $script:FeedCalls
   $dests = @()
   foreach ($t in $List) {

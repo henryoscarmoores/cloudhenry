@@ -141,19 +141,25 @@ function Feed-Merge([string] $Origin, [array] $List, [array] $Fares, [array] $In
   $outByDest = @{}
   foreach ($f in $all) { if (-not $outByDest.ContainsKey($f.dest)) { $outByDest[$f.dest] = @() }; $outByDest[$f.dest] += $f }
 
-  # Pairs from the singles, cheapest first, at most 40 of each kind a route.
+  # Pairs from the singles, cheapest first. The caps are per month, not
+  # per route: a flat forty per route let cheap autumn weekends crowd out
+  # January and February entirely (a Birmingham reader found one January
+  # route on 6 Sep 2026). Twelve weekends and ten day trips a month per
+  # route is every weekend with room to spare; Christmas stays at forty.
   $weekends = 0; $xmas = 0; $days = 0
   foreach ($dest in @($outByDest.Keys)) {
     if (-not $inByDest.ContainsKey($dest)) { continue }
     $ins = $inByDest[$dest]
     $isXmasDest = $FEED_XMAS.ContainsKey($dest)
-    $nW = 0; $nX = 0; $nD = 0
+    $nW = @{}; $nD = @{}; $nX = 0
     foreach ($o in ($outByDest[$dest] | Sort-Object { $_.p })) {
       $dep = [datetime]::ParseExact($o.d, "yyyy-MM-dd", $null)
+      $mon = $o.d.Substring(0, 7)
+      if (-not $nW.ContainsKey($mon)) { $nW[$mon] = 0; $nD[$mon] = 0 }
       # Day trip: same date, early out, late back.
-      if ($nD -lt 40 -and $o.h -ge 0 -and $o.h -le 9 -and $ins.ContainsKey($o.d) -and $ins[$o.d].hl -ge 17) {
+      if ($nD[$mon] -lt 10 -and $o.h -ge 0 -and $o.h -le 9 -and $ins.ContainsKey($o.d) -and $ins[$o.d].hl -ge 17) {
         $all += [pscustomobject]@{ dest = $dest; d = $o.d; r = $o.d; p = ($o.p + $ins[$o.d].p); c = 1; x = 1; h = -1 }
-        $nD++; $days++
+        $nD[$mon]++; $days++
       }
       $maxN = if ($isXmasDest) { 5 } else { 3 }
       foreach ($n in 1..$maxN) {
@@ -161,13 +167,12 @@ function Feed-Merge([string] $Origin, [array] $List, [array] $Fares, [array] $In
         if (-not $ins.ContainsKey($rk)) { continue }
         $isW = ($n -le 3) -and (Feed-IsWeekend $dep $back)
         $isX = $isXmasDest -and $n -ge 2 -and $o.d -ge $FEED_XMAS_FROM -and $o.d -le $FEED_XMAS_TO
-        if (($isW -and $nW -lt 40) -or ($isX -and $nX -lt 40)) {
+        if (($isW -and $nW[$mon] -lt 12) -or ($isX -and $nX -lt 40)) {
           $all += [pscustomobject]@{ dest = $dest; d = $o.d; r = $rk; p = ($o.p + $ins[$rk].p); c = 1; x = 0; h = -1 }
-          if ($isW) { $nW++; $weekends++ }
+          if ($isW) { $nW[$mon]++; $weekends++ }
           if ($isX) { $nX++; $xmas++ }
         }
       }
-      if ($nW -ge 40 -and $nD -ge 40 -and (-not $isXmasDest -or $nX -ge 40)) { break }
     }
   }
 

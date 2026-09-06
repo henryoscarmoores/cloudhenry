@@ -42,8 +42,13 @@
 [CmdletBinding()]
 param(
   [int]      $MonthsAhead = 3,
-  [int]      $MaxOneWay = 120,
-  [int]      $MaxReturn = 80,
+  [int]      $MaxOneWay = 220,
+  [int]      $MaxReturn = 150,
+  # Per-month caps come first, so every month ahead keeps its share of
+  # dates instead of the cheapest autumn ones taking every slot.
+  [int]      $OneWayPerMonth = 32,
+  [int]      $ReturnPerMonth = 22,
+  [int]      $PairsPerMonth = 14,
   [switch]   $SkipWeekends,
   [switch]   $SkipXmas,
   [string[]] $OnlyOrigins,
@@ -146,6 +151,22 @@ function Is-Weekend {
 
 $months = @()
 for ($i = 0; $i -lt $MonthsAhead; $i++) { $months += (Get-Date).AddMonths($i).ToString("yyyy-MM-01") }
+
+# Keep the cheapest $PerMonth options of each month (items arrive cheapest
+# first), up to $Max in all. A flat "cheapest 120" kept only the near
+# months: on 6 Sep 2026 Birmingham had 186 routes in September and 55 in
+# January, and a reader noticed.
+function Cap-ByMonth($Items, [int] $PerMonth, [int] $Max) {
+  $by = @{}; $out = New-Object System.Collections.Generic.List[object]
+  foreach ($o in @($Items)) {
+    $m = ([string]$o.d).Substring(0, 7)
+    if (-not $by.ContainsKey($m)) { $by[$m] = 0 }
+    if ($by[$m] -ge $PerMonth) { continue }
+    $by[$m]++; $out.Add($o)
+    if ($out.Count -ge $Max) { break }
+  }
+  return ,@($out.ToArray())
+}
 
 $generated = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $slim = New-Object System.Collections.Generic.List[object]
@@ -320,14 +341,20 @@ foreach ($origin in $ORIGINS) {
     # always keep the weekend and Christmas ones: they are few and they
     # are the whole point of two of the search's tabs.
     $seen = @{}; $ow = @(); $rt = @(); $sp = @()
-    # Real cached returns are kept whole; assembled pairs are capped at the
-    # thirty cheapest per route so the London files stay a sane size.
-    $paired = 0
+    # Real cached returns are kept whole; assembled pairs are capped per
+    # month ($PairsPerMonth cheapest) so the London files stay a sane size
+    # without the far months losing out.
+    $pairedBy = @{}
     foreach ($o in ($special | Sort-Object p)) {
       $k = "$($o.d)|$($o.r)"
       if ($seen.ContainsKey($k)) { continue }
       $isPair = ($o.PSObject.Properties['c'] -ne $null)
-      if ($isPair) { if ($paired -ge 30) { continue }; $paired++ }
+      if ($isPair) {
+        $pm = ([string]$o.d).Substring(0, 7)
+        if (-not $pairedBy.ContainsKey($pm)) { $pairedBy[$pm] = 0 }
+        if ($pairedBy[$pm] -ge $PairsPerMonth) { continue }
+        $pairedBy[$pm]++
+      }
       $seen[$k] = 1; $sp += $o
     }
     foreach ($o in ($opts | Sort-Object p)) {
@@ -336,7 +363,7 @@ foreach ($origin in $ORIGINS) {
       $seen[$k] = 1
       if ($o.r) { $rt += $o } else { $ow += $o }
     }
-    $t.options = @($sp) + @($ow | Select-Object -First $MaxOneWay) + @($rt | Select-Object -First $MaxReturn)
+    $t.options = @($sp) + @(Cap-ByMonth $ow $OneWayPerMonth $MaxOneWay) + @(Cap-ByMonth $rt $ReturnPerMonth $MaxReturn)
     $totalOptions += @($t.options).Count
 
     $n++
