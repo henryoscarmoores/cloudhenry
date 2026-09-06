@@ -13,6 +13,7 @@ $RepoDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 . (Join-Path $RepoDir "ryanair-calendar.ps1")
 . (Join-Path $RepoDir "wizzair.ps1")
 . (Join-Path $RepoDir "norwegian.ps1")
+$Feeds = @($Feeds | ForEach-Object { $_ -split "," } | Where-Object { $_ })
 $codes = if ($OnlyOrigins) { @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ }) } else { @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS") }
 foreach ($o in $codes) {
   $path = Join-Path $RepoDir "fares-$o.json"
