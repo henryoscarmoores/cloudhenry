@@ -69,7 +69,7 @@
     ["MAN","Manchester"], ["BHX","Birmingham"], ["LBA","Leeds Bradford"],
     ["STN","London Stansted"], ["LTN","London Luton"], ["BRS","Bristol"],
     ["NCL","Newcastle"], ["GLA","Glasgow"], ["EDI","Edinburgh"],
-    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"]
+    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"]
   ];
   function originName(code) {
     var n = code;
@@ -79,7 +79,7 @@
   // Short form for the card meta line, where "London Stansted" is too long.
   var ORIGIN_SHORT = { LON:"London", MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
                        LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
-                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth" };
+                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff" };
   // "London (any airport)" reads the three London files together: plenty
   // of people just want out of London and do not mind which end.
   var LONDON = { STN:1, LTN:1, LGW:1 };
@@ -118,7 +118,7 @@
     PAR:["Paris","France","🇫🇷"],AGP:["Málaga","Spain","🇪🇸"],
     ALC:["Alicante","Spain","🇪🇸"],OSS:["Osh","Kyrgyzstan","🇰🇬"],
     FAO:["Faro","Portugal","🇵🇹"],TAS:["Tashkent","Uzbekistan","🇺🇿"],
-    BFS:["Belfast","N. Ireland","🇬🇧"],BOH:["Bournemouth","England","🇬🇧"],KRK:["Kraków","Poland","🇵🇱"],
+    BFS:["Belfast","N. Ireland","🇬🇧"],BOH:["Bournemouth","England","🇬🇧"],CWL:["Cardiff","Wales","🇬🇧"],KRK:["Kraków","Poland","🇵🇱"],
     AMS:["Amsterdam","Netherlands","🇳🇱"],PMI:["Palma","Spain","🇪🇸"],
     LIS:["Lisbon","Portugal","🇵🇹"],BAK:["Baku","Azerbaijan","🇦🇿"],
     ACE:["Lanzarote","Spain","🇪🇸"],MAD:["Madrid","Spain","🇪🇸"],
@@ -322,7 +322,7 @@
     if (!document.querySelector(".chfs-eyebrow")) {
       var eb = document.createElement("span");
       eb.className = "chfs-eyebrow";
-      eb.textContent = "13 UK airports · Ryanair, Wizz Air, Norwegian and more · checked this morning";
+      eb.textContent = "14 UK airports · Ryanair, Wizz Air, Norwegian and more · checked this morning";
       h.parentNode.insertBefore(eb, h);
     }
     var t = document.querySelector(".chfs-tally");
@@ -331,7 +331,7 @@
     if (GENERATED) { var d = new Date(GENERATED); when = " at " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
     t.innerHTML = (TOTALS && TOTALS.fares)
       ? "<b>" + withCommas(TOTALS.fares) + " fares</b> on <b>" + withCommas(TOTALS.routes) + " routes</b>, priced this morning" + when + ". Pick an airport and go."
-      : "Every fare we can find from 13 UK airports, priced this morning" + when + ". Pick an airport and go.";
+      : "Every fare we can find from 14 UK airports, priced this morning" + when + ". Pick an airport and go.";
   }
 
   renderTitle();

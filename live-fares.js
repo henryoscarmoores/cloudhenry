@@ -36,7 +36,7 @@
   var ORIGIN_NAME = {
     MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
     LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
-    EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth"
+    EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff"
   };
 
   var JOIN_ORIGIN = {
@@ -45,7 +45,7 @@
     "london-luton":"LTN", "luton":"LTN", "bristol":"BRS",
     "newcastle":"NCL", "glasgow":"GLA", "edinburgh":"EDI",
     "london-gatwick":"LGW", "gatwick":"LGW", "liverpool":"LPL",
-    "belfast":"BFS", "bournemouth":"BOH"
+    "belfast":"BFS", "bournemouth":"BOH", "cardiff":"CWL"
   };
 
   // A hop to another UK airport is a real saving but it undersells a site
@@ -268,7 +268,7 @@
     var cta = card.querySelector(".ch-cta");
     var fine = card.querySelector(".ch-vf");
     var fromCity = homeOrigin ? ORIGIN_NAME[homeOrigin] : "";
-    if (t) t.textContent = fromCity ? "Every fare from " + fromCity + ", every date" : "Every fare, every date, all 13 airports";
+    if (t) t.textContent = fromCity ? "Every fare from " + fromCity + ", every date" : "Every fare, every date, all 14 airports";
     if (subs[0]) subs[0].textContent = "Tell us where, when and how much, and see everything we have found today. Members see every fare we find and go straight through to book it.";
     if (cta) {
       cta.textContent = "Search flights →";

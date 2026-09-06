@@ -102,7 +102,7 @@ jobs:
             exit 0
           }
           $count = @((Get-Content "fares.json" -Raw | ConvertFrom-Json).fares).Count
-          git commit -m "Refresh fares $(Get-Date -Format 'yyyy-MM-dd')" -m "$count routes across 13 UK airports." -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          git commit -m "Refresh fares $(Get-Date -Format 'yyyy-MM-dd')" -m "$count routes across 14 UK airports." -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
           # The run takes the best part of an hour; main may have moved.
           git pull --rebase origin main
           git push

@@ -81,7 +81,8 @@ $AIRPORTS = @(
   @{ code="LGW"; name="London Gatwick";   slug="london-gatwick" },
   @{ code="LPL"; name="Liverpool";        slug="liverpool" },
   @{ code="BFS"; name="Belfast";          slug="belfast" },
-  @{ code="BOH"; name="Bournemouth";      slug="bournemouth" }
+  @{ code="BOH"; name="Bournemouth";      slug="bournemouth" },
+  @{ code="CWL"; name="Cardiff";          slug="cardiff" }
 )
 if ($OnlyOrigins) { $AIRPORTS = @($AIRPORTS | Where-Object { $OnlyOrigins -contains $_.code }) }
 

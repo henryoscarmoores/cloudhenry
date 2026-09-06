@@ -25,7 +25,7 @@
     ["MAN","Manchester","manchester"], ["BHX","Birmingham","birmingham"], ["LBA","Leeds Bradford","leeds-bradford"],
     ["STN","London Stansted","london-stansted"], ["LTN","London Luton","london-luton"], ["BRS","Bristol","bristol"],
     ["NCL","Newcastle","newcastle"], ["GLA","Glasgow","glasgow"], ["EDI","Edinburgh","edinburgh"],
-    ["LGW","London Gatwick","london-gatwick"], ["LPL","Liverpool","liverpool"], ["BFS","Belfast","belfast"], ["BOH","Bournemouth","bournemouth"]
+    ["LGW","London Gatwick","london-gatwick"], ["LPL","Liverpool","liverpool"], ["BFS","Belfast","belfast"], ["BOH","Bournemouth","bournemouth"], ["CWL","Cardiff","cardiff"]
   ];
   var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1 };
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];

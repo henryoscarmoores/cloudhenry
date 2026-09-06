@@ -73,7 +73,7 @@ function Merge-Wizz([string] $Origin, [array] $List, [int] $Months = 5) {
   $before = $script:FeedCalls
   $fares = @(); $inbound = @()
   try {
-    $dests = Get-WizzDestinations $Origin
+    $dests = @(Get-WizzDestinations $Origin)   # @() so an airport Wizz skips (BOH, CWL) is an empty list, not $null
     if (-not $dests.Count) { Feed-Log ("{0}: Wizz Air flies nowhere from here (or the map was unreachable)" -f $Origin); return $List }
     $n = 0
     foreach ($d in $dests) {

@@ -87,7 +87,7 @@ try {
     Set-Content -Path $msgFile -Encoding utf8 -Value @(
       "Refresh fares $(Get-Date -Format 'yyyy-MM-dd')",
       "",
-      "$count routes across 13 UK airports.",
+      "$count routes across 14 UK airports.",
       "",
       "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
     )
