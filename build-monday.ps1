@@ -273,14 +273,20 @@ foreach ($a in $AIRPORTS) {
   # Cards. HTML cards carry visibility so Ghost sends the right version.
   $cardAll   = @{ type = "html"; version = 1; html = ($hero + $topHtml) }
   $cardTease = @{ type = "html"; version = 1; html = $tease; visibility = @{ web = @{ nonMember = $false; memberSegment = "" }; email = @{ memberSegment = "status:free" } } }
+  # The web version of the same tease, for visitors and Freemium members
+  # reading the post on the site: the one-tap sign-in link only works in
+  # email, so the button opens the plan chooser instead. This is what
+  # makes the post a public teaser rather than a wall.
+  $teaseWeb = $tease.Replace($goLink, "#/portal/signup")
+  $cardTeaseWeb = @{ type = "html"; version = 1; html = $teaseWeb; visibility = @{ web = @{ nonMember = $true; memberSegment = "status:free" }; email = @{ memberSegment = "" } } }
   $proofPara = @{ type = "paragraph"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @(@{ type = "extended-text"; version = 1; detail = 0; format = 0; mode = "normal"; style = ""; text = "Last week members from $($a.name) booked: (Henry, add one or two real ones here, or delete this line)." }) }
   $paywall   = @{ type = "paywall"; version = 1 }
   $cardFull  = @{ type = "html"; version = 1; html = $full; visibility = @{ web = @{ nonMember = $false; memberSegment = "status:-free" }; email = @{ memberSegment = "status:-free" } } }
   $cardSign  = @{ type = "html"; version = 1; html = $signoff }
-  $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($cardAll, $cardTease, $proofPara, $cardFull, $cardSign) } } | ConvertTo-Json -Depth 12 -Compress
+  $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($cardAll, $cardTease, $cardTeaseWeb, $proofPara, $cardFull, $cardSign) } } | ConvertTo-Json -Depth 12 -Compress
 
   $post = @{ posts = @(@{
-    title = $title; slug = $slugBase; lexical = $lexical; status = "draft"; visibility = "paid"
+    title = $title; slug = $slugBase; lexical = $lexical; status = "draft"; visibility = "public"
     tags = @(@{ name = "paid-draft" }, @{ name = "monday-auto" })
     custom_excerpt = "$n cheap fares from $($a.name) this week, checked this morning, from $([char]0xA3)$cheapest."
     email_subject = "$($a.name): $n fares this week, from $([char]0xA3)$cheapest"
