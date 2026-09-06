@@ -88,7 +88,7 @@
   // Other UK airports. A £44 hop to London with a stop is not a deal a
   // flight deals site should lead with. They still show when typed.
   var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1,
-             LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, ILY:1, KOI:1, ABZ:1, INV:1, SOU:1, EXT:1, NQY:1 };
+             LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, ILY:1, KOI:1, ABZ:1, INV:1, SOU:1, EXT:1, NQY:1, LDY:1 };
 
   // Codes the feed produces that are not real destinations for anyone
   // browsing. Bartica is a river town in Guyana quoted at £73 with two
@@ -1507,6 +1507,11 @@
       render();
       checkMember().then(function (paid) {
         PAID = paid;
+        // The first draw above ran before the member check answered, so
+        // a paying member was looking at the locked version (no Book
+        // buttons, "Try 40 days free" on the live bar) until they touched
+        // a filter. Found on 6 Sep 2026 testing as a comped member.
+        if (paid) { render(); return; }
         if (!paid) {
           var note = document.querySelector(".chfs-note");
           if (note && !document.getElementById("chfsTease")) {

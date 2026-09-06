@@ -378,7 +378,7 @@ window.CH_PLACES = {
     KHI:["Karachi","Pakistan","🇵🇰"],
     KHV:["Khabarovsk","Russia","🇷🇺"],
     KIN:["Kingston","Jamaica","🇯🇲"],
-    KIR:["Kerry County","Ireland","🇮🇪"],
+    KIR:["Kerry","Ireland","🇮🇪"],
     KJA:["Krasnoyarsk","Russia","🇷🇺"],
     KKN:["Kirkenes","Norway","🇳🇴"],
     KLU:["Klagenfurt","Austria","🇦🇹"],
