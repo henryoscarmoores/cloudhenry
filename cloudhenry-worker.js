@@ -262,18 +262,59 @@ async function handleGo(request, env) {
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
   if (throttled("go:" + ip, 40)) return new Response("slow down a little", { status: 429 });
   const u = new URL(request.url);
+  const site = "https://www.cloudhenry.com";
+  // Anything short of a clean pass lands on the normal sign-in page: one
+  // more tap for a real member, nothing at all for anyone else.
+  const back = () => Response.redirect(site + "/sign-in/", 302);
   const uuid = u.searchParams.get("u") || "";
+  const key = u.searchParams.get("k") || "";
+  const exp = parseInt(u.searchParams.get("e") || "0", 10);
+  const sig = u.searchParams.get("s") || "";
   let to = u.searchParams.get("to") || "/my-cloudhenry/";
   if (!/^\/[A-Za-z0-9\-_\/]*\/?(\?[A-Za-z0-9=&%\-_]*)?$/.test(to)) to = "/my-cloudhenry/";
-  const site = "https://www.cloudhenry.com";
+
+  // Three checks before anyone is signed in (added 6 Sep 2026, when Henry
+  // asked for the site to be hack proof):
+  //  1. the link has not expired (build-monday gives it three weeks);
+  //  2. destination and expiry carry a signature only build-monday can
+  //     make, so a link cannot be minted or pointed elsewhere;
+  //  3. the uuid and key are a pair Ghost itself put into an email to
+  //     this member (%%{uuid}%% and %%{key}%%), checked with Ghost. A
+  //     guessed or altered uuid fails here.
+  if (!exp || exp * 1000 < Date.now()) { console.log("go: expired or undated link"); return back(); }
+  if (!(await goSignatureOk(env, to, exp, sig))) { console.log("go: bad signature"); return back(); }
+  if (!/^[0-9a-f-]{20,40}$/i.test(uuid) || !/^[0-9a-f]{20,128}$/i.test(key)) { console.log("go: malformed uuid or key"); return back(); }
+  let chk;
+  try {
+    chk = await fetch(site + "/members/api/member/newsletters/?uuid=" + encodeURIComponent(uuid) + "&key=" + encodeURIComponent(key), { headers: { "Accept": "application/json" } });
+  } catch (e) { console.log("go: could not reach Ghost to check the key"); return back(); }
+  if (chk.status !== 200) { console.log("go: Ghost rejected the key, " + chk.status); return back(); }
+
   const m = await memberByUuid(env, uuid);
-  if (!m) return Response.redirect(site + "/sign-in/", 302);   // unknown or expired: the normal sign-in page
+  if (!m) return back();
   const r = await ghost(env, "GET", "/members/" + m.id + "/signin_urls/");
   const link = r.data && r.data.member_signin_urls && r.data.member_signin_urls[0] && r.data.member_signin_urls[0].url;
-  if (!link) return Response.redirect(site + "/sign-in/", 302);
+  if (!link) return back();
   const target = new URL(link);
   target.searchParams.set("r", site + to);
+  console.log("go: signed in " + String(m.email || "").replace(/^(.).*(@.*)$/, "$1***$2") + " -> " + to);
   return Response.redirect(target.toString(), 302);
+}
+
+// HMAC-SHA256 over "to|exp" with the secret half of the Ghost Admin key,
+// which build-monday also holds; base64url, first 24 characters. Compared
+// in constant time.
+async function goSignatureOk(env, to, exp, sig) {
+  const secretHex = String(env.GHOST_ADMIN_KEY || "").split(":")[1] || "";
+  if (!secretHex || !/^[0-9a-f]+$/i.test(secretHex)) return false;
+  const secret = new Uint8Array(secretHex.match(/../g).map(h => parseInt(h, 16)));
+  const k = await crypto.subtle.importKey("raw", secret, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const mac = new Uint8Array(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(to + "|" + exp)));
+  const want = b64url(mac).slice(0, 24);
+  if (!sig || want.length !== sig.length) return false;
+  let diff = 0;
+  for (let i = 0; i < want.length; i++) diff |= want.charCodeAt(i) ^ sig.charCodeAt(i);
+  return diff === 0;
 }
 
 /* ---- /plan ---------------------------------------------------------- */
@@ -393,7 +434,7 @@ async function handlePlan(request, env, origin) {
     let detail = "";
     try { detail = String((JSON.parse(await res.text()).error || {}).message || "").slice(0, 300); } catch (e) {}
     console.error("plan: Anthropic " + res.status + " " + detail);
-    return json({ error: "planner error " + res.status, detail: detail }, 502, origin);
+    return json({ error: "planner error " + res.status }, 502, origin);   // the reason stays in the logs
   }
 
   const msg = await res.json();

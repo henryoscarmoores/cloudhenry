@@ -59,6 +59,17 @@ function Token {
   $sig = B64Url ($hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes("$header.$payload")))
   return "$header.$payload.$sig"
 }
+# Signs the Monday button's destination and expiry with the secret half of
+# the Ghost key, which the Worker also holds. The Worker's one-tap sign-in
+# only honours links carrying this signature, and only for three weeks.
+# The member's own uuid and key are Ghost's %%{uuid}%% and %%{key}%%,
+# filled in at send time and checked back with Ghost by the Worker.
+function Go-Sign([string] $To, [long] $Exp) {
+  $secret = New-Object byte[] ($secretHex.Length / 2)
+  for ($i = 0; $i -lt $secret.Length; $i++) { $secret[$i] = [Convert]::ToByte($secretHex.Substring($i * 2, 2), 16) }
+  $hmac = New-Object System.Security.Cryptography.HMACSHA256; $hmac.Key = $secret
+  return (B64Url ($hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes("$To|$Exp")))).Substring(0, 24)
+}
 function Call([string] $Method, [string] $Path, $Body) {
   $h = @{ Authorization = "Ghost " + (Token); "Accept-Version" = "v5.0" }
   if ($Body) {
@@ -244,7 +255,9 @@ foreach ($a in $AIRPORTS) {
     foreach ($e in $existing) { if ($e.status -eq "draft") { Call DELETE "/posts/$($e.id)/" | Out-Null } }
   }
 
-  $goLink = "$Worker/go?u=%%{uuid}%%&to=" + [uri]::EscapeDataString("/join-" + $a.slug + "/?intent=trial")
+  $goTo = "/join-" + $a.slug + "/?intent=trial"
+  $goExp = [long][double]::Parse((Get-Date -UFormat %s)) + 21 * 86400
+  $goLink = "$Worker/go?u=%%{uuid}%%&k=%%{key}%%&to=" + [uri]::EscapeDataString($goTo) + "&e=$goExp&s=" + (Go-Sign $goTo $goExp)
 
   # 1 + 2: header and top three, for everyone.
   # The header. Phone mail apps in dark mode darken light colours, so the
