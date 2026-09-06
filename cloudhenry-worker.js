@@ -162,10 +162,17 @@ async function handleJoin(request, env, origin) {
 
   const labels = [{ name: airport[0] }];
   if (source) labels.push({ name: source });
+  // Where the visitor came from (instagram, facebook, a campaign name),
+  // captured on their first page by the footer snippet and sent along.
+  // Kept as labels so the admin's member list can be filtered by them.
+  const clean = (v, n) => String(v || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, n);
+  const src = clean(body.src, 24), camp = clean(body.campaign, 32);
+  if (src) labels.push({ name: "src-" + src });
+  if (camp) labels.push({ name: "camp-" + camp });
   const newsletters = await defaultNewsletters(env);
 
   const r = await ghost(env, "POST", "/members/", {
-    members: [{ email, name: "", labels, newsletters, note: "Joined via the website, " + new Date().toISOString().slice(0, 10) }]
+    members: [{ email, name: "", labels, newsletters, note: "Joined via the website, " + new Date().toISOString().slice(0, 10) + (src ? ", from " + src : "") + (camp ? ", campaign " + camp : "") }]
   });
 
   if (r.status === 201) return json({ ok: true, created: true, code: airport[1] }, 201, origin);

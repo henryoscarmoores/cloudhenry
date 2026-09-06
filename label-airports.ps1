@@ -102,6 +102,11 @@ try {
     via_airport_page = HasLabel "via-airport-page"
     no_airport       = HasLabel $NONE
   }
+  # Traffic sources: one count per src-* label (instagram, facebook, ...),
+  # written by the Worker from the footer's first-touch capture.
+  $sources = [ordered]@{}
+  foreach ($m in $all) { foreach ($l in @($m.labels)) { if ($l.name -like "src-*") { $k = $l.name.Substring(4); $sources[$k] = 1 + $(if ($sources.Contains($k)) { $sources[$k] } else { 0 }) } } }
+  $row.sources = $sources
   $path = Join-Path $RepoDir "stats.json"
   $rows = @()
   if (Test-Path $path) { $rows = @((Get-Content $path -Raw | ConvertFrom-Json).days | Where-Object { $_.date -ne $row.date }) }

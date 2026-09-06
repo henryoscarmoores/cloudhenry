@@ -32,6 +32,10 @@
   if (!city) return;
   var label = "loc-" + (slug === "leeds-bradford" ? "leeds" : slug);
   var JOIN_URL = "https://cloudhenry.henryswalk.workers.dev/join";
+  // Traffic source and campaign, saved by the footer's CH_SOURCE_CAPTURE
+  // snippet on the visitor's first page (instagram, facebook, a ?ref=).
+  function src() { try { return localStorage.getItem("ch-src") || ""; } catch (x) { return ""; } }
+  function camp() { try { return localStorage.getItem("ch-camp") || ""; } catch (x) { return ""; } }
   var code = CODES[slug];
 
   // Remember the airport on this device, for the member area.
@@ -118,7 +122,7 @@
         // sign-in link goes out too; the welcome screen says so.
         fetch(JOIN_URL, {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email, airport: slug, source: "airport-page", website: "" })
+          body: JSON.stringify({ email: email, airport: slug, source: "airport-page", website: "", src: src(), campaign: camp() })
         }).then(function (r) {
           return r.json().then(function (j) { return { ok: r.ok && j && j.ok, msg: j && j.error }; });
         }).then(function (res) {
@@ -126,7 +130,7 @@
           integrity().then(function (tok) {
             return fetch("/members/api/send-magic-link/", {
               method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email: email, emailType: "signin", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + location.pathname + "?intent=trial" })
+              body: JSON.stringify({ email: email, emailType: "signin", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + location.pathname + "?intent=trial" + (src() ? "&ref=" + encodeURIComponent(src()) : "") })
             });
           }).catch(function () {});
           if (window.CH_WELCOME) window.CH_WELCOME.render(box, { code: code, email: email, signedIn: false, slug: slug });

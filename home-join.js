@@ -86,6 +86,10 @@
       .catch(function () { return ""; });
   }
   function esc(s) { return String(s || "").replace(/[&<>"]/g, function (c) { return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]; }); }
+  // Traffic source and campaign, saved by the footer's CH_SOURCE_CAPTURE
+  // snippet on the visitor's first page (instagram, facebook, a ?ref=).
+  function src() { try { return localStorage.getItem("ch-src") || ""; } catch (x) { return ""; } }
+  function camp() { try { return localStorage.getItem("ch-camp") || ""; } catch (x) { return ""; } }
 
   function convert(w) {
     var sel = w.querySelector(".ch-ap-select"), btn = w.querySelector(".ch-ap-btn");
@@ -140,7 +144,7 @@
       // the trial is one tap away after it.
       fetch(JOIN_URL, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: addr, airport: slug, source: "homepage", website: "" })
+        body: JSON.stringify({ email: addr, airport: slug, source: "homepage", website: "", src: src(), campaign: camp() })
       }).then(function (r) {
         return r.json().then(function (j) { return { ok: r.ok && j && j.ok, msg: j && j.error }; });
       }).then(function (res) {
@@ -148,7 +152,7 @@
         integrity().then(function (tok) {
           return fetch("/members/api/send-magic-link/", {
             method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: addr, emailType: "signin", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + "/" + slug + "/?intent=trial" })
+            body: JSON.stringify({ email: addr, emailType: "signin", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + "/" + slug + "/?intent=trial" + (src() ? "&ref=" + encodeURIComponent(src()) : "") })
           });
         }).catch(function () {});
         var done = document.createElement("div");
