@@ -129,6 +129,10 @@ function Write-Json {
   [System.IO.File]::WriteAllText($Path, $json, (New-Object System.Text.UTF8Encoding($false)))
 }
 
+# Ryanair's fare finder, folded into each airport before its file is
+# written. Its own file, so a change to the feed never touches this one.
+. (Join-Path $RepoDir "ryanair.ps1")
+
 function Is-Weekend {
   param([datetime] $Dep, [datetime] $Ret)
   $nights = ($Ret - $Dep).Days
@@ -332,6 +336,11 @@ foreach ($origin in $ORIGINS) {
     $n++
     if ($n % 50 -eq 0) { Log ("  {0}: {1} of {2} routes, {3} calls, {4:n0} min" -f $origin, $n, $list.Count, $calls, ((Get-Date) - $runStart).TotalMinutes) }
   }
+
+  # ---- 2b. Ryanair's own fares on top --------------------------------
+  # Real dated fares straight from the airline, including proper weekend
+  # returns. A failure here is a warning and the list stays as it was.
+  try { $list = @(Merge-Ryanair -Origin $origin -List @($list)) } catch { Log ("{0}: Ryanair merge skipped: {1}" -f $origin, $_.Exception.Message) "WARN" }
 
   # ---- 3. Write the airport's file ----------------------------------
   $withOpts = @($list | Where-Object { @($_.options).Count -gt 0 })

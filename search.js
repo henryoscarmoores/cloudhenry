@@ -63,6 +63,7 @@
   var ANY = "ANY";
   var ORIGINS = [
     [ANY,"Any UK airport"],
+    ["LON","London (any airport)"],
     ["MAN","Manchester"], ["BHX","Birmingham"], ["LBA","Leeds Bradford"],
     ["STN","London Stansted"], ["LTN","London Luton"], ["BRS","Bristol"],
     ["NCL","Newcastle"], ["GLA","Glasgow"], ["EDI","Edinburgh"],
@@ -74,10 +75,13 @@
     return n;
   }
   // Short form for the card meta line, where "London Stansted" is too long.
-  var ORIGIN_SHORT = { MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
+  var ORIGIN_SHORT = { LON:"London", MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
                        LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
                        EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast" };
-  function fromMatches(f) { return state.from === ANY || f.origin === state.from; }
+  // "London (any airport)" reads the three London files together: plenty
+  // of people just want out of London and do not mind which end.
+  var LONDON = { STN:1, LTN:1, LGW:1 };
+  function fromMatches(f) { return state.from === ANY || (state.from === "LON" ? !!LONDON[f.origin] : f.origin === state.from); }
 
   // Other UK airports. A £44 hop to London with a stop is not a deal a
   // flight deals site should lead with. They still show when typed.
@@ -243,7 +247,8 @@
     return d.getUTCFullYear() + ("0" + (d.getUTCMonth() + 1)).slice(-2) + ("0" + d.getUTCDate()).slice(-2) + "-" + (d.getUTCHours() < 12 ? "am" : "pm");
   }
   function originsNeeded() {
-    if (state.from === ANY) return ORIGINS.filter(function (o) { return o[0] !== ANY; }).map(function (o) { return o[0]; });
+    if (state.from === ANY) return ORIGINS.filter(function (o) { return o[0] !== ANY && o[0] !== "LON"; }).map(function (o) { return o[0]; });
+    if (state.from === "LON") return Object.keys(LONDON);
     return [state.from];
   }
   function composeFares() {
@@ -411,7 +416,16 @@
     return "https://tp.media/r?marker=" + MARKER + "&trs=562291&p=4114&u=" + encodeURIComponent(url);
   }
   // Aviasales deep link. Format: ORIGIN + DDMM + DEST + [DDMM return] + pax
-  function bookUrl(origin, dest, dep, ret) {
+  // Fares from the Ryanair feed link straight to Ryanair, no middleman
+  // and no commission. Everything else goes through Aviasales.
+  function ryanairUrl(origin, dest, dep, ret) {
+    var q = "adults=1&teens=0&children=0&infants=0&dateOut=" + dep + "&dateIn=" + (ret || "") + "&isConnectedFlight=false&discount=0&isReturn=" + (ret ? "true" : "false") +
+            "&promoCode=&originIata=" + origin + "&destinationIata=" + dest + "&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=" + dep + "&tpEndDate=" + (ret || "") +
+            "&tpDiscount=0&tpPromoCode=&tpOriginIata=" + origin + "&tpDestinationIata=" + dest;
+    return "https://www.ryanair.com/gb/en/trip/flights/select?" + q;
+  }
+  function bookUrl(origin, dest, dep, ret, air) {
+    if (air === "FR" && /^\d{4}-\d\d-\d\d$/.test(dep || "")) return ryanairUrl(origin, dest, dep, ret);
     var o = ddmm(dep);
     if (!o) return tracked("https://www.aviasales.com/");
     return tracked("https://www.aviasales.com/search/" + origin + o + dest + (ddmm(ret) || "") + "1");
@@ -450,7 +464,7 @@
         var owAvg = f.typical || mean(ow), rtAvg = mean(rt);
         opts.forEach(function (o) {
           if (o.d && o.d < today) return;   // already departed
-          out.push({ origin:f.origin, dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0, pair:!!o.c,
+          out.push({ origin:f.origin, dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0, pair:!!o.c, air:o.a || "",
                      typical: o.r ? rtAvg : owAvg });
         });
       } else if (!f.departure || String(f.departure).slice(0, 10) >= today) {
@@ -766,7 +780,7 @@
       b.className = "chfs-card";
       var when = fmt(r.dep) + (r.ret ? " – " + fmt(r.ret) : "");
       var trip = r.ret ? "return" : "one way";
-      var stops = (r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops")) + (r.pair ? " · two single tickets" : "");
+      var stops = (r.stops === 0 ? "direct" : r.stops + (r.stops === 1 ? " stop" : " stops")) + (r.pair ? " · two single tickets" : "") + (r.air === "FR" ? " · Ryanair" : "");
       var nights = r.ret ? dayDiff(r.ret, r.dep) : 0;
       var extra = nights > 0 ? " · " + nights + (nights === 1 ? " night" : " nights") : "";
       var from = anyMode ? '<span class="chfs-from">from ' + (ORIGIN_SHORT[r.origin] || r.origin) + '</span>' : "";
@@ -843,13 +857,13 @@
       row.className = "chfs-opt";
       row.innerHTML =
         '<span><span class="d">' + fmt(a.dep) + (a.ret ? " – " + fmt(a.ret) : "") + '</span>' +
-        '<span class="s">' + (a.ret ? "return" : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + (a.pair ? " · two singles" : "") + '</span></span>' +
+        '<span class="s">' + (a.ret ? "return" : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + (a.pair ? " · two singles" : "") + (a.air === "FR" ? " · Ryanair" : "") + '</span></span>' +
         '<span><span class="p">£' + a.price + '</span>' +
-        '<a class="chfs-book" target="_blank" rel="noopener sponsored" href="' + bookUrl(a.origin, a.dest, a.dep, a.ret) + '">Book</a></span>';
+        '<a class="chfs-book" target="_blank" rel="noopener sponsored" href="' + bookUrl(a.origin, a.dest, a.dep, a.ret, a.air) + '">Book</a></span>';
       o.appendChild(row);
     });
 
-    $("chfsMain").href = bookUrl(r.origin, r.dest, r.dep, r.ret);
+    $("chfsMain").href = bookUrl(r.origin, r.dest, r.dep, r.ret, r.air);
     applyGate(document.getElementById("chfsBg"));
     $("chfsBg").hidden = false;
     $("chfsClose").focus();
