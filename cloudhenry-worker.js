@@ -167,7 +167,11 @@ async function handleJoin(request, env, origin) {
   // captured on their first page by the footer snippet and sent along.
   // Kept as labels so the admin's member list can be filtered by them.
   const clean = (v, n) => String(v || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, n);
-  const src = clean(body.src, 24), camp = clean(body.campaign, 32);
+  // Henry's link in his Instagram bio says ?ref=ig while the referrer
+  // check says instagram; one label, not two (86 + 21 on 6 Sep 2026).
+  const ALIAS = { ig: "instagram", insta: "instagram", fb: "facebook", tt: "tiktok", yt: "youtube", tw: "x", twitter: "x" };
+  let src = clean(body.src, 24); src = ALIAS[src] || src;
+  const camp = clean(body.campaign, 32);
   if (src) labels.push({ name: "src-" + src });
   if (camp) labels.push({ name: "camp-" + camp });
   const newsletters = await defaultNewsletters(env);
