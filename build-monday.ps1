@@ -156,13 +156,14 @@ function FareRow($f, [int] $i, [bool] $blur) {
   $flagCell = if ($fc -and -not $blur) { "<img src=`"https://flagcdn.com/w40/$fc.png`" width=`"26`" height=`"20`" alt=`"`" style=`"display:block;border-radius:3px;`">" } else { "<div style=`"width:26px;height:20px;background:#E6EEF5;border-radius:3px;`"></div>" }
   $usualHtml = if ($blur) { "" } else { $usual }
   # Its own fixed-width column beside the price. Ghost's phone stylesheet forces links to 16px and lets them wrap between letters, so the size and nowrap are inline with !important. Colour on the anchor and again on an inner span, which is what stops Gmail restyling it as a blue link in dark mode.
-  $book = if (-not $blur -and $f.book) { "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$($f.book)`" style=`"display:block;color:#12384F;font-weight:800;font-size:12px!important;line-height:16px!important;padding:8px 14px;text-decoration:none;white-space:nowrap!important;overflow-wrap:normal!important;word-break:keep-all!important;$FONT`"><span style=`"color:#12384F;text-decoration:none;font-size:12px!important;`">Book</span></a></td></tr></table>" } else { "" }
-  $bookCell = if ($book) { "<td width=`"66`" style=`"width:66px;padding:10px 10px 10px 0;vertical-align:middle;`">$book</td>" } else { "" }
+  # The button is a picture. Gmail on phones recolours and underlines any text link in dark mode and squeezes a fixed column into the price; an image keeps its yellow and its size everywhere.
+  $book = if (-not $blur -and $f.book) { "<a href=`"$($f.book)`" style=`"text-decoration:none;`"><img src=`"https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/assets/email-book.png`" width=`"66`" height=`"30`" alt=`"Book`" style=`"border:0;display:inline-block;vertical-align:middle;width:66px;height:30px;`"></a>" } else { "" }
+  $bookHtml = if ($book) { "<div style=`"margin-top:6px;text-align:right;`">$book</div>" } else { "" }
   return "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:#F7FBFE;border-radius:12px;margin-bottom:8px;`"><tr>" +
     "<td style=`"width:6px;background:$stripe;border-radius:12px 0 0 12px;`"></td>" +
     "<td style=`"width:34px;padding:10px 4px 10px 10px;vertical-align:middle;`">$flagCell</td>" +
     "<td style=`"padding:10px 6px;vertical-align:middle;$FONT`"><div style=`"font-size:15px;font-weight:800;color:$textColor;letter-spacing:-.2px;`">$(Esc $name)$(if (-not $blur) { $tag })</div><div style=`"font-size:11.5px;color:$subColor;`">$when</div></td>" +
-    "<td style=`"padding:10px 10px 10px 6px;text-align:right;vertical-align:middle;white-space:nowrap;$FONT`"><div style=`"font-size:20px;font-weight:900;color:$textColor;letter-spacing:-.5px;`">$([char]0xA3)$($f.price)</div>$usualHtml</td>" + $bookCell +
+    "<td style=`"padding:10px 10px 10px 6px;text-align:right;vertical-align:middle;white-space:nowrap;$FONT`"><div style=`"font-size:20px;font-weight:900;color:$textColor;letter-spacing:-.5px;`">$([char]0xA3)$($f.price)</div>$usualHtml$bookHtml</td>" +
     "</tr></table>"
 }
 
@@ -177,7 +178,7 @@ foreach ($a in $AIRPORTS) {
   $data = Get-Content $file -Raw -Encoding UTF8 | ConvertFrom-Json
 
   # Cheapest option per destination departing within the horizon.
-  $best = @{}
+  $best = @{}; $bestRet = @{}
   foreach ($r in $data.fares) {
     if ($UK.ContainsKey($r.destination) -or $BOGUS.ContainsKey($r.destination) -or -not $PLACES.ContainsKey($r.destination)) { continue }
     foreach ($o in @($r.options)) {
@@ -197,6 +198,10 @@ foreach ($a in $AIRPORTS) {
       }
       $cand = [pscustomobject]@{ dest = $r.destination; price = [int]$o.p; dep = [string]$o.d; ret = $(if ($isRet) { [string]$o.r } else { "" }); typical = $typ; book = $book }
       if (-not $best.ContainsKey($r.destination) -or $cand.price -lt $best[$r.destination].price) { $best[$r.destination] = $cand }
+      # Returns kept on their own too: a destination's cheapest fare is nearly
+      # always a one-way, so without this the "cheapest return" slot was left
+      # with whatever oddity happened to be cheaper as a return than a single.
+      if ($isRet -and (-not $bestRet.ContainsKey($r.destination) -or $cand.price -lt $bestRet[$r.destination].price)) { $bestRet[$r.destination] = $cand }
     }
   }
   $fares = @($best.Values | Sort-Object price)
@@ -209,7 +214,7 @@ foreach ($a in $AIRPORTS) {
   $returnsUnder50 = @($fares | Where-Object { $_.ret -and $_.price -le 50 }).Count
   # A mix, not just the three cheapest singles: the cheapest one-way, the
   # cheapest return, then the biggest saving. The blurred four: two of each.
-  $owAll = @($fares | Where-Object { -not $_.ret }); $rtAll = @($fares | Where-Object { $_.ret })
+  $owAll = @($fares | Where-Object { -not $_.ret }); $rtAll = @($bestRet.Values | Sort-Object price)
   $bySave = @($fares | Where-Object { $_.typical -gt 0 } | Sort-Object { $_.price / $_.typical })
   # The headline three favour places people recognise. Cheapest-of-all
   # from Stansted came out as Klagenfurt, Iasi and Szymany, which nobody
