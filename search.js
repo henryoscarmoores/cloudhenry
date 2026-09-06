@@ -14,11 +14,13 @@
   // would take a week to reach anyone who had already visited. A date
   // stamp on the query makes it a new URL each morning; jsDelivr ignores
   // the parameter and still serves from its edge.
+  // Morning and afternoon stamps, matching the two daily builds and the
+  // airport files, so a browser never sits on the morning file all day.
   function dataUrl() {
     var d = new Date();
     return DATA_URL + "?v=" + d.getUTCFullYear() +
            ("0" + (d.getUTCMonth() + 1)).slice(-2) +
-           ("0" + d.getUTCDate()).slice(-2);
+           ("0" + d.getUTCDate()).slice(-2) + "-" + (d.getUTCHours() < 12 ? "am" : "pm");
   }
   var MARKER   = "764584";
 
