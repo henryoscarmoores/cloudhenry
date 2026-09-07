@@ -32,6 +32,8 @@
   // "is it British", decides whether a route is too close to be a getaway.
   var IE = { CFN:1, DUB:1, GWY:1, KIR:1, NOC:1, ORK:1, SNN:1, WAT:1 };
   var CD = { GCI:1, IOM:1, JER:1 };
+  // The most changes of plane a fare can have and still be a flight deal.
+  var MAX_STOPS = 2;
   // Same country never shows; Ireland from a UK airport (or the UK from
   // Dublin) is allowed once, so the list is not all Irish hops.
   function sameCountry(origin, dest) { return IE[origin] ? !!IE[dest] : (!!UK[dest] && !IE[dest]); }
@@ -136,6 +138,7 @@
           if (sameCountry(f.origin, f.destination)) return;
           (f.options || []).forEach(function (o) {
             if (!o.p || !o.d || o.d < today) return;
+            if ((o.s || 0) > MAX_STOPS) return;
             var k = f.origin + f.destination;
             if (!best[k] || o.p < best[k].price) best[k] = { origin: f.origin, dest: f.destination, price: o.p, dep: o.d, ret: o.r || "", typical: f.typical || 0 };
           });

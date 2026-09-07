@@ -95,6 +95,8 @@
   // are flying from.
   var IE = { CFN:1, DUB:1, GWY:1, KIR:1, NOC:1, ORK:1, SNN:1, WAT:1 };
   var CD = { GCI:1, IOM:1, JER:1 };
+  // The most changes of plane a fare can have and still be a flight deal.
+  var MAX_STOPS = 2;
   // Two rules, not one. A hop inside your own country is never a getaway
   // and never shows. Ireland from a UK airport, or the UK from Dublin, is
   // a real trip, so a couple are allowed through, but only a couple:
@@ -641,6 +643,11 @@
   function build() {
     var rows = flatten();
     rows = rows.concat(assembleReturns(rows));
+    // Three changes of plane is not a cheap flight, it is an itinerary.
+    // Exeter to Moscow at 425 pounds and three stops was sitting in a
+    // seventeen row list next to a 16 pound Ryanair fare to Malaga. It is
+    // 3.7 per cent of everything we hold, so nothing worth keeping goes.
+    rows = rows.filter(function (r) { return (r.stops || 0) <= MAX_STOPS; });
     var q = isEverywhere(state.q) ? "" : state.q.trim().toLowerCase();
 
     if (q) {

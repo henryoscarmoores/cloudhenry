@@ -224,6 +224,9 @@ foreach ($a in $AIRPORTS) {
     if ((SameCountry $a.code $r.destination) -or $BOGUS.ContainsKey($r.destination) -or -not $PLACES.ContainsKey($r.destination)) { continue }
     foreach ($o in @($r.options)) {
       if (-not $o.p -or -not $o.d -or $o.d -lt $today -or $o.d -gt $limit) { continue }
+      # Three changes of plane is an itinerary, not a flight deal, and it
+      # has no place in an email that leads with a direct Ryanair fare.
+      if ($o.PSObject.Properties['s'] -and $o.s -and [int]$o.s -gt 2) { continue }
       $isRet = [bool]$o.r
       $typ = if (-not $isRet -and $r.typical) { [int]$r.typical } else { 0 }
       $ddmm = { param($iso) $d = [datetime]::ParseExact($iso, "yyyy-MM-dd", $null); $d.ToString("ddMM") }

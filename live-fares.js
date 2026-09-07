@@ -56,6 +56,8 @@
   // test is same country as the airport you fly from.
   var IE = { CFN:1, DUB:1, GWY:1, KIR:1, NOC:1, ORK:1, SNN:1, WAT:1 };
   var CD = { GCI:1, IOM:1, JER:1 };
+  // The most changes of plane a fare can have and still be a flight deal.
+  var MAX_STOPS = 2;
   // A hop inside your own country never shows. Ireland from a UK airport,
   // or the UK from Dublin, is a real trip, so one is allowed through the
   // teasers, not six (Henry, 7 Sep 2026).
@@ -119,6 +121,7 @@
       opts.forEach(function (o) {
         if (!o.p || o.p <= 0 || !o.d) return;
         if (daysFromToday(o.d) < 0) return;                 // already gone
+        if ((o.s || 0) > MAX_STOPS) return;                  // three changes is not a deal
         rows.push({ dep: String(o.d).slice(0,10), ret: o.r ? String(o.r).slice(0,10) : "", price: o.p });
       });
     }
