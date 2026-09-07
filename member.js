@@ -1,4 +1,4 @@
-/* CloudHenry member area, "My CloudHenry".
+﻿/* CloudHenry member area, "My CloudHenry".
  *
  * Runs on the /my-cloudhenry/ page. Everything it shows comes from three
  * places the browser can already reach as the signed-in member:
@@ -27,14 +27,15 @@
     ["NCL","Newcastle","newcastle"], ["GLA","Glasgow","glasgow"], ["EDI","Edinburgh","edinburgh"],
     ["LGW","London Gatwick","london-gatwick"], ["LPL","Liverpool","liverpool"], ["BFS","Belfast","belfast"], ["BOH","Bournemouth","bournemouth"], ["CWL","Cardiff","cardiff"], ["EMA","East Midlands","east-midlands"], ["DUB","Dublin","dublin"], ["EXT","Exeter","exeter"]
   ];
-  var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, EMA:1, EXT:1 };
+  var UK = { ABZ:1, ACI:1, BEB:1, BFS:1, BHD:1, BHX:1, BOH:1, BRR:1, BRS:1, CAL:1, CWL:1, DND:1, EDI:1, EMA:1, EXT:1, GLA:1, HUY:1, ILY:1, INV:1, ISC:1, KOI:1, LBA:1, LDY:1, LEQ:1, LGW:1, LON:1, LPL:1, LSI:1, LTN:1, MAN:1, MME:1, NCL:1, NQT:1, NQY:1, NWI:1, PIK:1, PPW:1, SDZ:1, SEN:1, SOU:1, STN:1, SYY:1, TRE:1, WIC:1, WRY:1 };
   // Dublin joined on 7 September 2026: same country as your airport, not
   // "is it British", decides whether a route is too close to be a getaway.
-  var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
+  var IE = { CFN:1, DUB:1, GWY:1, KIR:1, NOC:1, ORK:1, SNN:1, WAT:1 };
+  var CD = { GCI:1, IOM:1, JER:1 };
   // Same country never shows; Ireland from a UK airport (or the UK from
   // Dublin) is allowed once, so the list is not all Irish hops.
   function sameCountry(origin, dest) { return IE[origin] ? !!IE[dest] : (!!UK[dest] && !IE[dest]); }
-  function isles(dest) { return !!UK[dest] || !!IE[dest]; }
+  function isles(dest) { return !!UK[dest] || !!IE[dest] || !!CD[dest]; }
   function limitIsles(rows, max) {
     var n = 0;
     return rows.filter(function (r) { if (!isles(r.dest)) return true; n++; return n <= max; });

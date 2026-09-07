@@ -1,4 +1,4 @@
-<#
+﻿<#
   Builds the welcome email: one draft, sent to everyone who joined in the
   last few days, with the best fares we can find that morning across every
   airport.
@@ -59,8 +59,9 @@ function Call([string] $Method, [string] $Path, $Body) {
 $AIRPORT_NAME = @{ MAN="Manchester"; BHX="Birmingham"; LBA="Leeds Bradford"; STN="London Stansted"; LTN="London Luton";
   BRS="Bristol"; NCL="Newcastle"; GLA="Glasgow"; EDI="Edinburgh"; LGW="London Gatwick"; LPL="Liverpool";
   BFS="Belfast"; BOH="Bournemouth"; CWL="Cardiff"; EMA="East Midlands"; DUB="Dublin"; EXT="Exeter" }
-$UK = @{ LON=1; MAN=1; BHX=1; LBA=1; STN=1; LTN=1; BRS=1; NCL=1; GLA=1; EDI=1; LGW=1; LPL=1; BFS=1; CWL=1; EMA=1; BOH=1; ILY=1; KOI=1; ABZ=1; INV=1; SOU=1; EXT=1; NQY=1; LDY=1 }
-$IE = @{ DUB=1; ORK=1; SNN=1; NOC=1; KIR=1; GWY=1; WAT=1 }
+$UK = @{ ABZ=1; ACI=1; BEB=1; BFS=1; BHD=1; BHX=1; BOH=1; BRR=1; BRS=1; CAL=1; CWL=1; DND=1; EDI=1; EMA=1; EXT=1; GLA=1; HUY=1; ILY=1; INV=1; ISC=1; KOI=1; LBA=1; LDY=1; LEQ=1; LGW=1; LON=1; LPL=1; LSI=1; LTN=1; MAN=1; MME=1; NCL=1; NQT=1; NQY=1; NWI=1; PIK=1; PPW=1; SDZ=1; SEN=1; SOU=1; STN=1; SYY=1; TRE=1; WIC=1; WRY=1 }
+$IE = @{ CFN=1; DUB=1; GWY=1; KIR=1; NOC=1; ORK=1; SNN=1; WAT=1 }
+$CD = @{ GCI=1; IOM=1; JER=1 }
 $BOGUS = @{ BSZ=1; DSE=1 }
 # Places a reader recognises at a glance. A welcome email is no place for
 # an airport nobody has heard of.
@@ -95,7 +96,7 @@ foreach ($code in $AIRPORT_NAME.Keys) {
   $bestHere = $null
   foreach ($r in $data.fares) {
     $d = [string]$r.destination
-    if ($UK.ContainsKey($d) -or $IE.ContainsKey($d) -or $BOGUS.ContainsKey($d)) { continue }
+    if ($UK.ContainsKey($d) -or $IE.ContainsKey($d) -or $CD.ContainsKey($d) -or $BOGUS.ContainsKey($d)) { continue }
     if (-not $POPULAR.ContainsKey($d) -or -not $PLACES.ContainsKey($d)) { continue }
     $typ = if ($r.typical) { [int]$r.typical } else { 0 }
     foreach ($o in @($r.options)) {
