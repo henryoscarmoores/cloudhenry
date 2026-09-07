@@ -320,7 +320,7 @@ foreach ($a in $AIRPORTS) {
   $full += $searchStrip
   $full += "<div style=`"margin-top:14px;padding:12px 14px;border-radius:12px;background:#FFF4D1;font-size:13px;color:#5A4210;$FONT`"><b style=`"color:#3A2A08;`">Book fast.</b> The cheapest fares here are the kind that go within three days. Every price was checked this morning; airlines change them without warning.</div>"
 
-  $signoff = "<div style=`"margin-top:16px;font-size:13.5px;color:#46607A;$FONT`">See you Monday,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
+  $signoff = "<div style=`"margin-top:16px;font-size:13.5px;color:#46607A;$FONT`">Have a good day,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
 
   # Cards. HTML cards carry visibility so Ghost sends the right version.
   $cardAll   = @{ type = "html"; version = 1; html = ($hero + $topHtml) }
