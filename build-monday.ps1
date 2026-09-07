@@ -93,11 +93,13 @@ $AIRPORTS = @(
   @{ code="LPL"; name="Liverpool";        slug="liverpool" },
   @{ code="BFS"; name="Belfast";          slug="belfast" },
   @{ code="BOH"; name="Bournemouth";      slug="bournemouth" },
-  @{ code="CWL"; name="Cardiff";          slug="cardiff" }
+  @{ code="CWL"; name="Cardiff";          slug="cardiff" },
+  @{ code="EMA"; name="East Midlands";   slug="east-midlands" },
+  @{ code="DUB"; name="Dublin";          slug="dublin" }
 )
 if ($OnlyOrigins) { $AIRPORTS = @($AIRPORTS | Where-Object { $OnlyOrigins -contains $_.code }) }
 
-$UK = @{ LON=1; MAN=1; BHX=1; LBA=1; STN=1; LTN=1; BRS=1; NCL=1; GLA=1; EDI=1; LGW=1; LPL=1; BFS=1; CWL=1; ILY=1; KOI=1; ABZ=1; INV=1; SOU=1; EXT=1; NQY=1; LDY=1 }
+$UK = @{ LON=1; MAN=1; BHX=1; LBA=1; STN=1; LTN=1; BRS=1; NCL=1; GLA=1; EDI=1; LGW=1; LPL=1; BFS=1; CWL=1; EMA=1; ILY=1; KOI=1; ABZ=1; INV=1; SOU=1; EXT=1; NQY=1; LDY=1 }
 $BOGUS = @{ BSZ=1; DSE=1 }
 # Places a reader recognises at a glance. Used to choose the headline
 # fares in each email; everything else is still in the full list.
@@ -192,7 +194,7 @@ foreach ($a in $AIRPORTS) {
   # Cheapest option per destination departing within the horizon.
   $best = @{}; $bestRet = @{}
   foreach ($r in $data.fares) {
-    if ($UK.ContainsKey($r.destination) -or $BOGUS.ContainsKey($r.destination) -or -not $PLACES.ContainsKey($r.destination)) { continue }
+    if ((Domestic $a.code $r.destination) -or $BOGUS.ContainsKey($r.destination) -or -not $PLACES.ContainsKey($r.destination)) { continue }
     foreach ($o in @($r.options)) {
       if (-not $o.p -or -not $o.d -or $o.d -lt $today -or $o.d -gt $limit) { continue }
       $isRet = [bool]$o.r

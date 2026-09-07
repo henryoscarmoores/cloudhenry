@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CloudHenry homepage, with saved fares</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky-top: #1C7FD1; --sky-mid: #4FB3E8; --sky-low: #9FD8F5;
+    --navy: #0E3550; --ink: #12384F; --muted: #46607A; --line: #CFE0EE;
+    --sun: #F5C242; --white: #FFFFFF; --panel: #F0F6FB;
+    --good: #1E9E6A; --hot: #E5533D;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: var(--ink); background: var(--sky-low); }
+  .sky { background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-low) 100%); position: relative; overflow: hidden; }
+  .cloud { position: absolute; width: 96px; height: 36px; background: var(--white); opacity: .9; }
+  .cloud::before { content: ""; position: absolute; left: 18px; top: -18px; width: 60px; height: 18px; background: var(--white); }
+  .cloud::after  { content: ""; position: absolute; left: 36px; top: -36px; width: 24px; height: 18px; background: var(--white); }
+  .sun { position: absolute; right: 8%; top: 46px; width: 48px; height: 48px; background: var(--sun); box-shadow: 0 -12px 0 -6px var(--sun), 0 12px 0 -6px var(--sun), 12px 0 0 -6px var(--sun), -12px 0 0 -6px var(--sun); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 22px 40px; position: relative; }
+  nav { display: flex; align-items: center; justify-content: space-between; color: var(--white); font-weight: 800; font-size: 14px; }
+  nav .brand { font-size: 20px; font-weight: 900; letter-spacing: -.3px; }
+  nav a { color: var(--white); text-decoration: none; margin-left: 18px; }
+  nav .acct { background: rgba(255,255,255,.18); padding: 8px 14px; border-radius: 999px; }
+</style>
+</head>
+<body>
+<section class="sky">
+  <div class="cloud" style="left:4%;top:120px"></div>
+  <div class="cloud" style="left:70%;top:80px;transform:scale(.7)"></div>
+  <div class="sun"></div>
+  <div class="wrap">
+    <nav>
+      <span class="brand">☁ CloudHenry</span>
+      <span><a href="#">Search Flights</a><a href="#">Airports</a><a href="#">Pricing</a><a href="#" class="acct">Henry's account</a></span>
+    </nav>
+    <div class="hero">
+      <div class="eyebrow">Manchester · member · next email Monday</div>
+      <h1>Cheaper flights<br>Heavier wallets</h1>
+      <p class="sub">Evening, Henry. <b>346 destinations</b> from Manchester were checked this morning. The cheapest right now:</p>
+      <div class="tiles">
+        <div class="tile"><span class="flag">🇫🇷</span><b>Marseille</b><small>Wed 16 Sep</small><span class="price">£15</span><button class="star" aria-label="Save this fare">☆</button></div>
+        <div class="tile"><span class="flag">🇪🇸</span><b>Alicante</b><small>Wed 9 Sep</small><span class="price">£15</span><button class="star on" aria-label="Saved">★</button></div>
+        <div class="tile"><span class="flag">🇩🇰</span><b>Copenhagen</b><small>Wed 9 Sep</small><span class="price">£15</span><button class="star" aria-label="Save this fare">☆</button></div>
+        <div class="tile more"><b>+343</b><small>more places<br>from £15</small></div>
+      </div>
+      <div class="ctas"><a class="btn sun" href="#">Open my deals →</a><a class="btn ghost" href="#">Search every flight</a><a class="btn ghost" href="#saved">★ Saved (3)</a></div>
+    </div>
+  </div>
+</section>
+<!-- fares and saved panel go here -->
+</body>
+</html>

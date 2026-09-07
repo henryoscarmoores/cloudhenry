@@ -134,7 +134,7 @@
         var best = null;
         // A domestic hop undersells a flight deals site: Glasgow to
         // Birmingham was leading the Glasgow page. Show somewhere abroad.
-        var UK = { MAN:1,BHX:1,LBA:1,STN:1,LTN:1,BRS:1,NCL:1,GLA:1,EDI:1,LGW:1,LPL:1,BFS:1,LON:1,CWL:1,ILY:1,KOI:1 };
+        var UK = { MAN:1,BHX:1,LBA:1,STN:1,LTN:1,BRS:1,NCL:1,GLA:1,EDI:1,LGW:1,LPL:1,BFS:1,LON:1,CWL:1,EMA:1,ILY:1,KOI:1 };
 
         j.fares.forEach(function (f) {
           if (f.origin !== origin || !f.typical) return;

@@ -18,8 +18,12 @@
   "use strict";
   var CDN = "https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/";
   var NAMES = { MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds Bradford", STN:"London Stansted", LTN:"London Luton",
-                BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow", EDI:"Edinburgh", LGW:"London Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff" };
-  var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, ABZ:1, INV:1, SOU:1, EXT:1, NQY:1, LDY:1, ILY:1, KOI:1 };
+                BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow", EDI:"Edinburgh", LGW:"London Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"East Midlands", DUB:"Dublin" };
+  var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, EMA:1, ABZ:1, INV:1, SOU:1, EXT:1, NQY:1, LDY:1, ILY:1, KOI:1 };
+  // Dublin joined on 7 September 2026: same country as your airport, not
+  // "is it British", decides whether a route is too close to be a getaway.
+  var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
+  function domestic(origin, dest) { return IE[origin] ? !!IE[dest] : !!UK[dest]; }
   var DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   function stamp() { var d = new Date(); return d.getUTCFullYear() + ("0" + (d.getUTCMonth() + 1)).slice(-2) + ("0" + d.getUTCDate()).slice(-2) + (d.getUTCHours() < 12 ? "-am" : "-pm"); }
@@ -73,7 +77,7 @@
     function pick(list) {
       var best = {}, count = {};
       (list || []).forEach(function (f) {
-        if (f.origin !== code || UK[f.destination]) return;
+        if (f.origin !== code || domestic(code, f.destination)) return;
         count[f.destination] = 1;
         (f.options || []).forEach(function (o) {
           if (!o.p || !o.d || o.d < today || o.r) return;

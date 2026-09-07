@@ -36,7 +36,7 @@
   var ORIGIN_NAME = {
     MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
     LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
-    EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff"
+    EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"East Midlands", DUB:"Dublin"
   };
 
   var JOIN_ORIGIN = {
@@ -45,14 +45,19 @@
     "london-luton":"LTN", "luton":"LTN", "bristol":"BRS",
     "newcastle":"NCL", "glasgow":"GLA", "edinburgh":"EDI",
     "london-gatwick":"LGW", "gatwick":"LGW", "liverpool":"LPL",
-    "belfast":"BFS", "bournemouth":"BOH", "cardiff":"CWL"
+    "belfast":"BFS", "bournemouth":"BOH", "cardiff":"CWL", "east-midlands":"EMA", "dublin":"DUB"
   };
 
   // A hop to another UK airport is a real saving but it undersells a site
   // about getting away, so the teasers skip domestic routes.
   var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1,
-             GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, ILY:1, KOI:1,
+             GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, EMA:1, ILY:1, KOI:1,
              ABZ:1, INV:1, SOU:1, EXT:1, NQY:1, LDY:1 };
+  // Dublin joined on 7 September 2026. A hop inside your own country is
+  // not a getaway, but Dublin to Manchester is a foreign flight, so the
+  // test is same country as the airport you fly from.
+  var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
+  function domestic(origin, dest) { return IE[origin] ? !!IE[dest] : !!UK[dest]; }
 
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var SUBDIVISION = { "Scotland":"gb-sct", "England":"gb-eng", "Wales":"gb-wls", "N. Ireland":"gb-nir" };
@@ -171,7 +176,7 @@
     var all = [];
     fares.forEach(function (f) {
       if (opts.origin && f.origin !== opts.origin) return;
-      if (UK[f.destination]) return;
+      if (domestic(f.origin, f.destination)) return;
       if (places() && !places()[f.destination]) return;   // no name, looks broken
       expand(f).forEach(function (r) {
         if (opts.within && daysFromToday(r.dep) > opts.within) return;
@@ -268,7 +273,7 @@
     var cta = card.querySelector(".ch-cta");
     var fine = card.querySelector(".ch-vf");
     var fromCity = homeOrigin ? ORIGIN_NAME[homeOrigin] : "";
-    if (t) t.textContent = fromCity ? "Every fare from " + fromCity + ", every date" : "Every fare, every date, all 14 airports";
+    if (t) t.textContent = fromCity ? "Every fare from " + fromCity + ", every date" : "Every fare, every date, all 16 airports";
     if (subs[0]) subs[0].textContent = "Tell us where, when and how much, and see everything we have found today. Members see every fare we find and go straight through to book it.";
     if (cta) {
       cta.textContent = "Search flights →";

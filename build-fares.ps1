@@ -64,12 +64,20 @@ $RepoDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $TokenFile = Join-Path $RepoDir ".token"
 $LogFile   = Join-Path $RepoDir "build-fares.log"
 
-$ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL")
+$ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL","EMA","DUB")
 if ($OnlyOrigins) { $ORIGINS = @($OnlyOrigins | ForEach-Object { $_.ToUpper() }) }
 
 # Other UK airports. Kept in the data (someone may search for them) but
 # never worth a weekend or Christmas pass.
-$UK = @{ LON=1; MAN=1; BHX=1; LBA=1; STN=1; LTN=1; BRS=1; NCL=1; GLA=1; EDI=1; LGW=1; LPL=1; BFS=1; CWL=1; ILY=1; KOI=1; ABZ=1; INV=1; SOU=1; EXT=1; NQY=1; LDY=1 }
+$UK = @{ LON=1; MAN=1; BHX=1; LBA=1; STN=1; LTN=1; BRS=1; NCL=1; GLA=1; EDI=1; LGW=1; LPL=1; BFS=1; CWL=1; EMA=1; ILY=1; KOI=1; ABZ=1; INV=1; SOU=1; EXT=1; NQY=1; LDY=1 }
+# Dublin joined on 7 September 2026. A hop inside your own country is not
+# a getaway worth building weekend pairs for, but Dublin to Manchester is
+# a foreign flight, so the test is same country as the origin.
+$IE = @{ DUB=1; ORK=1; SNN=1; NOC=1; KIR=1; GWY=1; WAT=1 }
+function Domestic([string] $Origin, [string] $Dest) {
+  if ($IE.ContainsKey($Origin)) { return $IE.ContainsKey($Dest) }
+  return $UK.ContainsKey($Dest)
+}
 
 # Weekend breaks only make sense within a few hours' flight. Countries,
 # matched against places.js, so the list does not need every airport code.
@@ -258,7 +266,7 @@ foreach ($origin in $ORIGINS) {
         if ($p -le 0 -or -not $row.depart_date -or -not $row.return_date) { continue }
         $o = [pscustomobject]@{ d = ([string]$row.depart_date).Substring(0, 10); r = ([string]$row.return_date).Substring(0, 10); p = $p; s = [int]$row.number_of_changes }
         $isWk = $false
-        if (-not $SkipWeekends -and -not $UK.ContainsKey($t.destination) -and $weekendOk.ContainsKey($country)) {
+        if (-not $SkipWeekends -and -not (Domestic $origin $t.destination) -and $weekendOk.ContainsKey($country)) {
           try { $dep = [datetime]::Parse($o.d); $ret = [datetime]::Parse($o.r); $isWk = Is-Weekend -Dep $dep -Ret $ret } catch { $isWk = $false }
         }
         # Christmas market breaks are protected from the caps the same way.
@@ -278,7 +286,7 @@ foreach ($origin in $ORIGINS) {
     # Sunday or Monday back, one to three nights. Christmas market breaks
     # (two to five nights in the window) are assembled the same way.
     # Marked c = 1 so the site can say "two one-way tickets".
-    if (-not $SkipWeekends -and -not $UK.ContainsKey($t.destination) -and $owPrices.Count -gt 0) {
+    if (-not $SkipWeekends -and -not (Domestic $origin $t.destination) -and $owPrices.Count -gt 0) {
       $li = Invoke-TP -Path "/v2/prices/latest" -Query @{
         origin = $t.destination; destination = $origin; one_way = "true"; limit = 1000
         period_type = "year"; show_to_affiliates = "true"; currency = $Currency

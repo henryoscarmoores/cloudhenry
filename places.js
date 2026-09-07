@@ -40,7 +40,7 @@ window.CH_PLACES = {
     LHE:["Lahore","Pakistan","🇵🇰"],JNB:["Johannesburg","South Africa","🇿🇦"],
     HKG:["Hong Kong","Hong Kong","🇭🇰"],VNO:["Vilnius","Lithuania","🇱🇹"],
     BRI:["Bari","Italy","🇮🇹"],KZN:["Kazan","Russia","🇷🇺"],
-    AGA:["Agadir","Morocco","🇲🇦"],CWL:["Cardiff","Wales","🏴"],
+    AGA:["Agadir","Morocco","🇲🇦"],CWL:["Cardiff","Wales","🏴"],EMA:["East Midlands","United Kingdom","🇬🇧"],
     MLA:["Malta","Malta","🇲🇹"],MAN:["Manchester","England","🏴"],
     REU:["Reus","Spain","🇪🇸"],JMK:["Mykonos","Greece","🇬🇷"],
     HKT:["Phuket","Thailand","🇹🇭"],SYD:["Sydney","Australia","🇦🇺"],

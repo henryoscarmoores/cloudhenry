@@ -64,12 +64,12 @@
   // Manchester, so the search can look at all twelve at once.
   var ANY = "ANY";
   var ORIGINS = [
-    [ANY,"Any UK airport"],
+    [ANY,"Any airport"],
     ["LON","London (any airport)"],
     ["MAN","Manchester"], ["BHX","Birmingham"], ["LBA","Leeds Bradford"],
     ["STN","London Stansted"], ["LTN","London Luton"], ["BRS","Bristol"],
     ["NCL","Newcastle"], ["GLA","Glasgow"], ["EDI","Edinburgh"],
-    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"]
+    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"], ["EMA","East Midlands"], ["DUB","Dublin"]
   ];
   function originName(code) {
     var n = code;
@@ -79,7 +79,7 @@
   // Short form for the card meta line, where "London Stansted" is too long.
   var ORIGIN_SHORT = { LON:"London", MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
                        LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
-                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff" };
+                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"E Midlands", DUB:"Dublin" };
   // "London (any airport)" reads the three London files together: plenty
   // of people just want out of London and do not mind which end.
   var LONDON = { STN:1, LTN:1, LGW:1 };
@@ -88,7 +88,18 @@
   // Other UK airports. A £44 hop to London with a stop is not a deal a
   // flight deals site should lead with. They still show when typed.
   var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1,
-             LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, ILY:1, KOI:1, ABZ:1, INV:1, SOU:1, EXT:1, NQY:1, LDY:1 };
+             LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, EMA:1, ILY:1, KOI:1, ABZ:1, INV:1, SOU:1, EXT:1, NQY:1, LDY:1 };
+  // Dublin joined on 7 September 2026, so "is it British" stopped being
+  // the right test. A hop inside your own country is not a getaway, but
+  // Dublin to Manchester is a foreign flight and one of the busiest
+  // routes in Europe. The test is now: same country as the airport you
+  // are flying from.
+  var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
+  function domestic(origin, dest) {
+    if (!origin || origin === ANY) return !!UK[dest];   // a mixed list: keep it simple
+    if (IE[origin]) return !!IE[dest];
+    return !!UK[dest];
+  }
 
   // Codes the feed produces that are not real destinations for anyone
   // browsing. Bartica is a river town in Guyana quoted at £73 with two
@@ -118,7 +129,7 @@
     PAR:["Paris","France","🇫🇷"],AGP:["Málaga","Spain","🇪🇸"],
     ALC:["Alicante","Spain","🇪🇸"],OSS:["Osh","Kyrgyzstan","🇰🇬"],
     FAO:["Faro","Portugal","🇵🇹"],TAS:["Tashkent","Uzbekistan","🇺🇿"],
-    BFS:["Belfast","N. Ireland","🇬🇧"],BOH:["Bournemouth","England","🇬🇧"],CWL:["Cardiff","Wales","🇬🇧"],KRK:["Kraków","Poland","🇵🇱"],
+    BFS:["Belfast","N. Ireland","🇬🇧"],BOH:["Bournemouth","England","🇬🇧"],CWL:["Cardiff","Wales","🇬🇧"],EMA:["East Midlands","England","🇬🇧"],KRK:["Kraków","Poland","🇵🇱"],
     AMS:["Amsterdam","Netherlands","🇳🇱"],PMI:["Palma","Spain","🇪🇸"],
     LIS:["Lisbon","Portugal","🇵🇹"],BAK:["Baku","Azerbaijan","🇦🇿"],
     ACE:["Lanzarote","Spain","🇪🇸"],MAD:["Madrid","Spain","🇪🇸"],
@@ -143,7 +154,7 @@
     LHE:["Lahore","Pakistan","🇵🇰"],JNB:["Johannesburg","South Africa","🇿🇦"],
     HKG:["Hong Kong","Hong Kong","🇭🇰"],VNO:["Vilnius","Lithuania","🇱🇹"],
     BRI:["Bari","Italy","🇮🇹"],KZN:["Kazan","Russia","🇷🇺"],
-    AGA:["Agadir","Morocco","🇲🇦"],CWL:["Cardiff","Wales","🏴"],
+    AGA:["Agadir","Morocco","🇲🇦"],CWL:["Cardiff","Wales","🏴"],EMA:["East Midlands","United Kingdom","🇬🇧"],
     MLA:["Malta","Malta","🇲🇹"],MAN:["Manchester","England","🏴"],
     REU:["Reus","Spain","🇪🇸"],JMK:["Mykonos","Greece","🇬🇷"],
     HKT:["Phuket","Thailand","🇹🇭"],SYD:["Sydney","Australia","🇦🇺"],
@@ -322,7 +333,7 @@
     if (!document.querySelector(".chfs-eyebrow")) {
       var eb = document.createElement("span");
       eb.className = "chfs-eyebrow";
-      eb.textContent = "14 UK airports · Ryanair, Wizz Air, Norwegian and more · checked this morning";
+      eb.textContent = "16 airports in the UK and Ireland · Ryanair, Wizz Air, Norwegian and more · checked this morning";
       h.parentNode.insertBefore(eb, h);
     }
     var t = document.querySelector(".chfs-tally");
@@ -331,7 +342,7 @@
     if (GENERATED) { var d = new Date(GENERATED); when = " at " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
     t.innerHTML = (TOTALS && TOTALS.fares)
       ? "<b>" + withCommas(TOTALS.fares) + " fares</b> on <b>" + withCommas(TOTALS.routes) + " routes</b>, priced this morning" + when + ". Pick an airport and go."
-      : "Every fare we can find from 14 UK airports, priced this morning" + when + ". Pick an airport and go.";
+      : "Every fare we can find from 16 airports, priced this morning" + when + ". Pick an airport and go.";
   }
 
   renderTitle();
@@ -585,7 +596,7 @@
     var today = isoToday(), out = [], have = {};
     existing.forEach(function (r) { if (r.ret) have[r.origin + r.dest + r.dep + r.ret] = 1; });
     FARES.forEach(function (f) {
-      if (!fromMatches(f) || !f.inbound || !f.inbound.length || UK[f.destination] || BOGUS[f.destination] || !PLACES[f.destination]) return;
+      if (!fromMatches(f) || !f.inbound || !f.inbound.length || domestic(f.origin, f.destination) || BOGUS[f.destination] || !PLACES[f.destination]) return;
       var outs = (f.options || []).filter(function (o) {
         if (o.r || !o.d || o.d < today) return false;
         if (state.from2) return Math.abs(dayDiff(o.d, state.from2)) <= state.flex;
@@ -627,7 +638,7 @@
     } else {
       // Browsing, not asking for somewhere in particular: leave out the
       // hops to other UK airports.
-      rows = rows.filter(function (r) { return !UK[r.dest]; });
+      rows = rows.filter(function (r) { return !domestic(r.origin || state.from, r.dest); });
     }
     if (state.theme && THEMES[state.theme]) {
       var set = THEMES[state.theme].set;
@@ -978,7 +989,7 @@
 
     if (!term) {
       // The opening list is inspiration, so no hops to other UK airports.
-      matches = all.filter(function (d) { return !UK[d.code]; }).slice(0, 8);
+      matches = all.filter(function (d) { return !domestic(state.from, d.code); }).slice(0, 8);
     } else {
       matches = all.filter(function (d) {
         return d.name.toLowerCase().indexOf(term) === 0 ||
@@ -1308,7 +1319,7 @@
     var codes = Object.keys(PLACES).sort(function (a, b) { return PLACES[b][0].length - PLACES[a][0].length; });
     for (var i = 0; i < codes.length && !p.to; i++) {
       var nm = PLACES[codes[i]][0].toLowerCase().replace(/[^a-z ]/g, "");
-      if (nm.length > 3 && t.indexOf(" " + nm + " ") > -1 && !UK[codes[i]] && !BOGUS[codes[i]]) p.to = PLACES[codes[i]][0];
+      if (nm.length > 3 && t.indexOf(" " + nm + " ") > -1 && !domestic(state.from, codes[i]) && !BOGUS[codes[i]]) p.to = PLACES[codes[i]][0];
     }
     // A country works too. "Spain" was the first thing someone typed and
     // the parser knew nothing but cities.
@@ -1318,7 +1329,7 @@
       Object.keys(ALIAS).forEach(function (a) { if (!p.to && t.indexOf(" " + a + " ") > -1) p.to = ALIAS[a]; });
       var countries = {};
       Object.keys(PLACES).forEach(function (c) {
-        if (!UK[c] && !BOGUS[c] && PLACES[c][1]) countries[PLACES[c][1]] = 1;
+        if (!domestic(state.from, c) && !BOGUS[c] && PLACES[c][1]) countries[PLACES[c][1]] = 1;
       });
       Object.keys(countries).sort(function (a, b) { return b.length - a.length; }).forEach(function (cn) {
         var k = cn.toLowerCase().replace(/[^a-z ]/g, "");
