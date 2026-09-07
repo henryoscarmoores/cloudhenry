@@ -109,8 +109,22 @@ $BOGUS = @{ BSZ=1; DSE=1 }
 # whichever of the sixteen airports you start from, so the whole group is
 # kept out of the email. Members can still search for it by name.
 $IE = @{ DUB=1; ORK=1; SNN=1; NOC=1; KIR=1; GWY=1; WAT=1 }
-function Domestic([string] $Origin, [string] $Dest) {
-  return ($UK.ContainsKey($Dest) -or $IE.ContainsKey($Dest))
+# A hop inside your own country is never in the email.
+function SameCountry([string] $Origin, [string] $Dest) {
+  if ($IE.ContainsKey($Origin)) { return $IE.ContainsKey($Dest) }
+  return ($UK.ContainsKey($Dest) -and -not $IE.ContainsKey($Dest))
+}
+function Isles([string] $Dest) { return ($UK.ContainsKey($Dest) -or $IE.ContainsKey($Dest)) }
+# Ireland from a UK airport, and the UK from Dublin, are real trips, so a
+# couple stay in. Cheapest first in, so the couple kept are the best.
+function Limit-Isles($Rows, [int] $Max) {
+  $n = 0
+  $out = New-Object System.Collections.Generic.List[object]
+  foreach ($r in @($Rows)) {
+    if (Isles $r.dest) { $n++; if ($n -gt $Max) { continue } }
+    $out.Add($r)
+  }
+  $out.ToArray()
 }
 # Places a reader recognises at a glance. Used to choose the headline
 # fares in each email; everything else is still in the full list.
@@ -205,7 +219,7 @@ foreach ($a in $AIRPORTS) {
   # Cheapest option per destination departing within the horizon.
   $best = @{}; $bestRet = @{}
   foreach ($r in $data.fares) {
-    if ((Domestic $a.code $r.destination) -or $BOGUS.ContainsKey($r.destination) -or -not $PLACES.ContainsKey($r.destination)) { continue }
+    if ((SameCountry $a.code $r.destination) -or $BOGUS.ContainsKey($r.destination) -or -not $PLACES.ContainsKey($r.destination)) { continue }
     foreach ($o in @($r.options)) {
       if (-not $o.p -or -not $o.d -or $o.d -lt $today -or $o.d -gt $limit) { continue }
       $isRet = [bool]$o.r
@@ -229,7 +243,7 @@ foreach ($a in $AIRPORTS) {
       if ($isRet -and (-not $bestRet.ContainsKey($r.destination) -or $cand.price -lt $bestRet[$r.destination].price)) { $bestRet[$r.destination] = $cand }
     }
   }
-  $fares = @($best.Values | Sort-Object price)
+  $fares = @(Limit-Isles (@($best.Values | Sort-Object price)) 2)
   if ($fares.Count -lt 6) { Write-Host "$($a.code): only $($fares.Count) fares in the window, skipped"; $skipped++; continue }
 
   $n = $fares.Count
@@ -239,7 +253,7 @@ foreach ($a in $AIRPORTS) {
   $returnsUnder50 = @($fares | Where-Object { $_.ret -and $_.price -le 50 }).Count
   # A mix, not just the three cheapest singles: the cheapest one-way, the
   # cheapest return, then the biggest saving. The blurred four: two of each.
-  $owAll = @($fares | Where-Object { -not $_.ret }); $rtAll = @($bestRet.Values | Sort-Object price)
+  $owAll = @($fares | Where-Object { -not $_.ret }); $rtAll = @(Limit-Isles (@($bestRet.Values | Sort-Object price)) 1)
   $bySave = @($fares | Where-Object { $_.typical -gt 0 } | Sort-Object { $_.price / $_.typical })
   # The headline three favour places people recognise. Cheapest-of-all
   # from Stansted came out as Klagenfurt, Iasi and Szymany, which nobody

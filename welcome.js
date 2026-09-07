@@ -23,7 +23,14 @@
   // Dublin joined on 7 September 2026: same country as your airport, not
   // "is it British", decides whether a route is too close to be a getaway.
   var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
-  function domestic(origin, dest) { return !!UK[dest] || !!IE[dest]; }
+  // Same country never shows; Ireland from a UK airport (or the UK from
+  // Dublin) is allowed once, so the welcome list is not all Irish hops.
+  function sameCountry(origin, dest) { return IE[origin] ? !!IE[dest] : (!!UK[dest] && !IE[dest]); }
+  function isles(dest) { return !!UK[dest] || !!IE[dest]; }
+  function limitIsles(rows, max, key) {
+    var n = 0;
+    return rows.filter(function (r) { if (!isles(r[key])) return true; n++; return n <= max; });
+  }
   var DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   function stamp() { var d = new Date(); return d.getUTCFullYear() + ("0" + (d.getUTCMonth() + 1)).slice(-2) + ("0" + d.getUTCDate()).slice(-2) + (d.getUTCHours() < 12 ? "-am" : "-pm"); }
@@ -77,14 +84,14 @@
     function pick(list) {
       var best = {}, count = {};
       (list || []).forEach(function (f) {
-        if (f.origin !== code || domestic(code, f.destination)) return;
+        if (f.origin !== code || sameCountry(code, f.destination)) return;
         count[f.destination] = 1;
         (f.options || []).forEach(function (o) {
           if (!o.p || !o.d || o.d < today || o.r) return;
           if (!best[f.destination] || o.p < best[f.destination].p) best[f.destination] = { dest: f.destination, p: o.p, d: o.d, typ: f.typical || 0 };
         });
       });
-      var rows = Object.keys(best).map(function (k) { return best[k]; }).sort(function (a, b) { return a.p - b.p; }).slice(0, 5);
+      var rows = limitIsles(Object.keys(best).map(function (k) { return best[k]; }).sort(function (a, b) { return a.p - b.p; }), 1, "dest").slice(0, 5);
       return { rows: rows, destinations: Object.keys(count).length };
     }
     fetch(CDN + "fares-" + code + ".json?v=" + stamp()).then(function (r) { return r.ok ? r.json() : null; })

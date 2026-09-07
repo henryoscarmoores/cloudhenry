@@ -31,7 +31,14 @@
   // Dublin joined on 7 September 2026: same country as your airport, not
   // "is it British", decides whether a route is too close to be a getaway.
   var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
-  function domestic(origin, dest) { return !!UK[dest] || !!IE[dest]; }
+  // Same country never shows; Ireland from a UK airport (or the UK from
+  // Dublin) is allowed once, so the list is not all Irish hops.
+  function sameCountry(origin, dest) { return IE[origin] ? !!IE[dest] : (!!UK[dest] && !IE[dest]); }
+  function isles(dest) { return !!UK[dest] || !!IE[dest]; }
+  function limitIsles(rows, max) {
+    var n = 0;
+    return rows.filter(function (r) { if (!isles(r.dest)) return true; n++; return n <= max; });
+  }
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -125,14 +132,14 @@
         var best = {};
         j.fares.forEach(function (f) {
           if (code && f.origin !== code) return;
-          if (domestic(f.origin, f.destination)) return;
+          if (sameCountry(f.origin, f.destination)) return;
           (f.options || []).forEach(function (o) {
             if (!o.p || !o.d || o.d < today) return;
             var k = f.origin + f.destination;
             if (!best[k] || o.p < best[k].price) best[k] = { origin: f.origin, dest: f.destination, price: o.p, dep: o.d, ret: o.r || "", typical: f.typical || 0 };
           });
         });
-        return Object.keys(best).map(function (k) { return best[k]; }).sort(function (a, b) { return a.price - b.price; }).slice(0, 6);
+        return limitIsles(Object.keys(best).map(function (k) { return best[k]; }).sort(function (a, b) { return a.price - b.price; }), 1).slice(0, 6);
       })
       .catch(function () { return []; });
   }

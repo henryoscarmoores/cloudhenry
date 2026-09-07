@@ -57,7 +57,15 @@
   // not a getaway, but Dublin to Manchester is a foreign flight, so the
   // test is same country as the airport you fly from.
   var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
-  function domestic(origin, dest) { return !!UK[dest] || !!IE[dest]; }
+  // A hop inside your own country never shows. Ireland from a UK airport,
+  // or the UK from Dublin, is a real trip, so one is allowed through the
+  // teasers, not six (Henry, 7 Sep 2026).
+  function sameCountry(origin, dest) { return IE[origin] ? !!IE[dest] : (!!UK[dest] && !IE[dest]); }
+  function isles(dest) { return !!UK[dest] || !!IE[dest]; }
+  function limitIsles(rows, max) {
+    var n = 0;
+    return rows.filter(function (r) { if (!isles(r.dest)) return true; n++; return n <= max; });
+  }
 
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var SUBDIVISION = { "Scotland":"gb-sct", "England":"gb-eng", "Wales":"gb-wls", "N. Ireland":"gb-nir" };
@@ -144,8 +152,8 @@
       var k = r.dest;
       if (!best[k] || r.price < best[k].price) best[k] = r;
     });
-    return Object.keys(best).map(function (k) { return best[k]; })
-      .sort(function (a, b) { return a.price - b.price; });
+    return limitIsles(Object.keys(best).map(function (k) { return best[k]; })
+      .sort(function (a, b) { return a.price - b.price; }), 1);
   }
 
   // Spread the picks across airports. Six fares all from Manchester would
@@ -176,7 +184,7 @@
     var all = [];
     fares.forEach(function (f) {
       if (opts.origin && f.origin !== opts.origin) return;
-      if (domestic(f.origin, f.destination)) return;
+      if (sameCountry(f.origin, f.destination)) return;
       if (places() && !places()[f.destination]) return;   // no name, looks broken
       expand(f).forEach(function (r) {
         if (opts.within && daysFromToday(r.dep) > opts.within) return;

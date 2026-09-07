@@ -95,7 +95,24 @@
   // routes in Europe. The test is now: same country as the airport you
   // are flying from.
   var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
-  function domestic(origin, dest) { return !!UK[dest] || !!IE[dest]; }
+  // Two rules, not one. A hop inside your own country is never a getaway
+  // and never shows. Ireland from a UK airport, or the UK from Dublin, is
+  // a real trip, so a couple are allowed through, but only a couple:
+  // Henry, 7 Sep 2026, "the cheapest will just be full of Dublin".
+  function sameCountry(origin, dest) { return IE[origin] ? !!IE[dest] : (!!UK[dest] && !IE[dest]); }
+  function isles(dest) { return !!UK[dest] || !!IE[dest]; }
+  function domestic(origin, dest) { return sameCountry(origin, dest); }
+  // Rows must already be cheapest first, so the couple that survive are
+  // the best of them.
+  function limitIsles(rows, max, destOf, originOf) {
+    var n = 0;
+    return rows.filter(function (r) {
+      var d = destOf(r), o = originOf ? originOf(r) : state.from;
+      if (sameCountry(o, d)) return false;
+      if (!isles(d)) return true;
+      n++; return n <= max;
+    });
+  }
 
   // Codes the feed produces that are not real destinations for anyone
   // browsing. Bartica is a river town in Guyana quoted at £73 with two
@@ -634,7 +651,7 @@
     } else {
       // Browsing, not asking for somewhere in particular: leave out the
       // hops to other UK airports.
-      rows = rows.filter(function (r) { return !domestic(r.origin || state.from, r.dest); });
+      rows = rows.filter(function (r) { return !sameCountry(r.origin || state.from, r.dest); });
     }
     if (state.theme && THEMES[state.theme]) {
       var set = THEMES[state.theme].set;
@@ -689,6 +706,8 @@
       var k = perDestination ? r.dest : (r.origin + "|" + r.dest + "|" + r.dep + "|" + r.ret);
       if (!seen[k]) { seen[k] = 1; unique.push(r); }
     });
+    // Cheapest first by now, so the two that survive are the best of them.
+    if (!q) unique = limitIsles(unique, 2, function (r) { return r.dest; }, function (r) { return r.origin || state.from; });
     return unique;
   }
 
@@ -985,7 +1004,7 @@
 
     if (!term) {
       // The opening list is inspiration, so no hops to other UK airports.
-      matches = all.filter(function (d) { return !domestic(state.from, d.code); }).slice(0, 8);
+      matches = limitIsles(all, 1, function (d) { return d.code; }, function () { return state.from; }).slice(0, 8);
     } else {
       matches = all.filter(function (d) {
         return d.name.toLowerCase().indexOf(term) === 0 ||
