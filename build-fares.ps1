@@ -75,8 +75,7 @@ $UK = @{ LON=1; MAN=1; BHX=1; LBA=1; STN=1; LTN=1; BRS=1; NCL=1; GLA=1; EDI=1; L
 # a foreign flight, so the test is same country as the origin.
 $IE = @{ DUB=1; ORK=1; SNN=1; NOC=1; KIR=1; GWY=1; WAT=1 }
 function Domestic([string] $Origin, [string] $Dest) {
-  if ($IE.ContainsKey($Origin)) { return $IE.ContainsKey($Dest) }
-  return $UK.ContainsKey($Dest)
+  return ($UK.ContainsKey($Dest) -or $IE.ContainsKey($Dest))
 }
 
 # Weekend breaks only make sense within a few hours' flight. Countries,

@@ -95,11 +95,7 @@
   // routes in Europe. The test is now: same country as the airport you
   // are flying from.
   var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
-  function domestic(origin, dest) {
-    if (!origin || origin === ANY) return !!UK[dest];   // a mixed list: keep it simple
-    if (IE[origin]) return !!IE[dest];
-    return !!UK[dest];
-  }
+  function domestic(origin, dest) { return !!UK[dest] || !!IE[dest]; }
 
   // Codes the feed produces that are not real destinations for anyone
   // browsing. Bartica is a river town in Guyana quoted at £73 with two

@@ -57,7 +57,7 @@
   // not a getaway, but Dublin to Manchester is a foreign flight, so the
   // test is same country as the airport you fly from.
   var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
-  function domestic(origin, dest) { return IE[origin] ? !!IE[dest] : !!UK[dest]; }
+  function domestic(origin, dest) { return !!UK[dest] || !!IE[dest]; }
 
   var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var SUBDIVISION = { "Scotland":"gb-sct", "England":"gb-eng", "Wales":"gb-wls", "N. Ireland":"gb-nir" };

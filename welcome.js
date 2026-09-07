@@ -23,7 +23,7 @@
   // Dublin joined on 7 September 2026: same country as your airport, not
   // "is it British", decides whether a route is too close to be a getaway.
   var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };
-  function domestic(origin, dest) { return IE[origin] ? !!IE[dest] : !!UK[dest]; }
+  function domestic(origin, dest) { return !!UK[dest] || !!IE[dest]; }
   var DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   function stamp() { var d = new Date(); return d.getUTCFullYear() + ("0" + (d.getUTCMonth() + 1)).slice(-2) + ("0" + d.getUTCDate()).slice(-2) + (d.getUTCHours() < 12 ? "-am" : "-pm"); }
