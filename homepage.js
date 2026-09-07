@@ -41,7 +41,11 @@
     "manchester": "MAN", "birmingham": "BHX", "leeds": "LBA",
     "london-stansted": "STN", "london-luton": "LTN", "bristol": "BRS",
     "newcastle": "NCL", "glasgow": "GLA", "edinburgh": "EDI",
-    "london-gatwick": "LGW", "liverpool": "LPL", "belfast": "BFS"
+    "london-gatwick": "LGW", "liverpool": "LPL", "belfast": "BFS",
+    // The five that joined after this file was written, which is why
+    // their join pages had no best-deal strip while the first twelve did.
+    "bournemouth": "BOH", "cardiff": "CWL", "east-midlands": "EMA",
+    "dublin": "DUB", "exeter": "EXT"
   };
 
   var NAMES = {
@@ -62,7 +66,14 @@
     BUH:"Bucharest",BOD:"Bordeaux",VCE:"Venice",ATH:"Athens",RIX:"Riga",MXP:"Milan",
     FCO:"Rome",NAP:"Naples",CDG:"Paris",GVA:"Geneva",SSH:"Sharm el-Sheikh",CAI:"Cairo"
   };
-  function name(code) { return NAMES[code] || code; }
+  // places.js is loaded on every page and is the one list of names the
+  // whole site shares. This file's own NAMES map is only a fallback: it
+  // was missing Shannon, so the Manchester page read "Manchester to SNN".
+  function name(code) {
+    var P = window.CH_PLACES;
+    if (P && P[code] && P[code][0]) return P[code][0];
+    return NAMES[code] || code;
+  }
 
   var CSS =
     "@media(min-width:860px){.ch-airportpick{margin-left:0 !important;margin-right:auto !important}}" +
@@ -132,18 +143,27 @@
         // headline produced a "best deal" of 10% sitting directly above a
         // fare in the page's own list at 82%, which reads as nonsense.
         var best = null;
-        // A domestic hop undersells a flight deals site: Glasgow to
-        // Birmingham was leading the Glasgow page. Show somewhere abroad.
-        var UK = { MAN:1,BHX:1,LBA:1,STN:1,LTN:1,BRS:1,NCL:1,GLA:1,EDI:1,LGW:1,LPL:1,BFS:1,LON:1,CWL:1,EMA:1,ILY:1,KOI:1 };
+        // A hop undersells a flight deals site: Glasgow to Birmingham was
+        // leading the Glasgow page, and Manchester to Shannon was leading
+        // Manchester. One headline fare gets one job, so nothing in the
+        // British Isles is eligible for it. The list is the same one the
+        // search uses, kept in step by hand because this file predates it.
+        var HOME = {};
+        ("ABZ ACI BEB BFS BHD BHX BOH BRR BRS CAL CWL DND EDI EMA EXT GLA HUY ILY INV ISC KOI LBA LDY LEQ LGW LON LPL LSI LTN MAN MME NCL NQT NQY NWI PIK PPW SDZ SEN SOU STN SYY TRE WIC WRY " +
+         "CFN DUB GWY KIR NOC ORK SNN WAT " +
+         "GCI IOM JER").split(" ").forEach(function (c) { HOME[c] = 1; });
 
         j.fares.forEach(function (f) {
           if (f.origin !== origin || !f.typical) return;
-          if (UK[f.destination]) return;
+          if (HOME[f.destination]) return;
 
-          var price = f.price || Infinity;
+          // Two changes of plane is the limit everywhere else on the
+          // site, so a three stop itinerary cannot win the headline here.
+          var price = ((f.transfers || 0) > 2) ? Infinity : (f.price || Infinity);
           var dep = f.departure, ret = f.ret;
           if (f.options && f.options.length) {
             f.options.forEach(function (o) {
+              if ((o.s || 0) > 2) return;
               if (o.p && o.p < price) { price = o.p; dep = o.d; ret = o.r; }
             });
           }
