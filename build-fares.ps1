@@ -49,6 +49,10 @@ param(
   [int]      $OneWayPerMonth = 30,
   [int]      $ReturnPerMonth = 20,
   [int]      $PairsPerMonth = 14,
+  # How far ahead the airline calendars are asked to go. Ryanair answers
+  # one call per route per month, so this is cheap; the default matches
+  # what the feeds reliably hold.
+  [int]      $FeedMonths = 6,
   [switch]   $SkipWeekends,
   [switch]   $SkipXmas,
   [string[]] $OnlyOrigins,
@@ -384,7 +388,7 @@ foreach ($origin in $ORIGINS) {
   # Real dated fares straight from the airline, including proper weekend
   # returns. A failure here is a warning and the list stays as it was.
   try { $list = @(Merge-Ryanair -Origin $origin -List @($list)) } catch { Log ("{0}: Ryanair merge skipped: {1}" -f $origin, $_.Exception.Message) "WARN" }
-  try { $list = @(Merge-RyanairCalendar -Origin $origin -List @($list)) } catch { Log ("{0}: Ryanair calendar skipped: {1}" -f $origin, $_.Exception.Message) "WARN" }
+  try { $list = @(Merge-RyanairCalendar -Origin $origin -List @($list) -Months $FeedMonths) } catch { Log ("{0}: Ryanair calendar skipped: {1}" -f $origin, $_.Exception.Message) "WARN" }
   try { $list = @(Merge-Wizz -Origin $origin -List @($list)) } catch { Log ("{0}: Wizz Air merge skipped: {1}" -f $origin, $_.Exception.Message) "WARN" }
   try { $list = @(Merge-Norwegian -Origin $origin -List @($list)) } catch { Log ("{0}: Norwegian merge skipped: {1}" -f $origin, $_.Exception.Message) "WARN" }
 

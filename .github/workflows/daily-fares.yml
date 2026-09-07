@@ -48,7 +48,7 @@ jobs:
       # the homepage and join pages read.
       - name: Build fares
         shell: powershell
-        run: .\build-fares.ps1 -MonthsAhead 7
+        run: .\build-fares.ps1 -MonthsAhead 7 -FeedMonths 9
 
       # A destination the site cannot name is hidden, so name the new ones
       # from Travelpayouts' own city list before publishing.
