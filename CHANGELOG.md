@@ -28,3 +28,10 @@
 - Travelpayouts dashboard, 1 to 6 Sep: 16 Aviasales clicks, 0 bookings, no payout method set yet.
 - Ghost drafts tidied at Henry's instruction: 38 deleted (16 backup copies, 13 old weekly posts, 7 free copies, coming-soon, one test). 15 remain: the 14 Monday drafts and which-airport. All deleted content is in the 6 Sep backup export.
 - label-airports.ps1 now walks every members page (Ghost 6 caps limit=all at 100): 315 members, 299 with an airport, 16 paying members labelled No Airport Selected.
+
+## 7 Sep 2026
+- Monday emails: 14 sent to their airport labels, 668 delivered of 682, 210 opened in the first eight hours. Search chips became a two by two grid of cells because Gmail flattened the pills into one blue line; sign-off is now "Have a good day".
+- Search page: the weekend note and the live-check bar are white cards with navy text, they were unreadable on the sky.
+- East Midlands (EMA) and Dublin (DUB) are airports 15 and 16. Dublin is not in the UK, so the domestic-route filter is now "same country as the airport you fly from" (an IE set beside the UK one) instead of "is it British", or Dublin to Manchester would have been hidden. Copy everywhere reads "16 airports in the UK and Ireland" and the dropdown says "Any airport".
+- Fares now reach seven months ahead on every route: MonthsAhead 7, Ryanair calendar and Wizz and Norwegian six, the weekly Ryanair pass 32 weeks, per-month caps trimmed to 30 one-way and 20 return so the files stay their size.
+- Fixed: -OnlyOrigins with a comma list was read as one airport name.
