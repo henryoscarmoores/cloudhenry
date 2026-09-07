@@ -299,12 +299,17 @@ foreach ($a in $AIRPORTS) {
   # fare list every week (Henry, 6 Sep 2026: "encourage usage of our
   # amazing search flights feature").
   $nextMonth = (Get-Date).AddMonths(1); $mk = $nextMonth.ToString("yyyy-MM"); $mn = $nextMonth.ToString("MMMM")
-  $chip = { param($label, $qs) "<a href=`"$Site/search/?from=$($a.code)&$qs`" style=`"display:inline-block;margin:4px 3px;padding:9px 14px;border-radius:999px;background:#FFFFFF;border:1px solid #CFE0EE;color:#0E3550;font-weight:700;font-size:13px;text-decoration:none;$FONT`">$label</a>" }
-  $searchStrip = "<div style=`"margin-top:18px;padding:14px 12px 10px;border-radius:14px;background:#F0F6FB;text-align:center;$FONT`">" +
+  # Each chip is a table cell, not a styled link: Ghost's phone CSS and
+  # Gmail's dark mode strip the styling off links and ran the four pills
+  # together as one blue sentence (Henry's screenshot, 7 Sep 2026).
+  $chip = { param($label, $qs) "<td width=`"50%`" bgcolor=`"#FFFFFF`" style=`"background:#FFFFFF;border:1px solid #CFE0EE;border-radius:12px;padding:11px 8px;text-align:center;$FONT`"><a href=`"$Site/search/?from=$($a.code)&$qs`" style=`"color:#0E3550;font-weight:800;font-size:14px;text-decoration:none;display:block;`">$label &rarr;</a></td>" }
+  $searchStrip = "<div style=`"margin-top:18px;padding:14px 10px 12px;border-radius:14px;background:#F0F6FB;text-align:center;$FONT`">" +
     "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin-bottom:6px;`">Your search, one tap</div>" +
-    "<div style=`"font-size:13.5px;color:#46607A;margin-bottom:8px;`">Every fare from $(Esc $a.name), every date, five months ahead. Try one:</div>" +
-    (& $chip "Weekend breaks in $mn" "trip=weekend&month=$mk") + (& $chip "Extreme day trips" "trip=daytrip") + (& $chip "Christmas markets" "trip=xmas") + (& $chip "Sun under &pound;40" "theme=sun&max=40") +
-    "</div>"
+    "<div style=`"font-size:13.5px;color:#46607A;margin-bottom:10px;`">Every fare from $(Esc $a.name), every date, five months ahead. Try one:</div>" +
+    "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"6`" border=`"0`" style=`"border-collapse:separate;`">" +
+    "<tr>" + (& $chip "Weekend breaks in $mn" "trip=weekend&month=$mk") + (& $chip "Extreme day trips" "trip=daytrip") + "</tr>" +
+    "<tr>" + (& $chip "Christmas markets" "trip=xmas") + (& $chip "Sun under &pound;40" "theme=sun&max=40") + "</tr>" +
+    "</table></div>"
 
   $full = ""
   # Gmail clips anything over about 100KB, so the email carries the best thirteen after the top three and links to the rest.
