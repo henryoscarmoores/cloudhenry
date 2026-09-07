@@ -838,5 +838,12 @@ window.CH_PLACES = {
     SGD:["Sonderborg","Denmark","🇩🇰"],
     SRQ:["Sarasota","USA","🇺🇸"],
     TRR:["Trincomalee","Sri Lanka","🇱🇰"],
-    VIX:["Vitoria","Brazil","🇧🇷"]
+    VIX:["Vitoria","Brazil","🇧🇷"],
+    CRK:["City of Angeles","Philippines","🇵🇭"],
+    HFE:["Hefei","China","🇨🇳"],
+    IAO:["Del Carmen","Philippines","🇵🇭"],
+    KMG:["Kunming","China","🇨🇳"],
+    RJL:["Logrono","Spain","🇪🇸"],
+    TMS:["Sao Tome Island","SÃ£o TomÃ© and PrÃ­ncipe","🇸🇹"],
+    TWF:["Twin Falls","USA","🇺🇸"]
 };
