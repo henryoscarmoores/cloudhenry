@@ -97,7 +97,10 @@ $AIRPORTS = @(
   @{ code="EMA"; name="East Midlands";   slug="east-midlands" },
   @{ code="DUB"; name="Dublin";          slug="dublin" }
 )
-if ($OnlyOrigins) { $AIRPORTS = @($AIRPORTS | Where-Object { $OnlyOrigins -contains $_.code }) }
+if ($OnlyOrigins) {
+  $want = @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ } | ForEach-Object { $_.Trim().ToUpper() })   # -File hands a comma list over as one string
+  $AIRPORTS = @($AIRPORTS | Where-Object { $want -contains $_.code })
+}
 
 $UK = @{ LON=1; MAN=1; BHX=1; LBA=1; STN=1; LTN=1; BRS=1; NCL=1; GLA=1; EDI=1; LGW=1; LPL=1; BFS=1; CWL=1; EMA=1; ILY=1; KOI=1; ABZ=1; INV=1; SOU=1; EXT=1; NQY=1; LDY=1 }
 $BOGUS = @{ BSZ=1; DSE=1 }
