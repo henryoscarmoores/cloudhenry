@@ -25,9 +25,9 @@
     ["MAN","Manchester","manchester"], ["BHX","Birmingham","birmingham"], ["LBA","Leeds Bradford","leeds-bradford"],
     ["STN","London Stansted","london-stansted"], ["LTN","London Luton","london-luton"], ["BRS","Bristol","bristol"],
     ["NCL","Newcastle","newcastle"], ["GLA","Glasgow","glasgow"], ["EDI","Edinburgh","edinburgh"],
-    ["LGW","London Gatwick","london-gatwick"], ["LPL","Liverpool","liverpool"], ["BFS","Belfast","belfast"], ["BOH","Bournemouth","bournemouth"], ["CWL","Cardiff","cardiff"], ["EMA","East Midlands","east-midlands"], ["DUB","Dublin","dublin"]
+    ["LGW","London Gatwick","london-gatwick"], ["LPL","Liverpool","liverpool"], ["BFS","Belfast","belfast"], ["BOH","Bournemouth","bournemouth"], ["CWL","Cardiff","cardiff"], ["EMA","East Midlands","east-midlands"], ["DUB","Dublin","dublin"], ["EXT","Exeter","exeter"]
   ];
-  var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, EMA:1 };
+  var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, EMA:1, EXT:1 };
   // Dublin joined on 7 September 2026: same country as your airport, not
   // "is it British", decides whether a route is too close to be a getaway.
   var IE = { DUB:1, ORK:1, SNN:1, NOC:1, KIR:1, GWY:1, WAT:1 };

@@ -95,18 +95,19 @@ $AIRPORTS = @(
   @{ code="BOH"; name="Bournemouth";      slug="bournemouth" },
   @{ code="CWL"; name="Cardiff";          slug="cardiff" },
   @{ code="EMA"; name="East Midlands";   slug="east-midlands" },
-  @{ code="DUB"; name="Dublin";          slug="dublin" }
+  @{ code="DUB"; name="Dublin";          slug="dublin" },
+  @{ code="EXT"; name="Exeter";          slug="exeter" }
 )
 if ($OnlyOrigins) {
   $want = @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ } | ForEach-Object { $_.Trim().ToUpper() })   # -File hands a comma list over as one string
   $AIRPORTS = @($AIRPORTS | Where-Object { $want -contains $_.code })
 }
 
-$UK = @{ LON=1; MAN=1; BHX=1; LBA=1; STN=1; LTN=1; BRS=1; NCL=1; GLA=1; EDI=1; LGW=1; LPL=1; BFS=1; CWL=1; EMA=1; ILY=1; KOI=1; ABZ=1; INV=1; SOU=1; EXT=1; NQY=1; LDY=1 }
+$UK = @{ LON=1; MAN=1; BHX=1; LBA=1; STN=1; LTN=1; BRS=1; NCL=1; GLA=1; EDI=1; LGW=1; LPL=1; BFS=1; BOH=1; CWL=1; EMA=1; ILY=1; KOI=1; ABZ=1; INV=1; SOU=1; EXT=1; NQY=1; LDY=1 }
 $BOGUS = @{ BSZ=1; DSE=1 }
 # Henry, 7 Sep 2026: "we don't want UK users being spammed with England to
 # Ireland flights". Anywhere in the British Isles is a hop, not a getaway,
-# whichever of the sixteen airports you start from, so the whole group is
+# whichever of the seventeen airports you start from, so the whole group is
 # kept out of the email. Members can still search for it by name.
 $IE = @{ DUB=1; ORK=1; SNN=1; NOC=1; KIR=1; GWY=1; WAT=1 }
 # A hop inside your own country is never in the email.

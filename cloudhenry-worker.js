@@ -36,7 +36,8 @@ const AIRPORTS_BY_SLUG = {
   "bournemouth":["loc-bournemouth","BOH"],
   "cardiff":["loc-cardiff","CWL"],
   "east-midlands":["loc-east-midlands","EMA"],
-  "dublin":["loc-dublin","DUB"]
+  "dublin":["loc-dublin","DUB"],
+  "exeter":["loc-exeter","EXT"]
 };
 const SOURCES = { "homepage": "via-homepage", "airport-page": "via-airport-page", "flag-game": "via-flag-game" };
 
@@ -44,7 +45,7 @@ const AIRPORTS = [
   ["ANY", "Any airport"], ["MAN", "Manchester"], ["BHX", "Birmingham"],
   ["LBA", "Leeds Bradford"], ["STN", "London Stansted"], ["LTN", "London Luton"],
   ["BRS", "Bristol"], ["NCL", "Newcastle"], ["GLA", "Glasgow"], ["EDI", "Edinburgh"],
-  ["LGW", "London Gatwick"], ["LPL", "Liverpool"], ["BFS", "Belfast"], ["BOH", "Bournemouth"], ["CWL", "Cardiff"], ["EMA", "East Midlands"], ["DUB", "Dublin"]
+  ["LGW", "London Gatwick"], ["LPL", "Liverpool"], ["BFS", "Belfast"], ["BOH", "Bournemouth"], ["CWL", "Cardiff"], ["EMA", "East Midlands"], ["DUB", "Dublin"], ["EXT", "Exeter"]
 ];
 
 /* ---- plumbing ------------------------------------------------------ */
@@ -216,7 +217,7 @@ async function handleJoin(request, env, origin) {
  */
 
 const CODE_TO_LABEL = { MAN:"loc-manchester", BHX:"loc-birmingham", LBA:"loc-leeds", STN:"loc-london-stansted", LTN:"loc-london-luton",
-  BRS:"loc-bristol", NCL:"loc-newcastle", GLA:"loc-glasgow", EDI:"loc-edinburgh", LGW:"loc-london-gatwick", LPL:"loc-liverpool", BFS:"loc-belfast", BOH:"loc-bournemouth", CWL:"loc-cardiff", EMA:"loc-east-midlands", DUB:"loc-dublin" };
+  BRS:"loc-bristol", NCL:"loc-newcastle", GLA:"loc-glasgow", EDI:"loc-edinburgh", LGW:"loc-london-gatwick", LPL:"loc-liverpool", BFS:"loc-belfast", BOH:"loc-bournemouth", CWL:"loc-cardiff", EMA:"loc-east-midlands", DUB:"loc-dublin", EXT:"loc-exeter" };
 const LABEL_TO_CODE = Object.fromEntries(Object.entries(CODE_TO_LABEL).map(([c, l]) => [l, c]));
 
 async function memberByUuid(env, uuid) {

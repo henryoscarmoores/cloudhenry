@@ -23,11 +23,11 @@
   var NAMES = {
     "manchester":"Manchester", "birmingham":"Birmingham", "leeds":"Leeds Bradford", "leeds-bradford":"Leeds Bradford",
     "london-stansted":"London Stansted", "london-luton":"London Luton", "bristol":"Bristol", "newcastle":"Newcastle",
-    "glasgow":"Glasgow", "edinburgh":"Edinburgh", "london-gatwick":"London Gatwick", "liverpool":"Liverpool", "belfast":"Belfast", "bournemouth":"Bournemouth", "cardiff":"Cardiff", "east-midlands":"East Midlands", "dublin":"Dublin"
+    "glasgow":"Glasgow", "edinburgh":"Edinburgh", "london-gatwick":"London Gatwick", "liverpool":"Liverpool", "belfast":"Belfast", "bournemouth":"Bournemouth", "cardiff":"Cardiff", "east-midlands":"East Midlands", "dublin":"Dublin", "exeter":"Exeter"
   };
   var CODES = { "manchester":"MAN", "birmingham":"BHX", "leeds":"LBA", "leeds-bradford":"LBA", "london-stansted":"STN",
                 "london-luton":"LTN", "bristol":"BRS", "newcastle":"NCL", "glasgow":"GLA", "edinburgh":"EDI",
-                "london-gatwick":"LGW", "liverpool":"LPL", "belfast":"BFS", "bournemouth":"BOH", "cardiff":"CWL", "east-midlands":"EMA", "dublin":"DUB" };
+                "london-gatwick":"LGW", "liverpool":"LPL", "belfast":"BFS", "bournemouth":"BOH", "cardiff":"CWL", "east-midlands":"EMA", "dublin":"DUB", "exeter":"EXT" };
   var city = NAMES[slug];
   if (!city) return;
   var label = "loc-" + (slug === "leeds-bradford" ? "leeds" : slug);

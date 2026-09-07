@@ -18,7 +18,7 @@
   "use strict";
   var CDN = "https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/";
   var NAMES = { MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds Bradford", STN:"London Stansted", LTN:"London Luton",
-                BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow", EDI:"Edinburgh", LGW:"London Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"East Midlands", DUB:"Dublin" };
+                BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow", EDI:"Edinburgh", LGW:"London Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"East Midlands", DUB:"Dublin", EXT:"Exeter" };
   var UK = { LON:1, MAN:1, BHX:1, LBA:1, STN:1, LTN:1, BRS:1, NCL:1, GLA:1, EDI:1, LGW:1, LPL:1, BFS:1, BOH:1, CWL:1, EMA:1, ABZ:1, INV:1, SOU:1, EXT:1, NQY:1, LDY:1, ILY:1, KOI:1 };
   // Dublin joined on 7 September 2026: same country as your airport, not
   // "is it British", decides whether a route is too close to be a getaway.
