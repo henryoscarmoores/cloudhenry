@@ -69,7 +69,7 @@ function Get-WizzMonth([string] $Origin, [string] $Dest, [string] $From, [string
   return @{ out = $out; in = $in }
 }
 
-function Merge-Wizz([string] $Origin, [array] $List, [int] $Months = 5) {
+function Merge-Wizz([string] $Origin, [array] $List, [int] $Months = 6) {
   $before = $script:FeedCalls
   $fares = @(); $inbound = @()
   try {

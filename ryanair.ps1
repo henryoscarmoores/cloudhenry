@@ -49,7 +49,7 @@ function Ry-Price($p) {
 # Cheapest fare per destination per week, for the next $Weeks weeks.
 # The endpoint returns one fare per destination for whatever window it
 # is given, so a week at a time is what turns it into a calendar.
-function Get-RyanairOneWay([string] $Origin, [int] $Weeks = 30) {
+function Get-RyanairOneWay([string] $Origin, [int] $Weeks = 32) {
   $out = @()
   $start = (Get-Date).Date.AddDays(1)
   for ($w = 0; $w -lt $Weeks; $w++) {

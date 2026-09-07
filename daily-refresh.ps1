@@ -50,7 +50,7 @@ try {
   # asks each airport for every destination the cache knows, fills in the
   # dates per route, writes one file per airport and the slim fares.json.
   Log "step 1: building fares"
-  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "build-fares.ps1") -MonthsAhead 3
+  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "build-fares.ps1") -MonthsAhead 7
   if ($LASTEXITCODE -ne 0) { throw "build-fares.ps1 exited $LASTEXITCODE" }
 
   # Name any destination the feed found that places.js does not know.

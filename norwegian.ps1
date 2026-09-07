@@ -30,7 +30,7 @@ function Get-NorwegianMonth([string] $Origin, [string] $Dest, [string] $Month) {
   return $out
 }
 
-function Merge-Norwegian([string] $Origin, [array] $List, [int] $Months = 5) {
+function Merge-Norwegian([string] $Origin, [array] $List, [int] $Months = 6) {
   if ($NORWEGIAN_ORIGINS -notcontains $Origin) { return $List }
   $before = $script:FeedCalls
   $fares = @(); $inbound = @(); $routes = 0

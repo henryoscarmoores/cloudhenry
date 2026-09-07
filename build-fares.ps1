@@ -41,13 +41,13 @@
 #>
 [CmdletBinding()]
 param(
-  [int]      $MonthsAhead = 3,
+  [int]      $MonthsAhead = 7,
   [int]      $MaxOneWay = 220,
   [int]      $MaxReturn = 150,
   # Per-month caps come first, so every month ahead keeps its share of
   # dates instead of the cheapest autumn ones taking every slot.
-  [int]      $OneWayPerMonth = 32,
-  [int]      $ReturnPerMonth = 22,
+  [int]      $OneWayPerMonth = 30,
+  [int]      $ReturnPerMonth = 20,
   [int]      $PairsPerMonth = 14,
   [switch]   $SkipWeekends,
   [switch]   $SkipXmas,
@@ -65,7 +65,7 @@ $TokenFile = Join-Path $RepoDir ".token"
 $LogFile   = Join-Path $RepoDir "build-fares.log"
 
 $ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL","EMA","DUB")
-if ($OnlyOrigins) { $ORIGINS = @($OnlyOrigins | ForEach-Object { $_.ToUpper() }) }
+if ($OnlyOrigins) { $ORIGINS = @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ } | ForEach-Object { $_.Trim().ToUpper() }) }   # -File hands a comma list over as one string
 
 # Other UK airports. Kept in the data (someone may search for them) but
 # never worth a weekend or Christmas pass.
