@@ -45,7 +45,7 @@
     // The five that joined after this file was written, which is why
     // their join pages had no best-deal strip while the first twelve did.
     "bournemouth": "BOH", "cardiff": "CWL", "east-midlands": "EMA",
-    "dublin": "DUB", "exeter": "EXT"
+    "dublin": "DUB", "exeter": "EXT", "london-heathrow": "LHR"
   };
 
   var NAMES = {
@@ -149,7 +149,7 @@
         // British Isles is eligible for it. The list is the same one the
         // search uses, kept in step by hand because this file predates it.
         var HOME = {};
-        ("ABZ ACI BEB BFS BHD BHX BOH BRR BRS CAL CWL DND EDI EMA EXT GLA HUY ILY INV ISC KOI LBA LDY LEQ LGW LON LPL LSI LTN MAN MME NCL NQT NQY NWI PIK PPW SDZ SEN SOU STN SYY TRE WIC WRY " +
+        ("ABZ ACI BEB BFS BHD BHX BOH BRR BRS CAL CWL DND EDI EMA EXT GLA HUY ILY INV ISC KOI LBA LDY LEQ LGW LHR LON LPL LSI LTN MAN MME NCL NQT NQY NWI PIK PPW SDZ SEN SOU STN SYY TRE WIC WRY " +
          "CFN DUB GWY KIR NOC ORK SNN WAT " +
          "GCI IOM JER").split(" ").forEach(function (c) { HOME[c] = 1; });
 

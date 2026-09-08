@@ -68,12 +68,12 @@ $RepoDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $TokenFile = Join-Path $RepoDir ".token"
 $LogFile   = Join-Path $RepoDir "build-fares.log"
 
-$ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL","EMA","DUB","EXT")
+$ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL","EMA","DUB","EXT","LHR")
 if ($OnlyOrigins) { $ORIGINS = @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ } | ForEach-Object { $_.Trim().ToUpper() }) }   # -File hands a comma list over as one string
 
 # Other UK airports. Kept in the data (someone may search for them) but
 # never worth a weekend or Christmas pass.
-$UK = @{ ABZ=1; ACI=1; BEB=1; BFS=1; BHD=1; BHX=1; BOH=1; BRR=1; BRS=1; CAL=1; CWL=1; DND=1; EDI=1; EMA=1; EXT=1; GLA=1; HUY=1; ILY=1; INV=1; ISC=1; KOI=1; LBA=1; LDY=1; LEQ=1; LGW=1; LON=1; LPL=1; LSI=1; LTN=1; MAN=1; MME=1; NCL=1; NQT=1; NQY=1; NWI=1; PIK=1; PPW=1; SDZ=1; SEN=1; SOU=1; STN=1; SYY=1; TRE=1; WIC=1; WRY=1 }
+$UK = @{ ABZ=1; ACI=1; BEB=1; BFS=1; BHD=1; BHX=1; BOH=1; BRR=1; BRS=1; CAL=1; CWL=1; DND=1; EDI=1; EMA=1; EXT=1; GLA=1; HUY=1; ILY=1; INV=1; ISC=1; KOI=1; LBA=1; LDY=1; LEQ=1; LGW=1; LHR=1; LON=1; LPL=1; LSI=1; LTN=1; MAN=1; MME=1; NCL=1; NQT=1; NQY=1; NWI=1; PIK=1; PPW=1; SDZ=1; SEN=1; SOU=1; STN=1; SYY=1; TRE=1; WIC=1; WRY=1 }
 # Dublin joined on 7 September 2026. A hop inside your own country is not
 # a getaway worth building weekend pairs for, but Dublin to Manchester is
 # a foreign flight, so the test is same country as the origin.

@@ -69,7 +69,7 @@
     ["MAN","Manchester"], ["BHX","Birmingham"], ["LBA","Leeds Bradford"],
     ["STN","London Stansted"], ["LTN","London Luton"], ["BRS","Bristol"],
     ["NCL","Newcastle"], ["GLA","Glasgow"], ["EDI","Edinburgh"],
-    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"], ["EMA","East Midlands"], ["DUB","Dublin"], ["EXT","Exeter"]
+    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"], ["EMA","East Midlands"], ["DUB","Dublin"], ["EXT","Exeter"], ["LHR","London Heathrow"]
   ];
   function originName(code) {
     var n = code;
@@ -79,15 +79,15 @@
   // Short form for the card meta line, where "London Stansted" is too long.
   var ORIGIN_SHORT = { LON:"London", MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
                        LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
-                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"E Midlands", DUB:"Dublin", EXT:"Exeter" };
+                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"E Midlands", DUB:"Dublin", EXT:"Exeter", LHR:"Heathrow" };
   // "London (any airport)" reads the three London files together: plenty
   // of people just want out of London and do not mind which end.
-  var LONDON = { STN:1, LTN:1, LGW:1 };
+  var LONDON = { STN:1, LTN:1, LGW:1, LHR:1 };
   function fromMatches(f) { return state.from === ANY || (state.from === "LON" ? !!LONDON[f.origin] : f.origin === state.from); }
 
   // Other UK airports. A £44 hop to London with a stop is not a deal a
   // flight deals site should lead with. They still show when typed.
-  var UK = { ABZ:1, ACI:1, BEB:1, BFS:1, BHD:1, BHX:1, BOH:1, BRR:1, BRS:1, CAL:1, CWL:1, DND:1, EDI:1, EMA:1, EXT:1, GLA:1, HUY:1, ILY:1, INV:1, ISC:1, KOI:1, LBA:1, LDY:1, LEQ:1, LGW:1, LON:1, LPL:1, LSI:1, LTN:1, MAN:1, MME:1, NCL:1, NQT:1, NQY:1, NWI:1, PIK:1, PPW:1, SDZ:1, SEN:1, SOU:1, STN:1, SYY:1, TRE:1, WIC:1, WRY:1 };
+  var UK = { ABZ:1, ACI:1, BEB:1, BFS:1, BHD:1, BHX:1, BOH:1, BRR:1, BRS:1, CAL:1, CWL:1, DND:1, EDI:1, EMA:1, EXT:1, GLA:1, HUY:1, ILY:1, INV:1, ISC:1, KOI:1, LBA:1, LDY:1, LEQ:1, LGW:1, LHR:1, LON:1, LPL:1, LSI:1, LTN:1, MAN:1, MME:1, NCL:1, NQT:1, NQY:1, NWI:1, PIK:1, PPW:1, SDZ:1, SEN:1, SOU:1, STN:1, SYY:1, TRE:1, WIC:1, WRY:1 };
   // Dublin joined on 7 September 2026, so "is it British" stopped being
   // the right test. A hop inside your own country is not a getaway, but
   // Dublin to Manchester is a foreign flight and one of the busiest
@@ -348,7 +348,7 @@
     if (!document.querySelector(".chfs-eyebrow")) {
       var eb = document.createElement("span");
       eb.className = "chfs-eyebrow";
-      eb.textContent = "17 airports in the UK and Ireland · Ryanair, Wizz Air, Norwegian and more · checked this morning";
+      eb.textContent = "18 airports in the UK and Ireland · Ryanair, Wizz Air, Norwegian and more · checked this morning";
       h.parentNode.insertBefore(eb, h);
     }
     var t = document.querySelector(".chfs-tally");
@@ -357,7 +357,7 @@
     if (GENERATED) { var d = new Date(GENERATED); when = " at " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
     t.innerHTML = (TOTALS && TOTALS.fares)
       ? "<b>" + withCommas(TOTALS.fares) + " fares</b> on <b>" + withCommas(TOTALS.routes) + " routes</b>, priced this morning" + when + ". Pick an airport and go."
-      : "Every fare we can find from 17 airports, priced this morning" + when + ". Pick an airport and go.";
+      : "Every fare we can find from 18 airports, priced this morning" + when + ". Pick an airport and go.";
   }
 
   renderTitle();

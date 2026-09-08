@@ -14,7 +14,7 @@ $RepoDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 . (Join-Path $RepoDir "wizzair.ps1")
 . (Join-Path $RepoDir "norwegian.ps1")
 $Feeds = @($Feeds | ForEach-Object { $_ -split "," } | Where-Object { $_ })
-$codes = if ($OnlyOrigins) { @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ }) } else { @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL","EMA","DUB","EXT") }
+$codes = if ($OnlyOrigins) { @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ }) } else { @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL","EMA","DUB","EXT","LHR") }
 foreach ($o in $codes) {
   $path = Join-Path $RepoDir "fares-$o.json"
   if (-not (Test-Path $path)) { Write-Host "${o}: no airport file, skipped"; continue }
