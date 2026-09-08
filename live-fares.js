@@ -459,7 +459,9 @@
     // the wording it was written with.
     var from = ORIGIN_NAME[origin] || origin;
     var firstRoute = rows[0].querySelector("div");
-    if (firstRoute && firstRoute.textContent.indexOf("→") > -1) {
+    if (forcedName) {
+      from = forcedName;                 // the pricing page: the visitor's airport, not the page's
+    } else if (firstRoute && firstRoute.textContent.indexOf("→") > -1) {
       var existing = firstRoute.textContent.split("→")[0].trim();
       if (existing) from = existing;
     }
@@ -597,6 +599,28 @@
   var isHome = (path === "" || path === "/");
   var joinMatch = path.match(/^\/join-(.+)$/);
   var origin = joinMatch ? JOIN_ORIGIN[joinMatch[1]] : null;
+
+  // The pricing page had 947 visitors in the 30 days to 8 September 2026
+  // and sold nothing: it asked for money without showing a flight. It now
+  // carries the same fare rows as a join page, for the airport the
+  // visitor already told us about (the homepage picker and the join
+  // pages both remember it), with Manchester as the fallback.
+  var isPricing = (path === "/pricing");
+  var forcedName = null;
+  function rememberedAirport() {
+    var code = "";
+    try { code = localStorage.getItem("ch-airport") || ""; } catch (e) {}
+    if (!code) { var m = document.cookie.match(/(?:^|; )ch_airport=([A-Za-z]{3})/); if (m) code = m[1]; }
+    code = String(code).toUpperCase();
+    return ORIGIN_NAME[code] ? code : "";
+  }
+  if (isPricing) {
+    origin = rememberedAirport() || "MAN";
+    forcedName = ORIGIN_NAME[origin] || origin;
+    var cap = document.getElementById("ch-price-cap");
+    if (cap) cap.textContent = "Cheapest from " + forcedName + " this morning";
+  }
+
   var hasBlocks = !!document.querySelector("[data-ch-live]");
   if (!isHome && !origin && !hasBlocks) return;
 
