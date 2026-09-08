@@ -12,9 +12,12 @@ name: Daily fare refresh
 
 on:
   schedule:
-    # Twice a day, 05:00 and 17:00 UTC, so the site never sits on prices
-    # more than twelve hours old. GitHub runs schedules in UTC only.
-    - cron: "0 5,17 * * *"
+    # Three times a day, 05:00, 12:00 and 18:00 UTC (06:00, 13:00 and
+    # 19:00 UK in summer), so the site never sits on prices more than
+    # about seven hours old. Henry asked for three on 8 Sep 2026 after
+    # members found afternoon prices had moved. GitHub runs schedules in
+    # UTC only; the repository is public, so the extra run costs nothing.
+    - cron: "0 5,12,18 * * *"
   workflow_dispatch:        # lets Henry run it by hand from the Actions tab
 
 permissions:

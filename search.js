@@ -348,16 +348,25 @@
     if (!document.querySelector(".chfs-eyebrow")) {
       var eb = document.createElement("span");
       eb.className = "chfs-eyebrow";
-      eb.textContent = "19 airports in the UK and Ireland · Ryanair, Wizz Air, Norwegian and more · checked this morning";
+      eb.textContent = "19 airports in the UK and Ireland · Ryanair, Wizz Air, Norwegian and more · checked three times a day";
       h.parentNode.insertBefore(eb, h);
     }
     var t = document.querySelector(".chfs-tally");
     if (!t) { t = document.createElement("span"); t.className = "chfs-tally"; h.parentNode.insertBefore(t, h.nextSibling); }
     var when = "";
-    if (GENERATED) { var d = new Date(GENERATED); when = " at " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+    // "this morning" was hard-coded and stayed on screen after the
+    // afternoon and evening refreshes, which read as stale even when the
+    // prices were an hour old. Say when the build actually ran.
+    var part = "this morning";
+    if (GENERATED) {
+      var d = new Date(GENERATED);
+      when = " at " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+      var sameDay = d.toDateString() === new Date().toDateString();
+      part = !sameDay ? "on " + fmt(GENERATED) : d.getHours() < 12 ? "this morning" : d.getHours() < 17 ? "this afternoon" : "this evening";
+    }
     t.innerHTML = (TOTALS && TOTALS.fares)
-      ? "<b>" + withCommas(TOTALS.fares) + " fares</b> on <b>" + withCommas(TOTALS.routes) + " routes</b>, priced this morning" + when + ". Pick an airport and go."
-      : "Every fare we can find from 19 airports, priced this morning" + when + ". Pick an airport and go.";
+      ? "<b>" + withCommas(TOTALS.fares) + " fares</b> on <b>" + withCommas(TOTALS.routes) + " routes</b>, priced " + part + when + ". Pick an airport and go."
+      : "Every fare we can find from 19 airports, priced " + part + when + ". Pick an airport and go.";
   }
 
   renderTitle();
@@ -556,7 +565,7 @@
         opts.forEach(function (o) {
           if (o.d && o.d < today) return;   // already departed
           out.push({ origin:f.origin, dest:f.destination, price:o.p, dep:o.d, ret:o.r || "", stops:o.s || 0, pair:!!o.c, day:!!o.x, air:o.a || "",
-                     typical: o.r ? rtAvg : owAvg });
+                     h:o.h || 0, typical: o.r ? rtAvg : owAvg });
         });
       } else if (!f.departure || String(f.departure).slice(0, 10) >= today) {
         out.push({ origin:f.origin, dest:f.destination, price:f.price, dep:f.departure, ret:f.ret || "", stops:f.transfers || 0, typical: f.ret ? null : (f.typical || null) });
@@ -632,7 +641,7 @@
           var nights = dayDiff(i.d, o.d);
           if (nights < 1 || (!state.to2 && nights > 14)) return;
           if (have[f.origin + f.destination + o.d + i.d]) return;
-          combos.push({ origin:f.origin, dest:f.destination, price:o.p + i.p, dep:o.d, ret:i.d, stops:Math.max(o.s || 0, i.s || 0), pair:true, typical: rtAvg || null });
+          combos.push({ origin:f.origin, dest:f.destination, price:o.p + i.p, dep:o.d, ret:i.d, stops:Math.max(o.s || 0, i.s || 0), pair:true, h:Math.max(o.h || 0, i.h || 0), typical: rtAvg || null });
         });
       });
       combos.sort(function (a, b) { return a.price - b.price; }).slice(0, 20).forEach(function (c) { out.push(c); });
@@ -723,6 +732,32 @@
   function wasPrice(r) {
     if (!r.typical || r.typical < r.price * 1.1) return "";
     return '<span class="chfs-was">£' + r.typical + '</span>';
+  }
+
+  // When this price was last seen. Most fares come from a cache of other
+  // people's searches, and on a quiet route the sighting can be days old,
+  // so members were finding a different price at the airline and losing
+  // trust. Henry asked (8 Sep 2026) for the age on every fare. The build
+  // stamps each option with h, whole hours old at build time; the time
+  // since the build is added here. No h means it was fresh at the build.
+  var SEEN_CSS_DONE = false;
+  function seen(r) {
+    if (!GENERATED) return "";
+    if (!SEEN_CSS_DONE) {
+      SEEN_CSS_DONE = true;
+      var st = document.createElement("style");
+      st.textContent = ".chfs-seen{display:block;font-size:10.5px;color:var(--chfs-faint,#7A90A5);text-align:right;white-space:nowrap;margin-top:2px}" +
+                       ".chfs-seen.old{color:#B45309}";
+      document.head.appendChild(st);
+    }
+    var hours = (Date.now() - new Date(GENERATED).getTime()) / 36e5 + (r.h || 0);
+    if (!(hours >= 0)) return "";
+    var txt, old = hours >= 48;
+    if (hours < 1.5) txt = "seen this hour";
+    else if (hours < 24) txt = "seen " + Math.round(hours) + "h ago";
+    else if (hours < 48) txt = "seen yesterday";
+    else txt = "seen " + Math.round(hours / 24) + " days ago";
+    return '<span class="chfs-seen' + (old ? " old" : "") + '">' + txt + '</span>';
   }
 
   function tag(r) {
@@ -894,6 +929,7 @@
         '<span>' +
           '<span class="chfs-price">£' + r.price + '</span>' +
           wasPrice(r) +
+          seen(r) +
         '</span>';
 
       b.addEventListener("click", function () { openSheet(r); });

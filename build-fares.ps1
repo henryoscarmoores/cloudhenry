@@ -184,6 +184,27 @@ function Cap-ByMonth($Items, [int] $PerMonth, [int] $Max) {
 }
 
 $generated = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+
+# How old a cached sighting is, in whole hours at build time. The
+# Travelpayouts cache is other people's searches, and a quiet route can
+# carry a price first seen five days ago, so the search shows "seen 5
+# days ago" beside it rather than passing it off as this morning's.
+# Zero is left out of the files to keep them small: no h means fresh.
+$buildUtc = (Get-Date).ToUniversalTime()
+function Age([string] $found) {
+  if (-not $found) { return 0 }
+  try {
+    $t = [datetime]::SpecifyKind([datetime]::Parse($found, [Globalization.CultureInfo]::InvariantCulture), [DateTimeKind]::Utc)
+    $h = [int][math]::Floor(($buildUtc - $t).TotalHours)
+    if ($h -lt 0) { return 0 } else { return $h }
+  } catch { return 0 }
+}
+function Opt([string] $d, [string] $r, [int] $p, [int] $s, [string] $found) {
+  $o = [pscustomobject]@{ d = $d; r = $r; p = $p; s = $s }
+  $h = Age $found
+  if ($h -gt 0) { $o | Add-Member -NotePropertyName h -NotePropertyValue $h }
+  return $o
+}
 $slim = New-Object System.Collections.Generic.List[object]
 $totalRoutes = 0; $totalOptions = 0; $totalDated = 0; $calls = 0
 $runStart = Get-Date
@@ -250,7 +271,7 @@ foreach ($origin in $ORIGINS) {
       foreach ($row in @($lo.data)) {
         $p = [int]$row.value
         if ($p -le 0 -or -not $row.depart_date) { continue }
-        $opts += [pscustomobject]@{ d = ([string]$row.depart_date).Substring(0, 10); r = ""; p = $p; s = [int]$row.number_of_changes }
+        $opts += Opt ([string]$row.depart_date).Substring(0, 10) "" $p ([int]$row.number_of_changes) ([string]$row.found_at)
       }
     }
     $owPrices = @($opts | ForEach-Object { $_.p })
@@ -268,7 +289,7 @@ foreach ($origin in $ORIGINS) {
       foreach ($row in @($lr.data)) {
         $p = [int]$row.value
         if ($p -le 0 -or -not $row.depart_date -or -not $row.return_date) { continue }
-        $o = [pscustomobject]@{ d = ([string]$row.depart_date).Substring(0, 10); r = ([string]$row.return_date).Substring(0, 10); p = $p; s = [int]$row.number_of_changes }
+        $o = Opt ([string]$row.depart_date).Substring(0, 10) ([string]$row.return_date).Substring(0, 10) $p ([int]$row.number_of_changes) ([string]$row.found_at)
         $isWk = $false
         if (-not $SkipWeekends -and -not (Domestic $origin $t.destination) -and $weekendOk.ContainsKey($country)) {
           try { $dep = [datetime]::Parse($o.d); $ret = [datetime]::Parse($o.r); $isWk = Is-Weekend -Dep $dep -Ret $ret } catch { $isWk = $false }
@@ -302,10 +323,10 @@ foreach ($origin in $ORIGINS) {
           $p = [int]$row.value
           if ($p -le 0 -or -not $row.depart_date) { continue }
           $k = ([string]$row.depart_date).Substring(0, 10)
-          if (-not $inbound.ContainsKey($k) -or $p -lt $inbound[$k].p) { $inbound[$k] = [pscustomobject]@{ p = $p; s = [int]$row.number_of_changes } }
+          if (-not $inbound.ContainsKey($k) -or $p -lt $inbound[$k].p) { $inbound[$k] = [pscustomobject]@{ p = $p; s = [int]$row.number_of_changes; h = (Age ([string]$row.found_at)) } }
         }
         # Kept on the route so the search can assemble a return for any dates.
-        $t.inbound = @($inbound.Keys | Sort-Object | ForEach-Object { [pscustomobject]@{ d = $_; p = $inbound[$_].p; s = $inbound[$_].s } })
+        $t.inbound = @($inbound.Keys | Sort-Object | ForEach-Object { $ib = [pscustomobject]@{ d = $_; p = $inbound[$_].p; s = $inbound[$_].s }; if ($inbound[$_].h -gt 0) { $ib | Add-Member -NotePropertyName h -NotePropertyValue $inbound[$_].h }; $ib })
         $have = @{}
         foreach ($o in $special) { $have["$($o.d)|$($o.r)"] = 1 }
         $pairHere = ($weekendOk.ContainsKey($country) -or $XMAS.ContainsKey($t.destination))
@@ -324,7 +345,12 @@ foreach ($origin in $ORIGINS) {
             $key = "$($out.d)|$rk"
             if ($have.ContainsKey($key)) { continue }
             $have[$key] = 1
-            $special += [pscustomobject]@{ d = $out.d; r = $rk; p = ($out.p + $inbound[$rk].p); s = [math]::Max($out.s, $inbound[$rk].s); c = 1 }
+            $pair = [pscustomobject]@{ d = $out.d; r = $rk; p = ($out.p + $inbound[$rk].p); s = [math]::Max($out.s, $inbound[$rk].s); c = 1 }
+            # A pair is only as fresh as its older half.
+            $oh = 0; if ($out.PSObject.Properties['h']) { $oh = [int]$out.h }
+            $ph = [math]::Max($oh, [int]$inbound[$rk].h)
+            if ($ph -gt 0) { $pair | Add-Member -NotePropertyName h -NotePropertyValue $ph }
+            $special += $pair
           }
         }
       }
@@ -346,7 +372,7 @@ foreach ($origin in $ORIGINS) {
             if ($dep -lt $XmasStart -or $dep -gt $XmasEnd) { continue }
             $nights = ($ret - $dep).Days
             if ($nights -lt 2 -or $nights -gt 5) { continue }
-            $special += [pscustomobject]@{ d = [string]$row.depart_date; r = [string]$row.return_date; p = $p; s = [int]$row.number_of_changes }
+            $special += Opt ([string]$row.depart_date) ([string]$row.return_date) $p ([int]$row.number_of_changes) ([string]$row.found_at)
           }
         }
       }
