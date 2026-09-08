@@ -927,5 +927,17 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     TRI:["Blountville","USA","🇺🇸"],
     USK:["Usinsk","Russia","🇷🇺"],
     YFB:["Iqaluit","Canada","🇨🇦"],
-    YZF:["Yellowknife","Canada","🇨🇦"]
+    YZF:["Yellowknife","Canada","🇨🇦"],
+    DMB:["Taraz","Kazakhstan","🇰🇿"],
+    DSN:["Ordos/Dongsheng","China","🇨🇳"],
+    FSC:["Figari","France","🇫🇷"],
+    MKZ:["Malacca","Malaysia","🇲🇾"],
+    PKV:["Pskov","Russia","🇷🇺"],
+    PNA:["Pamplona","Spain","🇪🇸"],
+    RIC:["Richmond","USA","🇺🇸"],
+    RNB:["Ronneby","Sweden","🇸🇪"],
+    TCO:["Tumaco","Colombia","🇨🇴"],
+    TUR:["Tucurui","Brazil","🇧🇷"],
+    VGD:["Vologda","Russia","🇷🇺"],
+    XCR:["Chalons-en-Champagne","France","🇫🇷"]
 };
