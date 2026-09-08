@@ -45,13 +45,13 @@
     // The five that joined after this file was written, which is why
     // their join pages had no best-deal strip while the first twelve did.
     "bournemouth": "BOH", "cardiff": "CWL", "east-midlands": "EMA",
-    "dublin": "DUB", "exeter": "EXT", "london-heathrow": "LHR"
+    "dublin": "DUB", "exeter": "EXT", "london-heathrow": "LHR", "london-southend": "SEN"
   };
 
   var NAMES = {
     MAN:"Manchester",BHX:"Birmingham",LBA:"Leeds",STN:"London",LTN:"London",
     BRS:"Bristol",NCL:"Newcastle",GLA:"Glasgow",EDI:"Edinburgh",LGW:"London",
-    LPL:"Liverpool",BFS:"Belfast",
+    LPL:"Liverpool",BFS:"Belfast",BOH:"Bournemouth",CWL:"Cardiff",EMA:"East Midlands",EXT:"Exeter",LHR:"London Heathrow",SEN:"London Southend",
     BCN:"Barcelona",AYT:"Antalya",IST:"Istanbul",MOW:"Moscow",LED:"St Petersburg",
     PAR:"Paris",AGP:"Malaga",ALC:"Alicante",FAO:"Faro",KRK:"Krakow",AMS:"Amsterdam",
     PMI:"Palma",LIS:"Lisbon",ACE:"Lanzarote",MAD:"Madrid",BKK:"Bangkok",LON:"London",

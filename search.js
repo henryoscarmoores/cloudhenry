@@ -69,7 +69,7 @@
     ["MAN","Manchester"], ["BHX","Birmingham"], ["LBA","Leeds Bradford"],
     ["STN","London Stansted"], ["LTN","London Luton"], ["BRS","Bristol"],
     ["NCL","Newcastle"], ["GLA","Glasgow"], ["EDI","Edinburgh"],
-    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"], ["EMA","East Midlands"], ["DUB","Dublin"], ["EXT","Exeter"], ["LHR","London Heathrow"]
+    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"], ["EMA","East Midlands"], ["DUB","Dublin"], ["EXT","Exeter"], ["LHR","London Heathrow"], ["SEN","London Southend"]
   ];
   function originName(code) {
     var n = code;
@@ -79,10 +79,10 @@
   // Short form for the card meta line, where "London Stansted" is too long.
   var ORIGIN_SHORT = { LON:"London", MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
                        LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
-                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"E Midlands", DUB:"Dublin", EXT:"Exeter", LHR:"Heathrow" };
+                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"E Midlands", DUB:"Dublin", EXT:"Exeter", LHR:"Heathrow", SEN:"Southend" };
   // "London (any airport)" reads the three London files together: plenty
   // of people just want out of London and do not mind which end.
-  var LONDON = { STN:1, LTN:1, LGW:1, LHR:1 };
+  var LONDON = { STN:1, LTN:1, LGW:1, LHR:1, SEN:1 };
   function fromMatches(f) { return state.from === ANY || (state.from === "LON" ? !!LONDON[f.origin] : f.origin === state.from); }
 
   // Other UK airports. A £44 hop to London with a stop is not a deal a
@@ -348,7 +348,7 @@
     if (!document.querySelector(".chfs-eyebrow")) {
       var eb = document.createElement("span");
       eb.className = "chfs-eyebrow";
-      eb.textContent = "18 airports in the UK and Ireland · Ryanair, Wizz Air, Norwegian and more · checked this morning";
+      eb.textContent = "19 airports in the UK and Ireland · Ryanair, Wizz Air, Norwegian and more · checked this morning";
       h.parentNode.insertBefore(eb, h);
     }
     var t = document.querySelector(".chfs-tally");
@@ -357,7 +357,7 @@
     if (GENERATED) { var d = new Date(GENERATED); when = " at " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
     t.innerHTML = (TOTALS && TOTALS.fares)
       ? "<b>" + withCommas(TOTALS.fares) + " fares</b> on <b>" + withCommas(TOTALS.routes) + " routes</b>, priced this morning" + when + ". Pick an airport and go."
-      : "Every fare we can find from 18 airports, priced this morning" + when + ". Pick an airport and go.";
+      : "Every fare we can find from 19 airports, priced this morning" + when + ". Pick an airport and go.";
   }
 
   renderTitle();
