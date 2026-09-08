@@ -885,5 +885,16 @@ window.CH_PLACES = {
     TLN:["Toulon","France","🇫🇷"],
     TRE:["Tiree","United Kingdom","🇬🇧"],
     VLL:["Valladolid","Spain","🇪🇸"],
-    YQB:["Quebec","Canada","🇨🇦"]
+    YQB:["Quebec","Canada","🇨🇦"],
+    AVN:["Avignon","France","🇫🇷"],
+    IXU:["Aurangabad","India","🇮🇳"],
+    JSY:["Syros Island","Greece","🇬🇷"],
+    KIT:["Kithira","Greece","🇬🇷"],
+    MQM:["Mardin","Turkiye","🇹🇷"],
+    NLP:["Nelspruit","South Africa","🇿🇦"],
+    SDN:["Sandane","Norway","🇳🇴"],
+    SMI:["Samos","Greece","🇬🇷"],
+    SOJ:["Sorkjosen","Norway","🇳🇴"],
+    UET:["Quetta","Pakistan","🇵🇰"],
+    VOL:["Volos","Greece","🇬🇷"]
 };
