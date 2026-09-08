@@ -1,4 +1,4 @@
-﻿/* CloudHenry Everywhere search.
+/* CloudHenry Everywhere search.
    Loaded by the HTML card on /search/. Reads the fare file the daily
    fetch-fares task publishes, and links every result to Aviasales with
    the CloudHenry affiliate marker attached.
@@ -737,7 +737,7 @@
   // When this price was last seen. Most fares come from a cache of other
   // people's searches, and on a quiet route the sighting can be days old,
   // so members were finding a different price at the airline and losing
-  // trust. Henry asked (8 Sep 2026) for the age on every fare. The build
+  // trust. Henry asked (8 Sep 2026) for the age on every fare, worded
   // stamps each option with h, whole hours old at build time; the time
   // since the build is added here. No h means it was fresh at the build.
   var SEEN_CSS_DONE = false;
@@ -753,10 +753,10 @@
     var hours = (Date.now() - new Date(GENERATED).getTime()) / 36e5 + (r.h || 0);
     if (!(hours >= 0)) return "";
     var txt, old = hours >= 48;
-    if (hours < 1.5) txt = "seen this hour";
-    else if (hours < 24) txt = "seen " + Math.round(hours) + "h ago";
-    else if (hours < 48) txt = "seen yesterday";
-    else txt = "seen " + Math.round(hours / 24) + " days ago";
+    if (hours < 1.5) txt = "refreshed within the hour";
+    else if (hours < 24) txt = "refreshed " + Math.round(hours) + "h ago";
+    else if (hours < 48) txt = "refreshed yesterday";
+    else txt = "refreshed " + Math.round(hours / 24) + " days ago";
     return '<span class="chfs-seen' + (old ? " old" : "") + '">' + txt + '</span>';
   }
 
