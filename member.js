@@ -131,7 +131,8 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {
         if (!j || !j.fares) return [];
-        var today = new Date().toISOString().slice(0, 10);
+        // Two days out at the earliest: a same-day fare is not a deal (Henry, 8 Sep 2026).
+        var today = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
         var best = {};
         j.fares.forEach(function (f) {
           if (code && f.origin !== code) return;

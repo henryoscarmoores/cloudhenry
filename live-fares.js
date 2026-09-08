@@ -82,6 +82,13 @@
     return parseInt(p[2], 10) + " " + MON[parseInt(p[1], 10) - 1];
   }
 
+  // Henry, 8 Sep 2026, seeing a Dublin fare dated that same day on the
+  // homepage at five in the afternoon: "unrealistic". A tease on the
+  // homepage, a join page or the pricing page only shows fares at least
+  // this many days out. The search itself still lists today, since
+  // someone searching may genuinely want to fly today.
+  var MIN_DAYS_AHEAD = 2;
+
   function daysFromToday(iso) {
     var t = Date.parse(String(iso).slice(0, 10) + "T00:00:00Z");
     if (isNaN(t)) return 1e9;
@@ -112,7 +119,7 @@
     var opts = (route.options && route.options.length) ? route.options : null;
     var rows = [];
     if (!opts) {
-      if (route.price && route.departure && daysFromToday(route.departure) >= 0) {
+      if (route.price && route.departure && daysFromToday(route.departure) >= MIN_DAYS_AHEAD) {
         rows.push({ dep: String(route.departure).slice(0,10),
                     ret: route.ret ? String(route.ret).slice(0,10) : "",
                     price: route.price });
@@ -120,7 +127,7 @@
     } else {
       opts.forEach(function (o) {
         if (!o.p || o.p <= 0 || !o.d) return;
-        if (daysFromToday(o.d) < 0) return;                 // already gone
+        if (daysFromToday(o.d) < MIN_DAYS_AHEAD) return;    // gone, or too soon to be real
         if ((o.s || 0) > MAX_STOPS) return;                  // three changes is not a deal
         rows.push({ dep: String(o.d).slice(0,10), ret: o.r ? String(o.r).slice(0,10) : "", price: o.p });
       });

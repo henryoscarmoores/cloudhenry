@@ -149,7 +149,9 @@ function Esc([string] $s) { return [System.Net.WebUtility]::HtmlEncode($s) }
 function Day([string] $iso) { $d = [datetime]::ParseExact($iso, "yyyy-MM-dd", $null); return $d.ToString("ddd d MMM") }
 function DayShort([string] $iso) { $d = [datetime]::ParseExact($iso, "yyyy-MM-dd", $null); return $d.ToString("d MMM") }
 
-$today = (Get-Date).ToString("yyyy-MM-dd")
+# Nothing sooner than two days after the send. A fare dated the day the
+# email lands is not one a reader can take (Henry, 8 Sep 2026).
+$today = (Get-Date).AddDays(2).ToString("yyyy-MM-dd")
 $limit = (Get-Date).AddDays($Horizon).ToString("yyyy-MM-dd")
 $monday = (Get-Date)
 while ($monday.DayOfWeek -ne 'Monday') { $monday = $monday.AddDays(1) }

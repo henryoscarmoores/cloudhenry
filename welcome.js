@@ -83,7 +83,9 @@
   // from today's feed. The per-airport file is the full picture; the
   // slim homepage file is the fallback.
   function fares(code, next) {
-    var today = new Date().toISOString().slice(0, 10);
+    // Nothing sooner than two days out: a same-day fare is not one anyone
+    // can take (Henry, 8 Sep 2026).
+    var today = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
     function pick(list) {
       var best = {}, count = {};
       (list || []).forEach(function (f) {

@@ -82,7 +82,8 @@ function FlagCode([string] $emoji) {
 function Esc([string] $s) { return [System.Net.WebUtility]::HtmlEncode($s) }
 function Day([string] $iso) { $d = [datetime]::ParseExact($iso, "yyyy-MM-dd", $null); return $d.ToString("ddd d MMM") }
 
-$today = (Get-Date).ToString("yyyy-MM-dd")
+# Nothing sooner than two days out (Henry, 8 Sep 2026).
+$today = (Get-Date).AddDays(2).ToString("yyyy-MM-dd")
 $limit = (Get-Date).AddDays($Horizon).ToString("yyyy-MM-dd")
 
 # ---- pick the fares --------------------------------------------------
