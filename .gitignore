@@ -14,3 +14,6 @@ daily-refresh.log
 build-fares.log
 
 .ghostkey
+
+# Henry's Ghost staff access token, personal admin rights. Never commit.
+.ghoststaff
