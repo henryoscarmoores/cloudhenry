@@ -8,7 +8,11 @@
  *
  * search.js keeps its own copy so it never depends on load order.
  */
-window.CH_PLACES = {  ARN:["Stockholm Arlanda","Sweden","🇸🇪"],
+window.CH_PLACES = {
+LCY:["London City","United Kingdom","🇬🇧"],
+PIK:["Glasgow Prestwick","United Kingdom","🇬🇧"],
+BHD:["Belfast City","United Kingdom","🇬🇧"],
+  ARN:["Stockholm Arlanda","Sweden","🇸🇪"],
   BSL:["Basel","Switzerland","🇨🇭"],
   CRL:["Brussels Charleroi","Belgium","🇧🇪"],
   GNB:["Grenoble","France","🇫🇷"],

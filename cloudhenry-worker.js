@@ -39,7 +39,19 @@ const AIRPORTS_BY_SLUG = {
   "dublin":["loc-dublin","DUB"],
   "exeter":["loc-exeter","EXT"],
   "london-heathrow":["loc-london-heathrow","LHR"],
-  "london-southend":["loc-london-southend","SEN"]
+  "london-southend":["loc-london-southend","SEN"],
+  "london-city":["loc-london-city","LCY"],
+  "prestwick":["loc-prestwick","PIK"],
+  "belfast-city":["loc-belfast-city","BHD"],
+  "cork":["loc-cork","ORK"],
+  "shannon":["loc-shannon","SNN"],
+  "southampton":["loc-southampton","SOU"],
+  "aberdeen":["loc-aberdeen","ABZ"],
+  "norwich":["loc-norwich","NWI"],
+  "newquay":["loc-newquay","NQY"],
+  "knock":["loc-knock","NOC"],
+  "teesside":["loc-teesside","MME"],
+  "inverness":["loc-inverness","INV"]
 };
 const SOURCES = { "homepage": "via-homepage", "airport-page": "via-airport-page", "flag-game": "via-flag-game" };
 
@@ -47,7 +59,7 @@ const AIRPORTS = [
   ["ANY", "Any airport"], ["MAN", "Manchester"], ["BHX", "Birmingham"],
   ["LBA", "Leeds Bradford"], ["STN", "London Stansted"], ["LTN", "London Luton"],
   ["BRS", "Bristol"], ["NCL", "Newcastle"], ["GLA", "Glasgow"], ["EDI", "Edinburgh"],
-  ["LGW", "London Gatwick"], ["LPL", "Liverpool"], ["BFS", "Belfast"], ["BOH", "Bournemouth"], ["CWL", "Cardiff"], ["EMA", "East Midlands"], ["DUB", "Dublin"], ["EXT", "Exeter"], ["LHR", "London Heathrow"], ["SEN", "London Southend"]
+  ["LGW", "London Gatwick"], ["LPL", "Liverpool"], ["BFS", "Belfast"], ["BOH", "Bournemouth"], ["CWL", "Cardiff"], ["EMA", "East Midlands"], ["DUB", "Dublin"], ["EXT", "Exeter"], ["LHR", "London Heathrow"], ["SEN", "London Southend"], ["LCY", "London City"], ["PIK", "Glasgow Prestwick"], ["BHD", "Belfast City"], ["ORK", "Cork"], ["SNN", "Shannon"], ["SOU", "Southampton"], ["ABZ", "Aberdeen"], ["NWI", "Norwich"], ["NQY", "Newquay"], ["NOC", "Knock"], ["MME", "Teesside"], ["INV", "Inverness"]
 ];
 
 /* ---- plumbing ------------------------------------------------------ */
@@ -219,7 +231,7 @@ async function handleJoin(request, env, origin) {
  */
 
 const CODE_TO_LABEL = { MAN:"loc-manchester", BHX:"loc-birmingham", LBA:"loc-leeds", STN:"loc-london-stansted", LTN:"loc-london-luton",
-  BRS:"loc-bristol", NCL:"loc-newcastle", GLA:"loc-glasgow", EDI:"loc-edinburgh", LGW:"loc-london-gatwick", LPL:"loc-liverpool", BFS:"loc-belfast", BOH:"loc-bournemouth", CWL:"loc-cardiff", EMA:"loc-east-midlands", DUB:"loc-dublin", EXT:"loc-exeter", LHR:"loc-london-heathrow", SEN:"loc-london-southend" };
+  BRS:"loc-bristol", NCL:"loc-newcastle", GLA:"loc-glasgow", EDI:"loc-edinburgh", LGW:"loc-london-gatwick", LPL:"loc-liverpool", BFS:"loc-belfast", BOH:"loc-bournemouth", CWL:"loc-cardiff", EMA:"loc-east-midlands", DUB:"loc-dublin", EXT:"loc-exeter", LHR:"loc-london-heathrow", SEN:"loc-london-southend", LCY:"loc-london-city", PIK:"loc-prestwick", BHD:"loc-belfast-city", ORK:"loc-cork", SNN:"loc-shannon", SOU:"loc-southampton", ABZ:"loc-aberdeen", NWI:"loc-norwich", NQY:"loc-newquay", NOC:"loc-knock", MME:"loc-teesside", INV:"loc-inverness" };
 const LABEL_TO_CODE = Object.fromEntries(Object.entries(CODE_TO_LABEL).map(([c, l]) => [l, c]));
 
 async function memberByUuid(env, uuid) {

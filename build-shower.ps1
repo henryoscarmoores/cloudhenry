@@ -86,7 +86,19 @@ $LIST = @(
   @{ code="DUB"; name="Dublin";          slug="dublin" },
   @{ code="EXT"; name="Exeter";          slug="exeter" },
   @{ code="LHR"; name="London Heathrow"; slug="london-heathrow" },
-  @{ code="SEN"; name="London Southend"; slug="london-southend" }
+  @{ code="SEN"; name="London Southend"; slug="london-southend" },
+  @{ code="LCY"; name="London City"; slug="london-city" },
+  @{ code="PIK"; name="Glasgow Prestwick"; slug="prestwick" },
+  @{ code="BHD"; name="Belfast City"; slug="belfast-city" },
+  @{ code="ORK"; name="Cork"; slug="cork" },
+  @{ code="SNN"; name="Shannon"; slug="shannon" },
+  @{ code="SOU"; name="Southampton"; slug="southampton" },
+  @{ code="ABZ"; name="Aberdeen"; slug="aberdeen" },
+  @{ code="NWI"; name="Norwich"; slug="norwich" },
+  @{ code="NQY"; name="Newquay"; slug="newquay" },
+  @{ code="NOC"; name="Knock"; slug="knock" },
+  @{ code="MME"; name="Teesside"; slug="teesside" },
+  @{ code="INV"; name="Inverness"; slug="inverness" }
 )
 if ($Airports) { $want = @($Airports | ForEach-Object { $_ -split "," } | ForEach-Object { $_.Trim().ToUpper() } | Where-Object { $_ }); $LIST = @($LIST | Where-Object { $want -contains $_.code }) }
 
@@ -217,7 +229,7 @@ foreach ($a in $LIST) {
     "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#F5C242;`">What $($GBP)2.99 a month gets you</div>" +
     "<div style=`"font-size:14.5px;color:#D7EDFA;line-height:1.65;margin-top:8px;`">" +
     "&#10003; Every fare from $(Esc $a.name), every Monday, none of them blurred<br>" +
-    "&#10003; The full search: every route, every date, seven months ahead, from all 19 airports<br>" +
+    "&#10003; The full search: every route, every date, seven months ahead, from all 31 airports<br>" +
     "&#10003; Book straight through to the airline. We never touch your money<br>" +
     "&#10003; Cancel in two taps. No contract, no notice</div>" +
     "<div style=`"font-size:13.5px;color:#BEE3F8;line-height:1.5;margin-top:12px;border-top:1px solid rgba(255,255,255,.18);padding-top:12px;`">$($GBP)2.99 is less than a flat white. The cheapest fare above saves $GBP$(($picks | Sort-Object saving -Descending | Select-Object -First 1).typical - ($picks | Sort-Object saving -Descending | Select-Object -First 1).price) on its own. One good fare pays for the whole year.</div>" +

@@ -22,7 +22,7 @@
   var JOIN_URL = WORKER + "/join";
   var CODES = { "join-manchester":"MAN", "join-birmingham":"BHX", "join-leeds":"LBA", "join-london-stansted":"STN",
                 "join-london-luton":"LTN", "join-bristol":"BRS", "join-newcastle":"NCL", "join-glasgow":"GLA",
-                "join-edinburgh":"EDI", "join-london-gatwick":"LGW", "join-liverpool":"LPL", "join-belfast":"BFS", "join-bournemouth":"BOH", "join-cardiff":"CWL", "join-east-midlands":"EMA", "join-dublin":"DUB", "join-exeter":"EXT", "join-london-heathrow":"LHR", "join-london-southend":"SEN" };
+                "join-edinburgh":"EDI", "join-london-gatwick":"LGW", "join-liverpool":"LPL", "join-belfast":"BFS", "join-bournemouth":"BOH", "join-cardiff":"CWL", "join-east-midlands":"EMA", "join-dublin":"DUB", "join-exeter":"EXT", "join-london-heathrow":"LHR", "join-london-southend":"SEN", "join-london-city":"LCY", "join-prestwick":"PIK", "join-belfast-city":"BHD", "join-cork":"ORK", "join-shannon":"SNN", "join-southampton":"SOU", "join-aberdeen":"ABZ", "join-norwich":"NWI", "join-newquay":"NQY", "join-knock":"NOC", "join-teesside":"MME", "join-inverness":"INV" };
 
   function css() {
     if (document.getElementById("ch-hj-css")) return;
