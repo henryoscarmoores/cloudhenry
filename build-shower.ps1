@@ -290,9 +290,10 @@ foreach ($a in $LIST) {
     "<div style=`"font-size:17px;font-weight:800;color:#0E3550;letter-spacing:-.3px;`">What $($GBP)2.99 a month gets you</div>" +
     "<div style=`"font-size:13px;color:#46607A;line-height:1.7;margin:8px 0 4px;text-align:left;`">" +
     "&#10003; Every fare from $(Esc $a.name), every Monday, nothing blurred<br>" +
+    "&#10003; Hundreds of pounds of savings a year. This one email has $GBP$totalSaving under the usual prices<br>" +
     "&#10003; The full search: every route, every date, seven months ahead, all $TOTAL_AIRPORTS airports<br>" +
     "&#10003; Book straight through to the airline. We never touch your money<br>" +
-    "&#10003; Cancel in two taps. No contract, no notice</div>" +
+    "&#10003; And you back me: 24, building this on my own, no big company behind it</div>" +
     "<div style=`"font-size:12.5px;color:#46607A;margin:8px 0 12px;`">Less than a flat white. $(Esc $PLACES[$bestPick.dest].name) alone is $GBP$($bestPick.typical - $bestPick.price) under the usual price. One good fare pays for the year.</div>" +
     "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$goLink`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:16px 32px;text-decoration:none;$FONT`">Try 40 days free &rarr;</a></td></tr></table>" +
     "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">Then $($GBP)2.99 a month or $($GBP)29 a year. Cancel any time, no contract. One tap, no password.</div>" +

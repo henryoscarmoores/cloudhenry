@@ -750,7 +750,7 @@
       // squeezed the "75% under usual" pill into a green blob (Henry's
       // screenshot, 9 Sep 2026). It wraps onto two short lines instead,
       // and the pill itself never wraps.
-      st.textContent = ".chfs-seen{display:block;font-size:10px;line-height:1.2;color:var(--chfs-faint,#7A90A5);text-align:right;white-space:normal;max-width:64px;margin:2px 0 0 auto}" +
+      st.textContent = ".chfs-seen{grid-column:1/-1;display:block;font-size:10px;line-height:1.2;color:var(--chfs-faint,#7A90A5);text-align:right;white-space:nowrap;margin:-6px 0 0}" +
                        ".chfs-seen.old{color:#B45309}" +
                        ".chfs-tag{white-space:nowrap}";
       document.head.appendChild(st);
@@ -934,8 +934,8 @@
         '<span>' +
           '<span class="chfs-price">£' + r.price + '</span>' +
           wasPrice(r) +
-          seen(r) +
-        '</span>';
+        '</span>' +
+        seen(r);
 
       b.addEventListener("click", function () { openSheet(r); });
       grid.appendChild(b);
