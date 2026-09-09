@@ -977,5 +977,7 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     TGU:["Tegucigalpa","Honduras","🇭🇳"],
     XPL:["Comayagua","Honduras","🇭🇳"],
     YQR:["Regina","Canada","🇨🇦"],
-    YUM:["Yuma","USA","🇺🇸"]
+    YUM:["Yuma","USA","🇺🇸"],
+    AOR:["Alor Setar","Malaysia","🇲🇾"],
+    CRV:["Crotone","Italy","🇮🇹"]
 };
