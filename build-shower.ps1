@@ -142,8 +142,8 @@ function DayShort([string] $iso) { $d = [datetime]::ParseExact($iso, "yyyy-MM-dd
 $GBP = [string][char]0xA3
 $FONT = "font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;"
 
-# Nothing sooner than two days out (Henry, 8 Sep 2026).
-$today = (Get-Date).AddDays(2).ToString("yyyy-MM-dd")
+# Nothing sooner than a week out (Henry, 9 Sep 2026: "no flights on today or tomorrow with unrealistic time frames").
+$today = (Get-Date).AddDays(7).ToString("yyyy-MM-dd")
 $limit = (Get-Date).AddDays($Horizon).ToString("yyyy-MM-dd")
 $stamp = (Get-Date).ToString("yyyy-MM-dd")
 
@@ -219,12 +219,12 @@ foreach ($a in $LIST) {
   $sunOw  = @($ows | Where-Object { $_.kind -eq "sun" }  | Sort-Object price)
   $cityRt = @($rts | Where-Object { $_.kind -eq "city" } | Sort-Object price)
   $cityOw = @($ows | Where-Object { $_.kind -eq "city" } | Sort-Object price)
-  $sun = @(Take $sunRt 2); $sun += @(Take $sunOw ($nSun - $sun.Count)); $sun += @(Take $sunRt ($nSun - $sun.Count)); $sun = @($sun | Sort-Object price)
-  $city = @(Take $cityRt 2); $city += @(Take $cityOw ($nCity - $city.Count)); $city += @(Take $cityRt ($nCity - $city.Count)); $city = @($city | Sort-Object price)
-  $nBar = $Rows - $sun.Count - $city.Count
+  $sunPicks = @(Take $sunRt 2); $sunPicks += @(Take $sunOw ($nSun - $sunPicks.Count)); $sunPicks += @(Take $sunRt ($nSun - $sunPicks.Count)); $sunPicks = @($sunPicks | Sort-Object price)
+  $cityPicks = @(Take $cityRt 2); $cityPicks += @(Take $cityOw ($nCity - $cityPicks.Count)); $cityPicks += @(Take $cityRt ($nCity - $cityPicks.Count)); $cityPicks = @($cityPicks | Sort-Object price)
+  $nBar = $Rows - $sunPicks.Count - $cityPicks.Count
   $barPool = @($ows | Sort-Object -Property @{ Expression = "saving"; Descending = $true }, price)
-  $bar = @(Take $barPool $nBar); $bar += @(Take @($rts | Sort-Object price) ($nBar - $bar.Count)); $bar = @($bar | Sort-Object price)
-  $picks = @($sun + $city + $bar)
+  $barPicks = @(Take $barPool $nBar); $barPicks += @(Take @($rts | Sort-Object price) ($nBar - $barPicks.Count)); $barPicks = @($barPicks | Sort-Object price)
+  $picks = @($sunPicks + $cityPicks + $barPicks)
   if ($picks.Count -lt 5) { Write-Host ("{0}: only {1} fares good enough, skipped" -f $a.code, $picks.Count); continue }
   $cheapest = ($picks | Measure-Object price -Minimum).Minimum
   $bestSaving = ($picks | Measure-Object saving -Maximum).Maximum
@@ -262,7 +262,7 @@ foreach ($a in $LIST) {
       "</tr></table>"
   }
   $rowsHtml = ""
-  $groups = @(, @("Winter sun", $sun)) + @(, @("City breaks", $city)) + @(, @("And the bargains", $bar))
+  $groups = @(, @("Winter sun", $sunPicks)) + @(, @("City breaks", $cityPicks)) + @(, @("The bargains", $barPicks))
   $i = 0
   foreach ($g in $groups) {
     $list = @($g[1]); if ($list.Count -eq 0) { continue }
@@ -275,14 +275,14 @@ foreach ($a in $LIST) {
     "<tr><td style=`"padding:6px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#FFFFFF`" style=`"width:100%;border-collapse:separate;background:#FFFFFF;border-radius:14px;`"><tr><td style=`"padding:16px 16px 14px 16px;text-align:center;$FONT`">" +
     "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;color:#0E6FB6;`">$(Esc $a.name) &middot; on us this week</div>" +
     "<div style=`"font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1.05;color:#0E3550;margin-top:8px;`">Every fare.<br><span style=`"color:#0E6FB6;`">Nothing hidden.</span></div>" +
-    "<div style=`"font-size:13.5px;color:#46607A;margin-top:8px;`">On a Monday the free list sees three fares and a blur. Today you see the lot: what members get every week for $($GBP)2.99 a month.</div>" +
+    "<div style=`"font-size:13.5px;color:#46607A;margin-top:8px;`">Normally you get three fares on a Monday and the rest blurred out. Today I'm showing you the lot, exactly what members get every week for $($GBP)2.99 a month.</div>" +
     "<table align=`"center`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"margin-top:14px;`"><tr>$(Stat "$($picks.Count)" "places")$(Stat "$GBP$cheapest" "cheapest")$(Stat "$GBP$totalSaving" "under usual")</tr></table>" +
     "</td></tr></table></td></tr>" +
     "<tr><td style=`"padding:8px 14px 12px 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;`"><tr><td></td><td align=`"right`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr></table>"
   $statRow = ""
 
-  $fares = "<div style=`"font-size:13.5px;color:#46607A;margin-top:18px;$FONT`">Everything below is from $(Esc $a.name), checked this morning, with what people usually pay beside it. Tap a fare and it opens in the search.</div>" + $rowsHtml +
-    "<div style=`"margin-top:6px;padding:12px 14px;border-radius:12px;background:#FFF4D1;font-size:13px;color:#5A4210;$FONT`"><b style=`"color:#3A2A08;`">Book fast.</b> Fares like these go within a few days. Members get them every Monday and can search every date in between.</div>"
+  $fares = "<div style=`"font-size:13.5px;color:#46607A;margin-top:18px;$FONT`">All from $(Esc $a.name), all checked this morning. The crossed out price is what people usually pay. Tap one and it opens in the search.</div>" + $rowsHtml +
+    "<div style=`"margin-top:6px;padding:12px 14px;border-radius:12px;background:#FFF4D1;font-size:13px;color:#5A4210;$FONT`"><b style=`"color:#3A2A08;`">Move quick.</b> Fares like these usually go within a few days. Members get a list like this every Monday and can search every date in between.</div>"
 
   $bestPick = ($picks | Sort-Object saving -Descending | Select-Object -First 1)
   $price = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;border-collapse:separate;background:#F0F6FB;border-radius:14px;margin-top:18px;`"><tr><td style=`"padding:18px 16px 18px 16px;text-align:center;$FONT`">" +
@@ -294,13 +294,13 @@ foreach ($a in $LIST) {
     "&#10003; The full search: every route, every date, seven months ahead, all $TOTAL_AIRPORTS airports<br>" +
     "&#10003; Book straight through to the airline. We never touch your money<br>" +
     "&#10003; And you back me: 24, building this on my own, no big company behind it</div>" +
-    "<div style=`"font-size:12.5px;color:#46607A;margin:8px 0 12px;`">Less than a flat white. $(Esc $PLACES[$bestPick.dest].name) alone is $GBP$($bestPick.typical - $bestPick.price) under the usual price. One good fare pays for the year.</div>" +
+    "<div style=`"font-size:12.5px;color:#46607A;margin:8px 0 12px;`">That's less than a coffee. $(Esc $PLACES[$bestPick.dest].name) alone is $GBP$($bestPick.typical - $bestPick.price) under the usual price, so one good fare pays for the whole year.</div>" +
     "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td><a href=`"$goLink`" style=`"text-decoration:none;`"><img src=`"$($CDNA)email-try.png`" width=`"224`" height=`"49`" alt=`"Try 40 days free`" style=`"display:block;border:0;width:224px;height:49px;`"></a></td></tr></table>" +
     "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">Then $($GBP)2.99 a month or $($GBP)29 a year. Cancel any time, no contract. One tap, no password.</div>" +
     "</td></tr></table>"
   $cta = ""
 
-  $signoff = "<div style=`"margin-top:18px;font-size:13.5px;color:#46607A;$FONT`">Your Monday email still comes either way. This one is just to show you what is behind the blur.<br><br>Have a good week,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
+  $signoff = "<div style=`"margin-top:18px;font-size:13.5px;color:#46607A;$FONT`">Your Monday email still comes either way, this one's just to show you what's behind the blur.<br><br>Speak Monday,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
 
   $html = $head + $statRow + $fares + $price + $cta + $signoff
   $card = @{ type = "html"; version = 1; html = $html }
@@ -311,17 +311,26 @@ foreach ($a in $LIST) {
   if ($existing.Count -gt 0 -and -not $Replace) { Write-Host ("{0}: draft already exists ({1}), skipped" -f $a.code, $slug); continue }
   foreach ($e in $existing) { if ($e.status -eq "draft") { Call DELETE "/posts/$($e.id)/" | Out-Null } }
 
+  # Inbox hook: the three best fares by name and price, no duplicates.
+  $hookBits = @(); $hookSeen = @{}
+  foreach ($f in @(@($sunPicks | Select-Object -First 1) + @($cityPicks | Select-Object -First 1) + @($picks | Where-Object { $_.ret } | Sort-Object price | Select-Object -First 1) + @($barPicks | Select-Object -First 1))) {
+    if (-not $f -or $hookSeen.ContainsKey($f.dest) -or $hookBits.Count -ge 3) { continue }
+    $hookSeen[$f.dest] = 1
+    $hookBits += ($PLACES[$f.dest].name + " " + $GBP + $f.price + $(if ($f.ret) { " return" } else { "" }))
+  }
+  $hook = ($hookBits -join ", ") + ". The blur is off, on me."
+
   $post = @{ posts = @(@{
-    title = "$($a.name): $($picks.Count) cheap fares this week, all of them, on us"
+    title = "Secret access, one week only: every cheap flight from $($a.name)"
     slug = $slug
     lexical = $lexical
     status = "draft"
     visibility = "members"
-    custom_excerpt = "Every cheap fare from $($a.name) this week with nothing blurred, and what members pay to get this every Monday."
+    custom_excerpt = $hook
     tags = @(@{ name = "#shower-auto" })
   }) }
   $new = (Call POST "/posts/?source=html" $post).posts[0]
   $made++
-  Write-Host ("{0}: draft made, {1} fares ({2} returns; sun {3}, city {4}, bargains {5}), cheapest {6}{7}, best saving {8}%, {9}{10} below usual added up -> {11} (preview {12}/p/{13}/)" -f $a.code, $picks.Count, $returns, $sun.Count, $city.Count, $bar.Count, $GBP, $cheapest, $bestSaving, $GBP, $totalSaving, $new.slug, $Site, $new.uuid)
+  Write-Host ("{0}: draft made, {1} fares ({2} returns; sun {3}, city {4}, bargains {5}), cheapest {6}{7}, best saving {8}%, {9}{10} below usual added up -> {11} (preview {12}/p/{13}/)" -f $a.code, $picks.Count, $returns, $sunPicks.Count, $cityPicks.Count, $barPicks.Count, $GBP, $cheapest, $bestSaving, $GBP, $totalSaving, $new.slug, $Site, $new.uuid)
 }
 Write-Host "Made $made shower drafts. Send with -Send after Henry's yes."

@@ -752,7 +752,10 @@
       // and the pill itself never wraps.
       st.textContent = ".chfs-seen{grid-column:1/-1;display:block;font-size:10px;line-height:1.2;color:var(--chfs-faint,#7A90A5);text-align:right;white-space:nowrap;margin:-6px 0 0}" +
                        ".chfs-seen.old{color:#B45309}" +
-                       ".chfs-tag{white-space:nowrap}";
+                       ".chfs-tag{white-space:nowrap}" +
+                       ".chfs-opt.pick{outline:2px solid #0E6FB6;outline-offset:-2px;background:rgba(14,111,182,.06)}" +
+                       ".chfs-pick{display:block;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#0E6FB6;margin-bottom:2px}" +
+                       ".chfs-optlbl{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#7A90A5;margin:10px 0 6px}";
       document.head.appendChild(st);
     }
     var hours = (Date.now() - new Date(GENERATED).getTime()) / 36e5 + (r.h || 0);
@@ -976,7 +979,12 @@
       v.innerHTML = "<strong>£" + r.price + "</strong><span>No price history for this route yet.</span>";
     }
 
-    // Other dates for the same destination, so people can shift a few days.
+    // The fare that was tapped comes first, exactly as the card showed it.
+    // Under it, other dates on the same route so people can shift a few
+    // days. With specific dates chosen, only dates inside that window;
+    // Henry, 9 Sep 2026: the sheet used to open on six random October
+    // one-ways for a card that said 10 to 12 Sep return.
+    var win = state.from2 ? state.flex : null;
     var alts = flatten()
       .filter(function (x) { return x.dest === r.dest && x.origin === r.origin; })
       .filter(function (x) {
@@ -985,18 +993,32 @@
         if (state.trip === "weekend") return isWeekendBreak(x);
         return true;
       })
+      .filter(function (x) {
+        if (win === null) return true;
+        if (Math.abs(dayDiff(x.dep, state.from2)) > win) return false;
+        if (state.to2 && state.trip !== "one" && (!x.ret || Math.abs(dayDiff(x.ret, state.to2)) > win)) return false;
+        return true;
+      })
+      .filter(function (x) { return !(x.dep === r.dep && (x.ret || "") === (r.ret || "")); })
       .sort(function (a, b) { return a.price - b.price; })
       .filter(function (x, i, arr) {          // one row per date pair
         return arr.findIndex(function (y) { return y.dep === x.dep && y.ret === x.ret; }) === i;
       })
-      .slice(0, 6);
+      .slice(0, 5);
+    alts.unshift(r);
     var o = $("chfsOpts");
     o.innerHTML = "";
-    alts.forEach(function (a) {
+    alts.forEach(function (a, i) {
+      if (i === 1) {
+        var lbl = document.createElement("div");
+        lbl.className = "chfs-optlbl";
+        lbl.textContent = win === null ? "Other dates on this route" : "Other dates near yours";
+        o.appendChild(lbl);
+      }
       var row = document.createElement("div");
-      row.className = "chfs-opt";
+      row.className = "chfs-opt" + (i === 0 ? " pick" : "");
       row.innerHTML =
-        '<span><span class="d">' + fmt(a.dep) + (a.ret ? " – " + fmt(a.ret) : "") + '</span>' +
+        '<span>' + (i === 0 ? '<span class="chfs-pick">The fare you tapped</span>' : '') + '<span class="d">' + fmt(a.dep) + (a.ret ? " – " + fmt(a.ret) : "") + '</span>' +
         '<span class="s">' + (a.ret ? (isDayTrip(a) ? "day trip" : "return") : "one way") + " · " + (a.stops === 0 ? "direct" : a.stops + " stop") + (a.pair ? " · two singles" : "") + airlineTag(a.air) + '</span></span>' +
         '<span><span class="p">£' + a.price + '</span>' +
         '<a class="chfs-book" target="_blank" rel="noopener sponsored" href="' + bookUrl(a.origin, a.dest, a.dep, a.ret, a.air) + '">Book</a></span>';

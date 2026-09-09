@@ -1,4 +1,4 @@
-﻿/* CloudHenry welcome screen, shown the moment someone joins.
+/* CloudHenry welcome screen, shown the moment someone joins.
  *
  * Their airport, the five cheapest fares out of it today from the live
  * feed, how many destinations members can see, and one button for the
@@ -112,7 +112,7 @@
     css();
     var code = opts.code, city = NAMES[code] || "your airport";
     el.className = (el.className || "").replace(/\bch-hj-done\b|\bch-join\b/g, "").trim() + " chw";
-    el.innerHTML = '<span class="chw-pill">You\'re in</span><h3>Welcome, ' + esc(city) + '.</h3><div class="chw-loading">Finding today\'s cheapest fares out of ' + esc(city) + '</div>';
+    el.innerHTML = '<span class="chw-pill">You\'re in</span><h3>Welcome to CloudHenry.</h3><div class="chw-loading">Finding today\'s cheapest fares out of ' + esc(city) + '</div>';
 
     places(function (P) {
       fares(code, function (data) {
@@ -124,7 +124,7 @@
             '<span class="p">£' + r.p + (r.typ && r.typ > r.p * 1.15 ? '<small>usually £' + r.typ + '</small>' : '') + '</span></div>';
         }).join("");
 
-        var html = '<span class="chw-pill">You\'re in</span><h3>Welcome, ' + esc(city) + '.</h3>';
+        var html = '<span class="chw-pill">You\'re in</span><h3>Welcome to CloudHenry.</h3>';
         if (rows) {
           html += '<p class="chw-sub">The five cheapest fares out of ' + esc(city) + ' right now, found this morning.</p>' +
                   '<div class="chw-card">' + rows + '</div>' +
