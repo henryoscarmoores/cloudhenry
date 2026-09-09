@@ -191,6 +191,8 @@ foreach ($a in $LIST) {
     foreach ($o in @($r.options)) {
       if (-not $o.p -or -not $o.d -or $o.d -lt $today -or $o.d -gt $limit) { continue }
       if ($o.s -and [int]$o.s -gt 1) { continue }
+      # A return under two nights is a day trip or a dash, not a holiday (Henry, 9 Sep 2026: "unrealistic time frames").
+      if ($o.r -and (([datetime]$o.r) - ([datetime]$o.d)).Days -lt 2) { continue }
       $row = [pscustomobject]@{ dest = $d; price = [int]$o.p; typical = 0; dep = [string]$o.d; ret = [string]$o.r; stops = [int]($(if ($o.s) { $o.s } else { 0 })); saving = 0; kind = "" }
       if ($o.r) { if ($rtTyp -gt 0 -and (-not $br -or $row.price -lt $br.price)) { $row.typical = $rtTyp; $br = $row } }
       else      { if ($typ -gt 0 -and (-not $bo -or $row.price -lt $bo.price)) { $row.typical = $typ; $bo = $row } }
@@ -311,7 +313,7 @@ foreach ($a in $LIST) {
   $slug = "shower-" + $a.slug + "-" + $stamp
   $existing = @((Call GET "/posts/?limit=5&filter=$([uri]::EscapeDataString("slug:$slug"))").posts)
   if ($existing.Count -gt 0 -and -not $Replace) { Write-Host ("{0}: draft already exists ({1}), skipped" -f $a.code, $slug); continue }
-  foreach ($e in $existing) { if ($e.status -eq "draft") { Call DELETE "/posts/$($e.id)/" | Out-Null } }
+  foreach ($e in $existing) { if ($e.status -in @("draft", "scheduled")) { Call DELETE "/posts/$($e.id)/" | Out-Null } }
 
   # Inbox hook: the three best fares by name and price, no duplicates.
   $hookBits = @(); $hookSeen = @{}
