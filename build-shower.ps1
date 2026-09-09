@@ -28,7 +28,8 @@ param(
   [int] $Rows = 12,
   [int] $Horizon = 120,
   [switch] $Replace,
-  [switch] $Send
+  [switch] $Send,
+  [string] $Schedule
 )
 $ErrorActionPreference = "Stop"
 $RepoDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -156,8 +157,9 @@ if ($Send) {
     if (-not $d -or $d[0].status -ne "draft") { Write-Host ("{0}: no draft to send ({1})" -f $a.code, $slug); continue }
     $segment = "label:loc-" + $a.slug + "+status:free"
     $q = "?newsletter=$Newsletter&email_segment=" + [uri]::EscapeDataString($segment)
-    $r = Call PUT ("/posts/" + $d[0].id + "/" + $q) @{ posts = @(@{ status = "published"; updated_at = $d[0].updated_at }) }
-    Write-Host ("{0}: sent to {1} ({2})" -f $a.code, $segment, $r.posts[0].status)
+    $body = if ($Schedule) { @{ status = "scheduled"; published_at = $Schedule; updated_at = $d[0].updated_at } } else { @{ status = "published"; updated_at = $d[0].updated_at } }
+    $r = Call PUT ("/posts/" + $d[0].id + "/" + $q) @{ posts = @($body) }
+    Write-Host ("{0}: {1} to {2} ({3}{4})" -f $a.code, $(if ($Schedule) { "scheduled" } else { "sent" }), $segment, $r.posts[0].status, $(if ($Schedule) { " for " + $r.posts[0].published_at } else { "" }))
     $sent++
   }
   Write-Host "Sent $sent shower emails."
