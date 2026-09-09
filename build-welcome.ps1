@@ -127,7 +127,7 @@ function FareRow($f, [int] $i) {
   $link = "$Site/search/?from=$($f.origin)&to=" + [uri]::EscapeDataString($p.name)
   $bg = if ($i % 2 -eq 0) { "#FFFFFF" } else { "#F7FBFE" }
   return "<tr><td style=`"padding:0;`"><a href=`"$link`" style=`"text-decoration:none;display:block;`">" +
-    "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"$bg`" style=`"background:$bg;border-bottom:1px solid #E8F1F8;`"><tr>" +
+    "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"$bg`" style=`"width:100%;background:$bg;border-bottom:1px solid #E8F1F8;`"><tr>" +
     "<td style=`"padding:13px 16px;$FONT`">" +
       "<div style=`"font-size:15.5px;font-weight:800;color:#0E3550;`">$flag$(Esc $AIRPORT_NAME[$f.origin]) to $(Esc $p.name)</div>" +
       "<div style=`"font-size:12.5px;color:#5B7387;margin-top:3px;`">$(Day $f.dep) &middot; one way &middot; direct</div>" +
@@ -142,20 +142,20 @@ function FareRow($f, [int] $i) {
 $rowsHtml = ""
 for ($i = 0; $i -lt $picks.Count; $i++) { $rowsHtml += FareRow $picks[$i] $i }
 
-$head = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#0E6FB6`" style=`"background:#0E6FB6;border-radius:18px;`"><tr><td style=`"padding:26px 22px 22px;text-align:center;$FONT`">" +
+$head = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#0E6FB6`" style=`"width:100%;background:#0E6FB6;border-radius:18px;`"><tr><td style=`"padding:26px 22px 22px;text-align:center;$FONT`">" +
   "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:#BEE3F8;`">Welcome aboard</div>" +
   "<div style=`"font-size:27px;font-weight:900;color:#FFFFFF;line-height:1.15;margin:8px 0 6px;letter-spacing:-.5px;`">You are in.</div>" +
   "<div style=`"font-size:14.5px;color:#D7EDFA;line-height:1.5;max-width:34em;margin:0 auto;`">Thanks for joining. Here is what we found this morning across all 38 airports, so you can see what lands in your inbox every Monday.</div>" +
   "</td></tr></table>"
 
-$statRow = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"8`" border=`"0`" style=`"border-collapse:separate;margin-top:12px;`"><tr>" +
+$statRow = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"8`" border=`"0`" style=`"width:100%;border-collapse:separate;margin-top:12px;`"><tr>" +
   "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">16</div><div style=`"font-size:11px;color:#5B7387;`">airports</div></td>" +
   "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">$([char]0xA3)$cheapest</div><div style=`"font-size:11px;color:#5B7387;`">cheapest today</div></td>" +
   "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">$bestSaving%</div><div style=`"font-size:11px;color:#5B7387;`">off the usual price</div></td>" +
   "</tr></table>"
 
 $fares = "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:20px 0 8px;$FONT`">This morning's best</div>" +
-  "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border:1px solid #E3EEF6;border-radius:14px;overflow:hidden;`">$rowsHtml</table>" +
+  "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;border:1px solid #E3EEF6;border-radius:14px;overflow:hidden;`">$rowsHtml</table>" +
   "<div style=`"font-size:12px;color:#7A90A5;margin-top:8px;$FONT`">Prices checked this morning. Fares like these go within a few days.</div>"
 
 $what = "<div style=`"margin-top:22px;padding:16px 18px;border-radius:14px;background:#F0F6FB;$FONT`">" +

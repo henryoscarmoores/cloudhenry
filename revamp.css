@@ -309,3 +309,23 @@
    within ~100 characters of Ghost's 65,535 limit.
    --------------------------------------------------------------- */
 .ch-nav-soon { display: none !important; }
+
+/* ---------------------------------------------------------------
+   Email posts on the web (Monday, welcome and shower emails, all tagged
+   #...-auto). The theme wraps every table in .gh-table with a permanent
+   horizontal scrollbar, forces nowrap, draws data-table borders and
+   pushes 28px between siblings. Those tables are the email's layout,
+   not data, so put them back the way the email has them. 9 Sep 2026.
+   --------------------------------------------------------------- */
+.tag-hash-monday-auto .gh-content .gh-table,
+.tag-hash-welcome-auto .gh-content .gh-table,
+.tag-hash-shower-auto .gh-content .gh-table { overflow: visible; }
+.tag-hash-monday-auto .gh-content > * + *,
+.tag-hash-welcome-auto .gh-content > * + *,
+.tag-hash-shower-auto .gh-content > * + * { margin-top: 0; }
+.tag-hash-monday-auto .gh-content .gh-table table,
+.tag-hash-welcome-auto .gh-content .gh-table table,
+.tag-hash-shower-auto .gh-content .gh-table table { white-space: normal; border-collapse: separate; font-size: inherit; }
+.tag-hash-monday-auto .gh-content .gh-table table td,
+.tag-hash-welcome-auto .gh-content .gh-table table td,
+.tag-hash-shower-auto .gh-content .gh-table table td { padding: 0; border-bottom: 0; }

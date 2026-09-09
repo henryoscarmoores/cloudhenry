@@ -223,7 +223,7 @@ function FareRow($f, [int] $i, [bool] $blur) {
   # The button is a picture. Gmail on phones recolours and underlines any text link in dark mode and squeezes a fixed column into the price; an image keeps its yellow and its size everywhere.
   $book = if (-not $blur -and $f.book) { "<a href=`"$($f.book)`" style=`"text-decoration:none;`"><img src=`"https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/assets/email-book.png`" width=`"66`" height=`"30`" alt=`"Book`" style=`"border:0;display:inline-block;vertical-align:middle;width:66px;height:30px;`"></a>" } else { "" }
   $bookHtml = if ($book) { "<div style=`"margin-top:6px;text-align:right;`">$book</div>" } else { "" }
-  return "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:#F7FBFE;border-radius:12px;margin-bottom:8px;`"><tr>" +
+  return "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;border-collapse:separate;background:#F7FBFE;border-radius:12px;margin-bottom:8px;`"><tr>" +
     "<td style=`"width:6px;background:$stripe;border-radius:12px 0 0 12px;`"></td>" +
     "<td style=`"width:34px;padding:10px 4px 10px 10px;vertical-align:middle;`">$flagCell</td>" +
     "<td style=`"padding:10px 6px;vertical-align:middle;$FONT`"><div style=`"font-size:15px;font-weight:800;color:$textColor;letter-spacing:-.2px;`">$(Esc $name)$(if (-not $blur) { $tag })</div><div style=`"font-size:11.5px;color:$subColor;`">$when</div></td>" +
@@ -320,15 +320,15 @@ foreach ($a in $AIRPORTS) {
   # text on a dark card and still reads. The cloud and sun are images,
   # which dark mode leaves alone.
   $CDNA = "https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/assets/"
-  $hero = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#1F7FC4`" style=`"border-collapse:separate;background:#1F7FC4;background-image:linear-gradient(180deg,#0E6FB6 0%,#3E9BE0 75%,#7CC3F2 100%);border-radius:18px;`">" +
-    "<tr><td style=`"padding:12px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`"><tr><td align=`"left`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td><td></td><td align=`"right`" style=`"width:40px;`"><img src=`"$($CDNA)email-sun.png`" width=`"40`" height=`"40`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr>" +
-    "<tr><td style=`"padding:6px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#FFFFFF`" style=`"border-collapse:separate;background:#FFFFFF;border-radius:14px;`"><tr><td style=`"padding:16px 16px 14px 16px;text-align:center;$FONT`">" +
+  $hero = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#1F7FC4`" style=`"width:100%;border-collapse:separate;background:#1F7FC4;background-image:linear-gradient(180deg,#0E6FB6 0%,#3E9BE0 75%,#7CC3F2 100%);border-radius:18px;`">" +
+    "<tr><td style=`"padding:12px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;`"><tr><td align=`"left`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td><td></td><td align=`"right`" style=`"width:40px;`"><img src=`"$($CDNA)email-sun.png`" width=`"40`" height=`"40`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr>" +
+    "<tr><td style=`"padding:6px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#FFFFFF`" style=`"width:100%;border-collapse:separate;background:#FFFFFF;border-radius:14px;`"><tr><td style=`"padding:16px 16px 14px 16px;text-align:center;$FONT`">" +
     "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;color:#0E6FB6;`">$(Esc $a.name) · week of $weekLabel</div>" +
     "<div style=`"font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1.05;color:#0E3550;margin-top:8px;`">$n cheap fares.<br><span style=`"color:#0E6FB6;`">Checked this morning.</span></div>" +
     "<div style=`"font-size:13.5px;color:#46607A;margin-top:8px;`">Every one with what people usually pay beside it.</div>" +
     "<table align=`"center`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"margin-top:14px;`"><tr>$(Stat "$n" "fares found")$(Stat "$([char]0xA3)$cheapest" "cheapest")$(Stat "$avgSave%" "avg saving")</tr></table>" +
     "</td></tr></table></td></tr>" +
-    "<tr><td style=`"padding:8px 14px 12px 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`"><tr><td></td><td align=`"right`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr></table>"
+    "<tr><td style=`"padding:8px 14px 12px 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;`"><tr><td></td><td align=`"right`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr></table>"
 
   $topHtml = "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:18px 0 8px;$FONT`">This week's best from $(Esc $a.name)</div>"
   for ($i = 0; $i -lt $top.Count; $i++) { $topHtml += FareRow $top[$i] $i $false }
@@ -337,7 +337,7 @@ foreach ($a in $AIRPORTS) {
   $lockedHtml = ""
   for ($i = 0; $i -lt $locked.Count; $i++) { $lockedHtml += FareRow $locked[$i] ($i + 3) $true }
   $nudge = "<div style=`"text-align:center;margin:4px 0 12px;$FONT`"><span style=`"font-size:13.5px;color:#46607A;`">That is 3 of <b style=`"color:#0E3550;`">$n fares</b> from $(Esc $a.name) this week. </span><a href=`"$goLink`" style=`"font-size:13.5px;font-weight:800;color:#0E6FB6;text-decoration:none;border-bottom:2px solid #F5C242;`">See them all, 40 days free &rarr;</a></div>"
-  $tease = $nudge + "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:#F0F6FB;border-radius:14px;margin-top:6px;`"><tr><td style=`"padding:8px 8px 0 8px;`">$lockedHtml</td></tr>" +
+  $tease = $nudge + "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;border-collapse:separate;background:#F0F6FB;border-radius:14px;margin-top:6px;`"><tr><td style=`"padding:8px 8px 0 8px;`">$lockedHtml</td></tr>" +
     "<tr><td style=`"padding:4px 16px 18px 16px;text-align:center;$FONT`">" +
     "<div style=`"width:38px;height:38px;line-height:38px;border-radius:50%;background:#F5C242;margin:0 auto 6px auto;font-size:18px;text-align:center;`">&#128274;</div>" +
     "<div style=`"font-size:17px;font-weight:800;color:#0E3550;letter-spacing:-.3px;`">$rest more fares from $(Esc $a.name)</div>" +
@@ -361,7 +361,7 @@ foreach ($a in $AIRPORTS) {
   $searchStrip = "<div style=`"margin-top:18px;padding:14px 10px 12px;border-radius:14px;background:#F0F6FB;text-align:center;$FONT`">" +
     "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin-bottom:6px;`">Your search, one tap</div>" +
     "<div style=`"font-size:13.5px;color:#46607A;margin-bottom:10px;`">Every fare from $(Esc $a.name), every date, five months ahead. Try one:</div>" +
-    "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"6`" border=`"0`" style=`"border-collapse:separate;`">" +
+    "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"6`" border=`"0`" style=`"width:100%;border-collapse:separate;`">" +
     "<tr>" + (& $chip "Weekend breaks in $mn" "trip=weekend&month=$mk") + (& $chip "Extreme day trips" "trip=daytrip") + "</tr>" +
     "<tr>" + (& $chip "Christmas markets" "trip=xmas") + (& $chip "Sun under &pound;40" "theme=sun&max=40") + "</tr>" +
     "</table></div>"

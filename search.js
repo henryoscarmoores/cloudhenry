@@ -746,8 +746,13 @@
     if (!SEEN_CSS_DONE) {
       SEEN_CSS_DONE = true;
       var st = document.createElement("style");
-      st.textContent = ".chfs-seen{display:block;font-size:10.5px;color:var(--chfs-faint,#7A90A5);text-align:right;white-space:nowrap;margin-top:2px}" +
-                       ".chfs-seen.old{color:#B45309}";
+      // The age line must not widen the price column: on a narrow card it
+      // squeezed the "75% under usual" pill into a green blob (Henry's
+      // screenshot, 9 Sep 2026). It wraps onto two short lines instead,
+      // and the pill itself never wraps.
+      st.textContent = ".chfs-seen{display:block;font-size:10px;line-height:1.2;color:var(--chfs-faint,#7A90A5);text-align:right;white-space:normal;max-width:64px;margin:2px 0 0 auto}" +
+                       ".chfs-seen.old{color:#B45309}" +
+                       ".chfs-tag{white-space:nowrap}";
       document.head.appendChild(st);
     }
     var hours = (Date.now() - new Date(GENERATED).getTime()) / 36e5 + (r.h || 0);

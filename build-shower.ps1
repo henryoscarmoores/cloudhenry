@@ -1,4 +1,4 @@
-<#
+﻿<#
   Builds the "shower" email for the free list: one draft per airport with
   every good fare from that airport this week shown in full, nothing
   blurred, plus what the membership costs and one button to start the
@@ -26,7 +26,7 @@
 param(
   [string[]] $Airports,
   [int] $Rows = 12,
-  [int] $Horizon = 90,
+  [int] $Horizon = 120,
   [switch] $Replace,
   [switch] $Send
 )
@@ -113,6 +113,11 @@ $UK = @{ ABZ=1; ACI=1; BEB=1; BFS=1; BHD=1; BHX=1; BOH=1; BRR=1; BRS=1; CAL=1; C
 $IE = @{ CFN=1; DUB=1; GWY=1; KIR=1; NOC=1; ORK=1; SNN=1; WAT=1 }
 $CD = @{ GCI=1; IOM=1; JER=1 }
 $BOGUS = @{ BSZ=1; DSE=1 }
+# Winter sun is the search's own list (theme=sun in search.js) plus the
+# Tenerife, Larnaca, Madeira and Enfidha codes. City breaks are the places
+# people actually want a weekend in. Everything else is a bargain.
+$SUN = @{}; foreach ($c in "ACE LPA TCI TFS TFN FUE AGA RAK SSH HRG CAI DXB MLA PFO LCA AGP ALC FAO MIR TUN NBE AYT DLM FNC".Split(" ")) { $SUN[$c] = 1 }
+$CITY = @{}; foreach ($c in ("BCN LIS OPO FCO CIA MXP BGY LIN VCE TSF NAP PRG BUD VIE CPH AMS ATH IBZ PMI SVQ VLC MAD NCE MRS BER KRK CDG ORY BVA GVA SZG INN SPU DBV ZAD PSA FLR BLQ VRN TRN MUC HAM STR DUS CGN FRA BRU ARN OSL HEL KEF IST SAW RVN TOS BGO RIX TLL VNO WAW WMI GDN LJU ZAG TIA SOF OTP BOD LYS TLS NTE BIO SDR BJV ADB TIV PUY BRI CTA PMO OLB CAG CFU RHO HER SKG").Split(" ")) { $CITY[$c] = 1 }
 # Anything inside the British Isles is a hop, not a deal, whichever end
 # you start from. Same rule as the search and the Monday email.
 function Domestic([string] $o, [string] $d) {
@@ -133,6 +138,7 @@ function FlagCode([string] $emoji) {
 }
 function Esc([string] $s) { return [System.Net.WebUtility]::HtmlEncode($s) }
 function Day([string] $iso) { $d = [datetime]::ParseExact($iso, "yyyy-MM-dd", $null); return $d.ToString("ddd d MMM") }
+function DayShort([string] $iso) { $d = [datetime]::ParseExact($iso, "yyyy-MM-dd", $null); return $d.ToString("d MMM") }
 $GBP = [string][char]0xA3
 $FONT = "font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;"
 
@@ -165,90 +171,135 @@ foreach ($a in $LIST) {
   if (-not (Test-Path $file)) { Write-Host ("{0}: no fare file, skipped" -f $a.code); continue }
   $data = Get-Content $file -Raw -Encoding UTF8 | ConvertFrom-Json
 
-  # Best option per destination: cheapest, up to one change, at least 25
-  # per cent under the usual price, a place with a name. One row per
-  # destination so twelve rows are twelve places, not twelve Faro dates.
-  $cands = @()
+  # Per destination, the cheapest one way and the cheapest return, each up
+  # to one change and inside the window. A one way is judged against the
+  # route's typical price; a return against the route's usual return
+  # price, the mean of its return options, which is the figure the search
+  # shows. Under 75 per cent of usual to count. Henry, 9 Sep 2026: "a few
+  # return trips in there as well, winter sun remember and desirable
+  # destinations".
+  $ows = @(); $rts = @()
   foreach ($r in $data.fares) {
     $d = [string]$r.destination
     if ((Domestic $a.code $d) -or $BOGUS.ContainsKey($d) -or -not $PLACES.ContainsKey($d)) { continue }
     $typ = if ($r.typical) { [int]$r.typical } else { 0 }
-    if ($typ -le 0) { continue }
-    $best = $null
+    $rtAll = @($r.options | Where-Object { $_.r -and $_.p })
+    $rtTyp = if ($rtAll.Count -ge 3) { [int][math]::Round((($rtAll | Measure-Object p -Average).Average)) } else { 0 }
+    $bo = $null; $br = $null
     foreach ($o in @($r.options)) {
       if (-not $o.p -or -not $o.d -or $o.d -lt $today -or $o.d -gt $limit) { continue }
       if ($o.s -and [int]$o.s -gt 1) { continue }
-      if (-not $best -or [int]$o.p -lt $best.price) {
-        $best = [pscustomobject]@{ dest = $d; price = [int]$o.p; typical = $typ; dep = [string]$o.d; ret = [string]$o.r; stops = [int]($(if ($o.s) { $o.s } else { 0 })); saving = [int]((1 - ([int]$o.p / $typ)) * 100) }
-      }
+      $row = [pscustomobject]@{ dest = $d; price = [int]$o.p; typical = 0; dep = [string]$o.d; ret = [string]$o.r; stops = [int]($(if ($o.s) { $o.s } else { 0 })); saving = 0; kind = "" }
+      if ($o.r) { if ($rtTyp -gt 0 -and (-not $br -or $row.price -lt $br.price)) { $row.typical = $rtTyp; $br = $row } }
+      else      { if ($typ -gt 0 -and (-not $bo -or $row.price -lt $bo.price)) { $row.typical = $typ; $bo = $row } }
     }
-    if ($best -and $best.price -lt $typ * 0.75) { $cands += $best }
+    foreach ($b in @($bo, $br)) {
+      if (-not $b) { continue }
+      if ($b.price -ge $b.typical * 0.75) { continue }
+      $b.saving = [int][math]::Floor((1 - ($b.price / $b.typical)) * 100)
+      $m = [int]$b.dep.Substring(5, 2)
+      # Winter sun means winter: October to March, same rule as the search.
+      $b.kind = if ($SUN.ContainsKey($d) -and ($m -ge 10 -or $m -le 3)) { "sun" } elseif ($CITY.ContainsKey($d)) { "city" } else { "bargain" }
+      if ($b.ret) { $rts += $b } else { $ows += $b }
+    }
   }
-  $picks = @($cands | Sort-Object -Property @{ Expression = "saving"; Descending = $true }, price | Select-Object -First $Rows)
-  $picks = @($picks | Sort-Object price)
+
+  # The mix: a third winter sun, a third city breaks, the rest the plain
+  # bargains. Sun and city each lead with up to two returns. One row per
+  # destination. Where a small airport has no sun or city fares the
+  # bargains take the slots.
+  $used = @{}
+  function Take($pool, [int] $n) {
+    $out = @()
+    foreach ($f in @($pool)) { if ($out.Count -ge $n) { break }; if ($used.ContainsKey($f.dest)) { continue }; $used[$f.dest] = 1; $out += $f }
+    return $out
+  }
+  $nSun = [math]::Floor($Rows / 3); $nCity = [math]::Floor($Rows / 3)
+  $sunRt  = @($rts | Where-Object { $_.kind -eq "sun" }  | Sort-Object price)
+  $sunOw  = @($ows | Where-Object { $_.kind -eq "sun" }  | Sort-Object price)
+  $cityRt = @($rts | Where-Object { $_.kind -eq "city" } | Sort-Object price)
+  $cityOw = @($ows | Where-Object { $_.kind -eq "city" } | Sort-Object price)
+  $sun = @(Take $sunRt 2); $sun += @(Take $sunOw ($nSun - $sun.Count)); $sun += @(Take $sunRt ($nSun - $sun.Count)); $sun = @($sun | Sort-Object price)
+  $city = @(Take $cityRt 2); $city += @(Take $cityOw ($nCity - $city.Count)); $city += @(Take $cityRt ($nCity - $city.Count)); $city = @($city | Sort-Object price)
+  $nBar = $Rows - $sun.Count - $city.Count
+  $barPool = @($ows | Sort-Object -Property @{ Expression = "saving"; Descending = $true }, price)
+  $bar = @(Take $barPool $nBar); $bar += @(Take @($rts | Sort-Object price) ($nBar - $bar.Count)); $bar = @($bar | Sort-Object price)
+  $picks = @($sun + $city + $bar)
   if ($picks.Count -lt 5) { Write-Host ("{0}: only {1} fares good enough, skipped" -f $a.code, $picks.Count); continue }
   $cheapest = ($picks | Measure-Object price -Minimum).Minimum
   $bestSaving = ($picks | Measure-Object saving -Maximum).Maximum
   $totalSaving = 0; foreach ($p in $picks) { $totalSaving += ($p.typical - $p.price) }
-  $under30 = @($picks | Where-Object { $_.price -le 30 }).Count
+  $returns = @($picks | Where-Object { $_.ret }).Count
 
   $goTo = "/join-" + $a.slug + "/?intent=trial"
   $goExp = [long][double]::Parse((Get-Date -UFormat %s)) + 21 * 86400
   $goLink = "$Worker/go?u=%%{uuid}%%&k=%%{key}%%&to=" + [uri]::EscapeDataString($goTo) + "&e=$goExp&s=" + (Go-Sign $goTo $goExp)
 
-  $rowsHtml = ""
-  for ($i = 0; $i -lt $picks.Count; $i++) {
-    $f = $picks[$i]; $pl = $PLACES[$f.dest]
+  $TOTAL_AIRPORTS = 38
+  # ---- the email, in the Monday email's clothes ------------------------
+  # Same hero (sky gradient, cloud and sun images, white card), the same
+  # striped fare rows and stat pills as build-monday.ps1, so the free list
+  # sees the family resemblance. Henry, 9 Sep 2026: the first draft looked
+  # "bland with no background" next to the Monday emails.
+  $CDNA = "https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/assets/"
+  $STRIPES = @("#FF6B4A", "#2ED3A5", "#7C5CFF")
+  function Stat([string] $big, [string] $small) {
+    return "<td style=`"padding:0 4px;`"><table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border-collapse:separate;background:#EAF6FD;border:1px solid #D7EDFA;border-radius:12px;`"><tr><td style=`"padding:8px 12px;text-align:center;$FONT`"><div style=`"font-size:20px;font-weight:900;color:#0E3550;letter-spacing:-.5px;line-height:1;`">$big</div><div style=`"font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#46607A;margin-top:3px;`">$small</div></td></tr></table></td>"
+  }
+  function Row($f, [int] $i) {
+    $pl = $PLACES[$f.dest]
     $fc = FlagCode $pl.flag
-    $flag = if ($fc) { "<img src=`"https://flagcdn.com/w20/$fc.png`" width=`"18`" height=`"13`" alt=`"$(Esc $pl.name)`" style=`"border:0;display:inline-block;vertical-align:-2px;border-radius:2px;margin-right:6px;`">" } else { "" }
+    $stripe = $STRIPES[$i % 3]
     $link = "$Site/search/?from=$($a.code)&to=" + [uri]::EscapeDataString($pl.name)
-    $bg = if ($i % 2 -eq 0) { "#FFFFFF" } else { "#F7FBFE" }
-    $when = (Day $f.dep) + $(if ($f.ret) { " to " + (Day $f.ret) + " &middot; return" } else { " &middot; one way" }) + $(if ($f.stops -eq 0) { " &middot; direct" } else { " &middot; 1 stop" })
-    $rowsHtml += "<tr><td style=`"padding:0;`"><a href=`"$link`" style=`"text-decoration:none;display:block;`">" +
-      "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"$bg`" style=`"background:$bg;border-bottom:1px solid #E8F1F8;`"><tr>" +
-      "<td style=`"padding:12px 16px;$FONT`">" +
-        "<div style=`"font-size:15.5px;font-weight:800;color:#0E3550;`">$flag$(Esc $pl.name)</div>" +
-        "<div style=`"font-size:12.5px;color:#5B7387;margin-top:3px;`">$when</div>" +
-      "</td>" +
-      "<td align=`"right`" style=`"padding:12px 16px;white-space:nowrap;$FONT`">" +
-        "<div style=`"font-size:20px;font-weight:900;color:#0E6FB6;`">$GBP$($f.price)</div>" +
-        "<div style=`"font-size:11.5px;color:#7A90A5;text-decoration:line-through;`">usually $GBP$($f.typical)</div>" +
-      "</td></tr></table></a></td></tr>"
+    $when = $(if ($f.ret) { (DayShort $f.dep) + " to " + (DayShort $f.ret) + " &middot; return" } else { (Day $f.dep) + " &middot; one way" }) + $(if ($f.stops -eq 0) { " &middot; direct" } else { " &middot; 1 stop" })
+    $tag = "<span style=`"display:inline-block;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:#FF6B4A;color:#FFFFFF;border-radius:4px;padding:2px 6px;margin-left:6px;vertical-align:middle;`">$($f.saving)% off</span>"
+    $flagCell = if ($fc) { "<img src=`"https://flagcdn.com/w40/$fc.png`" width=`"26`" height=`"20`" alt=`"`" style=`"display:block;border-radius:3px;`">" } else { "<div style=`"width:26px;height:20px;background:#E6EEF5;border-radius:3px;`"></div>" }
+    return "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;border-collapse:separate;background:#F7FBFE;border-radius:12px;margin-bottom:8px;`"><tr>" +
+      "<td style=`"width:6px;background:$stripe;border-radius:12px 0 0 12px;`"></td>" +
+      "<td style=`"width:34px;padding:10px 4px 10px 10px;vertical-align:middle;`">$flagCell</td>" +
+      "<td style=`"padding:10px 6px;vertical-align:middle;$FONT`"><a href=`"$link`" style=`"text-decoration:none;color:#0E3550;`"><div style=`"font-size:15px;font-weight:800;color:#0E3550;letter-spacing:-.2px;`">$(Esc $pl.name)$tag</div><div style=`"font-size:11.5px;color:#46607A;`">$when</div></a></td>" +
+      "<td style=`"padding:10px 10px 10px 6px;text-align:right;vertical-align:middle;white-space:nowrap;$FONT`"><div style=`"font-size:20px;font-weight:900;color:#0E3550;letter-spacing:-.5px;`">$GBP$($f.price)</div><div style=`"font-size:10px;font-weight:600;color:#7A90A5;text-decoration:line-through;`">usually $GBP$($f.typical)</div></td>" +
+      "</tr></table>"
+  }
+  $rowsHtml = ""
+  $groups = @(, @("Winter sun", $sun)) + @(, @("City breaks", $city)) + @(, @("And the bargains", $bar))
+  $i = 0
+  foreach ($g in $groups) {
+    $list = @($g[1]); if ($list.Count -eq 0) { continue }
+    $rowsHtml += "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:16px 0 8px;$FONT`">$($g[0])</div>"
+    foreach ($f in $list) { $rowsHtml += (Row $f $i); $i++ }
   }
 
-  $head = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#0E6FB6`" style=`"background:#0E6FB6;border-radius:18px;`"><tr><td style=`"padding:26px 22px 22px;text-align:center;$FONT`">" +
-    "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:#BEE3F8;`">On us this week</div>" +
-    "<div style=`"font-size:27px;font-weight:900;color:#FFFFFF;line-height:1.15;margin:8px 0 6px;letter-spacing:-.5px;`">Every fare from $(Esc $a.name). Nothing hidden.</div>" +
-    "<div style=`"font-size:14.5px;color:#D7EDFA;line-height:1.5;max-width:34em;margin:0 auto;`">You are on the free list, so on a Monday you see three fares and a blur. Today you see the lot. This is what members get every week for $($GBP)2.99 a month.</div>" +
-    "</td></tr></table>"
+  $head = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#1F7FC4`" style=`"width:100%;border-collapse:separate;background:#1F7FC4;background-image:linear-gradient(180deg,#0E6FB6 0%,#3E9BE0 75%,#7CC3F2 100%);border-radius:18px;`">" +
+    "<tr><td style=`"padding:12px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;`"><tr><td align=`"left`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td><td></td><td align=`"right`" style=`"width:40px;`"><img src=`"$($CDNA)email-sun.png`" width=`"40`" height=`"40`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr>" +
+    "<tr><td style=`"padding:6px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#FFFFFF`" style=`"width:100%;border-collapse:separate;background:#FFFFFF;border-radius:14px;`"><tr><td style=`"padding:16px 16px 14px 16px;text-align:center;$FONT`">" +
+    "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;color:#0E6FB6;`">$(Esc $a.name) &middot; on us this week</div>" +
+    "<div style=`"font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1.05;color:#0E3550;margin-top:8px;`">Every fare.<br><span style=`"color:#0E6FB6;`">Nothing hidden.</span></div>" +
+    "<div style=`"font-size:13.5px;color:#46607A;margin-top:8px;`">On a Monday the free list sees three fares and a blur. Today you see the lot: what members get every week for $($GBP)2.99 a month.</div>" +
+    "<table align=`"center`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"margin-top:14px;`"><tr>$(Stat "$($picks.Count)" "places")$(Stat "$GBP$cheapest" "cheapest")$(Stat "$GBP$totalSaving" "under usual")</tr></table>" +
+    "</td></tr></table></td></tr>" +
+    "<tr><td style=`"padding:8px 14px 12px 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;`"><tr><td></td><td align=`"right`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr></table>"
+  $statRow = ""
 
-  $statRow = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"8`" border=`"0`" style=`"border-collapse:separate;margin-top:12px;`"><tr>" +
-    "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">$($picks.Count)</div><div style=`"font-size:11px;color:#5B7387;`">places, $under30 under $($GBP)30</div></td>" +
-    "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">$GBP$cheapest</div><div style=`"font-size:11px;color:#5B7387;`">cheapest this week</div></td>" +
-    "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">$GBP$totalSaving</div><div style=`"font-size:11px;color:#5B7387;`">below the usual, added up</div></td>" +
-    "</tr></table>"
+  $fares = "<div style=`"font-size:13.5px;color:#46607A;margin-top:18px;$FONT`">Everything below is from $(Esc $a.name), checked this morning, with what people usually pay beside it. Tap a fare and it opens in the search.</div>" + $rowsHtml +
+    "<div style=`"margin-top:6px;padding:12px 14px;border-radius:12px;background:#FFF4D1;font-size:13px;color:#5A4210;$FONT`"><b style=`"color:#3A2A08;`">Book fast.</b> Fares like these go within a few days. Members get them every Monday and can search every date in between.</div>"
 
-  $fares = "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:20px 0 8px;$FONT`">From $(Esc $a.name), checked this morning</div>" +
-    "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"border:1px solid #E3EEF6;border-radius:14px;overflow:hidden;`">$rowsHtml</table>" +
-    "<div style=`"font-size:12px;color:#7A90A5;margin-top:8px;$FONT`">Real prices from this morning's check. Fares like these go within a few days, which is why members get them every Monday and can search every date in between.</div>"
-
-  $price = "<div style=`"margin-top:22px;padding:18px 20px;border-radius:14px;background:#0E3550;$FONT`">" +
-    "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#F5C242;`">What $($GBP)2.99 a month gets you</div>" +
-    "<div style=`"font-size:14.5px;color:#D7EDFA;line-height:1.65;margin-top:8px;`">" +
-    "&#10003; Every fare from $(Esc $a.name), every Monday, none of them blurred<br>" +
-    "&#10003; The full search: every route, every date, seven months ahead, from all 38 airports<br>" +
+  $bestPick = ($picks | Sort-Object saving -Descending | Select-Object -First 1)
+  $price = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;border-collapse:separate;background:#F0F6FB;border-radius:14px;margin-top:18px;`"><tr><td style=`"padding:18px 16px 18px 16px;text-align:center;$FONT`">" +
+    "<div style=`"width:38px;height:38px;line-height:38px;border-radius:50%;background:#F5C242;margin:0 auto 6px auto;font-size:18px;text-align:center;`">&#9992;</div>" +
+    "<div style=`"font-size:17px;font-weight:800;color:#0E3550;letter-spacing:-.3px;`">What $($GBP)2.99 a month gets you</div>" +
+    "<div style=`"font-size:13px;color:#46607A;line-height:1.7;margin:8px 0 4px;text-align:left;`">" +
+    "&#10003; Every fare from $(Esc $a.name), every Monday, nothing blurred<br>" +
+    "&#10003; The full search: every route, every date, seven months ahead, all $TOTAL_AIRPORTS airports<br>" +
     "&#10003; Book straight through to the airline. We never touch your money<br>" +
     "&#10003; Cancel in two taps. No contract, no notice</div>" +
-    "<div style=`"font-size:13.5px;color:#BEE3F8;line-height:1.5;margin-top:12px;border-top:1px solid rgba(255,255,255,.18);padding-top:12px;`">$($GBP)2.99 is less than a flat white. The cheapest fare above saves $GBP$(($picks | Sort-Object saving -Descending | Select-Object -First 1).typical - ($picks | Sort-Object saving -Descending | Select-Object -First 1).price) on its own. One good fare pays for the whole year.</div>" +
-    "</div>"
+    "<div style=`"font-size:12.5px;color:#46607A;margin:8px 0 12px;`">Less than a flat white. $(Esc $PLACES[$bestPick.dest].name) alone is $GBP$($bestPick.typical - $bestPick.price) under the usual price. One good fare pays for the year.</div>" +
+    "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$goLink`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:16px 32px;text-decoration:none;$FONT`">Try 40 days free &rarr;</a></td></tr></table>" +
+    "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">Then $($GBP)2.99 a month or $($GBP)29 a year. Cancel any time, no contract. One tap, no password.</div>" +
+    "</td></tr></table>"
+  $cta = ""
 
-  $cta = "<div style=`"text-align:center;margin-top:20px;$FONT`">" +
-    "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`">" +
-    "<a href=`"$goLink`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:15px 30px;text-decoration:none;$FONT`">Try 40 days free &rarr;</a>" +
-    "</td></tr></table>" +
-    "<div style=`"font-size:12px;color:#7A90A5;margin-top:10px;`">Then $($GBP)2.99 a month or $($GBP)29 a year. Cancel any time, no contract.</div></div>"
-
-  $signoff = "<div style=`"margin-top:20px;font-size:13.5px;color:#46607A;$FONT`">Your Monday email still comes either way. This one is just to show you what is behind the blur.<br><br>Have a good week,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
+  $signoff = "<div style=`"margin-top:18px;font-size:13.5px;color:#46607A;$FONT`">Your Monday email still comes either way. This one is just to show you what is behind the blur.<br><br>Have a good week,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
 
   $html = $head + $statRow + $fares + $price + $cta + $signoff
   $card = @{ type = "html"; version = 1; html = $html }
@@ -270,6 +321,6 @@ foreach ($a in $LIST) {
   }) }
   $new = (Call POST "/posts/?source=html" $post).posts[0]
   $made++
-  Write-Host ("{0}: draft made, {1} fares, cheapest {2}{3}, best saving {4}%, {5}{6} below usual added up -> {7} (preview {8}/p/{9}/)" -f $a.code, $picks.Count, $GBP, $cheapest, $bestSaving, $GBP, $totalSaving, $new.slug, $Site, $new.uuid)
+  Write-Host ("{0}: draft made, {1} fares ({2} returns; sun {3}, city {4}, bargains {5}), cheapest {6}{7}, best saving {8}%, {9}{10} below usual added up -> {11} (preview {12}/p/{13}/)" -f $a.code, $picks.Count, $returns, $sun.Count, $city.Count, $bar.Count, $GBP, $cheapest, $bestSaving, $GBP, $totalSaving, $new.slug, $Site, $new.uuid)
 }
 Write-Host "Made $made shower drafts. Send with -Send after Henry's yes."
