@@ -12,13 +12,35 @@
 # build.
 
 $NORWEGIAN_ORIGINS = @("LGW", "MAN", "EDI")
+$script:NorwegianOdd = 0   # replies without a calendar, logged for the first two only
 $NORWEGIAN_DESTS = @("OSL","BGO","SVG","TRD","AES","TOS","KRS","BOO","CPH","BLL","AAL","ARN","GOT","HEL","AGP","ALC","BCN","MAD","TFS","LPA","ACE","FUE","PMI","NCE","FCO","ATH","LIS","OPO","DXB","BUD","PRG","KRK","WAW")
 
 function Get-NorwegianMonth([string] $Origin, [string] $Dest, [string] $Month) {
   $url = "https://www.norwegian.com/api/fare-calendar/calendar?adultCount=1&originAirportCode=$Origin&destinationAirportCode=$Dest&outboundDate=$Month-15&tripType=1&currencyCode=GBP&languageCode=en-GB"
   $r = Feed-Call GET $url $null $null
   $out = @()
-  if (-not $r -or -not $r.outbound -or -not $r.outbound.days) { return $out }
+  if (-not $r) { return $out }
+  # From GitHub's runners norwegian.com started answering with something
+  # other than the calendar (8 Sep 2026: every origin failed with "property
+  # 'outbound' cannot be found", which under strict mode killed the whole
+  # feed at the first route). Treat a reply without the calendar as "no
+  # fares" and say what came back, once, so the next person can see why.
+  if ($r -is [string]) {
+    try { $r = $r | ConvertFrom-Json } catch {
+      if ($script:NorwegianOdd -lt 2) { Feed-Log ("Norwegian {0}-{1}: reply is not JSON: {2}" -f $Origin, $Dest, $r.Substring(0, [Math]::Min(160, $r.Length))) "WARN" }
+      $script:NorwegianOdd++
+      return $out
+    }
+  }
+  $ob = $r.PSObject.Properties['outbound']
+  if (-not $ob -or -not $ob.Value -or -not $ob.Value.PSObject.Properties['days'] -or -not $ob.Value.days) {
+    if ($script:NorwegianOdd -lt 2) {
+      $peek = ""; try { $peek = (($r | ConvertTo-Json -Compress -Depth 2) -replace '\s+', ' ') } catch { $peek = [string]$r }
+      Feed-Log ("Norwegian {0}-{1}: no outbound.days in reply: {2}" -f $Origin, $Dest, $peek.Substring(0, [Math]::Min(200, $peek.Length))) "WARN"
+    }
+    $script:NorwegianOdd++
+    return $out
+  }
   $today = (Get-Date).ToString("yyyy-MM-dd")
   foreach ($day in @($r.outbound.days)) {
     if ($day.isSoldOut -or -not $day.price -or [double]$day.price -le 0) { continue }
