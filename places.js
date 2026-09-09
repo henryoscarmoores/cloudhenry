@@ -952,5 +952,12 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     PBI:["West Palm Beach","USA","🇺🇸"],
     RLG:["Rostock","Germany","🇩🇪"],
     SAL:["San Salvador","El Salvador","🇸🇻"],
-    UDI:["Uberlandia","Brazil","🇧🇷"]
+    UDI:["Uberlandia","Brazil","🇧🇷"],
+    GRQ:["Groningen","Netherlands","🇳🇱"],
+    LEX:["Lexington","USA","🇺🇸"],
+    OIT:["Oita","Japan","🇯🇵"],
+    SSG:["Malabo","Equatorial Guinea","🇬🇶"],
+    VAF:["Valence","France","🇫🇷"],
+    VIT:["Vitoria-Gasteiz","Spain","🇪🇸"],
+    YXS:["Prince George","Canada","🇨🇦"]
 };
