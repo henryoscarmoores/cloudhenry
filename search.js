@@ -69,7 +69,7 @@
     ["MAN","Manchester"], ["BHX","Birmingham"], ["LBA","Leeds Bradford"],
     ["STN","London Stansted"], ["LTN","London Luton"], ["BRS","Bristol"],
     ["NCL","Newcastle"], ["GLA","Glasgow"], ["EDI","Edinburgh"],
-    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"], ["EMA","East Midlands"], ["DUB","Dublin"], ["EXT","Exeter"], ["LHR","London Heathrow"], ["SEN","London Southend"], ["LCY","London City"], ["PIK","Glasgow Prestwick"], ["BHD","Belfast City"], ["ORK","Cork"], ["SNN","Shannon"], ["SOU","Southampton"], ["ABZ","Aberdeen"], ["NWI","Norwich"], ["NQY","Newquay"], ["NOC","Knock"], ["MME","Teesside"], ["INV","Inverness"]
+    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"], ["EMA","East Midlands"], ["DUB","Dublin"], ["EXT","Exeter"], ["LHR","London Heathrow"], ["SEN","London Southend"], ["LCY","London City"], ["PIK","Glasgow Prestwick"], ["BHD","Belfast City"], ["ORK","Cork"], ["SNN","Shannon"], ["SOU","Southampton"], ["ABZ","Aberdeen"], ["NWI","Norwich"], ["NQY","Newquay"], ["NOC","Knock"], ["MME","Teesside"], ["INV","Inverness"], ["HUY","Humberside"], ["JER","Jersey"], ["GCI","Guernsey"], ["IOM","Isle of Man"], ["KIR","Kerry"], ["LDY","City of Derry"], ["DND","Dundee"]
   ];
   function originName(code) {
     var n = code;
@@ -79,7 +79,7 @@
   // Short form for the card meta line, where "London Stansted" is too long.
   var ORIGIN_SHORT = { LON:"London", MAN:"Manchester", BHX:"Birmingham", LBA:"Leeds", STN:"Stansted",
                        LTN:"Luton", BRS:"Bristol", NCL:"Newcastle", GLA:"Glasgow",
-                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"E Midlands", DUB:"Dublin", EXT:"Exeter", LHR:"Heathrow", SEN:"Southend", LCY:"City", PIK:"Prestwick", BHD:"Belfast City", ORK:"Cork", SNN:"Shannon", SOU:"Southampton", ABZ:"Aberdeen", NWI:"Norwich", NQY:"Newquay", NOC:"Knock", MME:"Teesside", INV:"Inverness" };
+                       EDI:"Edinburgh", LGW:"Gatwick", LPL:"Liverpool", BFS:"Belfast", BOH:"Bournemouth", CWL:"Cardiff", EMA:"E Midlands", DUB:"Dublin", EXT:"Exeter", LHR:"Heathrow", SEN:"Southend", LCY:"City", PIK:"Prestwick", BHD:"Belfast City", ORK:"Cork", SNN:"Shannon", SOU:"Southampton", ABZ:"Aberdeen", NWI:"Norwich", NQY:"Newquay", NOC:"Knock", MME:"Teesside", INV:"Inverness", HUY:"Humberside", JER:"Jersey", GCI:"Guernsey", IOM:"Isle of Man", KIR:"Kerry", LDY:"Derry", DND:"Dundee" };
   // "London (any airport)" reads the three London files together: plenty
   // of people just want out of London and do not mind which end.
   var LONDON = { STN:1, LTN:1, LGW:1, LHR:1, SEN:1, LCY:1 };
@@ -348,7 +348,7 @@
     if (!document.querySelector(".chfs-eyebrow")) {
       var eb = document.createElement("span");
       eb.className = "chfs-eyebrow";
-      eb.textContent = "31 airports in the UK and Ireland · Ryanair, Wizz Air, Norwegian and more · checked three times a day";
+      eb.textContent = "38 airports in the UK and Ireland · Ryanair, Wizz Air, Norwegian and more · checked three times a day";
       h.parentNode.insertBefore(eb, h);
     }
     var t = document.querySelector(".chfs-tally");
@@ -366,7 +366,7 @@
     }
     t.innerHTML = (TOTALS && TOTALS.fares)
       ? "<b>" + withCommas(TOTALS.fares) + " fares</b> on <b>" + withCommas(TOTALS.routes) + " routes</b>, priced " + part + when + ". Pick an airport and go."
-      : "Every fare we can find from 31 airports, priced " + part + when + ". Pick an airport and go.";
+      : "Every fare we can find from 38 airports, priced " + part + when + ". Pick an airport and go.";
   }
 
   renderTitle();

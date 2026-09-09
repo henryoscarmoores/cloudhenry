@@ -51,7 +51,14 @@ const AIRPORTS_BY_SLUG = {
   "newquay":["loc-newquay","NQY"],
   "knock":["loc-knock","NOC"],
   "teesside":["loc-teesside","MME"],
-  "inverness":["loc-inverness","INV"]
+  "inverness":["loc-inverness","INV"],
+  "humberside":["loc-humberside","HUY"],
+  "jersey":["loc-jersey","JER"],
+  "guernsey":["loc-guernsey","GCI"],
+  "isle-of-man":["loc-isle-of-man","IOM"],
+  "kerry":["loc-kerry","KIR"],
+  "derry":["loc-derry","LDY"],
+  "dundee":["loc-dundee","DND"]
 };
 const SOURCES = { "homepage": "via-homepage", "airport-page": "via-airport-page", "flag-game": "via-flag-game" };
 
@@ -59,7 +66,7 @@ const AIRPORTS = [
   ["ANY", "Any airport"], ["MAN", "Manchester"], ["BHX", "Birmingham"],
   ["LBA", "Leeds Bradford"], ["STN", "London Stansted"], ["LTN", "London Luton"],
   ["BRS", "Bristol"], ["NCL", "Newcastle"], ["GLA", "Glasgow"], ["EDI", "Edinburgh"],
-  ["LGW", "London Gatwick"], ["LPL", "Liverpool"], ["BFS", "Belfast"], ["BOH", "Bournemouth"], ["CWL", "Cardiff"], ["EMA", "East Midlands"], ["DUB", "Dublin"], ["EXT", "Exeter"], ["LHR", "London Heathrow"], ["SEN", "London Southend"], ["LCY", "London City"], ["PIK", "Glasgow Prestwick"], ["BHD", "Belfast City"], ["ORK", "Cork"], ["SNN", "Shannon"], ["SOU", "Southampton"], ["ABZ", "Aberdeen"], ["NWI", "Norwich"], ["NQY", "Newquay"], ["NOC", "Knock"], ["MME", "Teesside"], ["INV", "Inverness"]
+  ["LGW", "London Gatwick"], ["LPL", "Liverpool"], ["BFS", "Belfast"], ["BOH", "Bournemouth"], ["CWL", "Cardiff"], ["EMA", "East Midlands"], ["DUB", "Dublin"], ["EXT", "Exeter"], ["LHR", "London Heathrow"], ["SEN", "London Southend"], ["LCY", "London City"], ["PIK", "Glasgow Prestwick"], ["BHD", "Belfast City"], ["ORK", "Cork"], ["SNN", "Shannon"], ["SOU", "Southampton"], ["ABZ", "Aberdeen"], ["NWI", "Norwich"], ["NQY", "Newquay"], ["NOC", "Knock"], ["MME", "Teesside"], ["INV", "Inverness"], ["HUY", "Humberside"], ["JER", "Jersey"], ["GCI", "Guernsey"], ["IOM", "Isle of Man"], ["KIR", "Kerry"], ["LDY", "City of Derry"], ["DND", "Dundee"]
 ];
 
 /* ---- plumbing ------------------------------------------------------ */
@@ -231,7 +238,7 @@ async function handleJoin(request, env, origin) {
  */
 
 const CODE_TO_LABEL = { MAN:"loc-manchester", BHX:"loc-birmingham", LBA:"loc-leeds", STN:"loc-london-stansted", LTN:"loc-london-luton",
-  BRS:"loc-bristol", NCL:"loc-newcastle", GLA:"loc-glasgow", EDI:"loc-edinburgh", LGW:"loc-london-gatwick", LPL:"loc-liverpool", BFS:"loc-belfast", BOH:"loc-bournemouth", CWL:"loc-cardiff", EMA:"loc-east-midlands", DUB:"loc-dublin", EXT:"loc-exeter", LHR:"loc-london-heathrow", SEN:"loc-london-southend", LCY:"loc-london-city", PIK:"loc-prestwick", BHD:"loc-belfast-city", ORK:"loc-cork", SNN:"loc-shannon", SOU:"loc-southampton", ABZ:"loc-aberdeen", NWI:"loc-norwich", NQY:"loc-newquay", NOC:"loc-knock", MME:"loc-teesside", INV:"loc-inverness" };
+  BRS:"loc-bristol", NCL:"loc-newcastle", GLA:"loc-glasgow", EDI:"loc-edinburgh", LGW:"loc-london-gatwick", LPL:"loc-liverpool", BFS:"loc-belfast", BOH:"loc-bournemouth", CWL:"loc-cardiff", EMA:"loc-east-midlands", DUB:"loc-dublin", EXT:"loc-exeter", LHR:"loc-london-heathrow", SEN:"loc-london-southend", LCY:"loc-london-city", PIK:"loc-prestwick", BHD:"loc-belfast-city", ORK:"loc-cork", SNN:"loc-shannon", SOU:"loc-southampton", ABZ:"loc-aberdeen", NWI:"loc-norwich", NQY:"loc-newquay", NOC:"loc-knock", MME:"loc-teesside", INV:"loc-inverness", HUY:"loc-humberside", JER:"loc-jersey", GCI:"loc-guernsey", IOM:"loc-isle-of-man", KIR:"loc-kerry", LDY:"loc-derry", DND:"loc-dundee" };
 const LABEL_TO_CODE = Object.fromEntries(Object.entries(CODE_TO_LABEL).map(([c, l]) => [l, c]));
 
 async function memberByUuid(env, uuid) {

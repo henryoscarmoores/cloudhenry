@@ -68,7 +68,7 @@ $RepoDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $TokenFile = Join-Path $RepoDir ".token"
 $LogFile   = Join-Path $RepoDir "build-fares.log"
 
-$ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL","EMA","DUB","EXT","LHR","SEN","LCY","PIK","BHD","ORK","SNN","SOU","ABZ","NWI","NQY","NOC","MME","INV")
+$ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL","EMA","DUB","EXT","LHR","SEN","LCY","PIK","BHD","ORK","SNN","SOU","ABZ","NWI","NQY","NOC","MME","INV","HUY","JER","GCI","IOM","KIR","LDY","DND")
 if ($OnlyOrigins) { $ORIGINS = @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ } | ForEach-Object { $_.Trim().ToUpper() }) }   # -File hands a comma list over as one string
 
 # Other UK airports. Kept in the data (someone may search for them) but
@@ -242,7 +242,7 @@ foreach ($origin in $ORIGINS) {
   $list = @($routes.Values | Sort-Object price)
   Log ("{0}: {1} destinations found" -f $origin, $list.Count)
 
-  $minRoutes = switch ($origin) { "BOH" { 15 } "CWL" { 5 } "EXT" { 5 } "SEN" { 5 } "LCY" { 20 } "PIK" { 15 } "BHD" { 15 } "ORK" { 15 } "SNN" { 10 } "SOU" { 10 } "ABZ" { 10 } "NWI" { 5 } "NQY" { 5 } "NOC" { 5 } "MME" { 5 } "INV" { 5 } default { 40 } }   # the twelve added 9 Sep 2026 are small; the bar is what the cache actually holds abroad   # Bournemouth is small (34 routes is its whole network) and Cardiff smaller still
+  $minRoutes = switch ($origin) { "BOH" { 15 } "CWL" { 5 } "EXT" { 5 } "SEN" { 5 } "LCY" { 20 } "PIK" { 15 } "BHD" { 15 } "ORK" { 15 } "SNN" { 10 } "SOU" { 10 } "ABZ" { 10 } "NWI" { 5 } "NQY" { 5 } "NOC" { 5 } "MME" { 5 } "INV" { 5 } "HUY" { 2 } "JER" { 2 } "GCI" { 2 } "IOM" { 2 } "KIR" { 2 } "LDY" { 2 } "DND" { 2 } default { 40 } }   # the twelve added 9 Sep 2026 are small; the bar is what the cache actually holds abroad   # Bournemouth is small (34 routes is its whole network) and Cardiff smaller still
   if ($list.Count -lt $minRoutes) {
     Log "$origin came back thin ($($list.Count) routes). Keeping the previous file." "WARN"
     continue

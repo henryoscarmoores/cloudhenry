@@ -110,7 +110,14 @@ $AIRPORTS = @(
   @{ code="NQY"; name="Newquay"; slug="newquay" },
   @{ code="NOC"; name="Knock"; slug="knock" },
   @{ code="MME"; name="Teesside"; slug="teesside" },
-  @{ code="INV"; name="Inverness"; slug="inverness" }
+  @{ code="INV"; name="Inverness"; slug="inverness" },
+  @{ code="HUY"; name="Humberside"; slug="humberside" },
+  @{ code="JER"; name="Jersey"; slug="jersey" },
+  @{ code="GCI"; name="Guernsey"; slug="guernsey" },
+  @{ code="IOM"; name="Isle of Man"; slug="isle-of-man" },
+  @{ code="KIR"; name="Kerry"; slug="kerry" },
+  @{ code="LDY"; name="City of Derry"; slug="derry" },
+  @{ code="DND"; name="Dundee"; slug="dundee" }
 )
 if ($OnlyOrigins) {
   $want = @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ } | ForEach-Object { $_.Trim().ToUpper() })   # -File hands a comma list over as one string
@@ -121,7 +128,7 @@ $UK = @{ ABZ=1; ACI=1; BEB=1; BFS=1; BHD=1; BHX=1; BOH=1; BRR=1; BRS=1; CAL=1; C
 $BOGUS = @{ BSZ=1; DSE=1 }
 # Henry, 7 Sep 2026: "we don't want UK users being spammed with England to
 # Ireland flights". Anywhere in the British Isles is a hop, not a getaway,
-# whichever of the 31 airports you start from, so the whole group is
+# whichever of the 38 airports you start from, so the whole group is
 # kept out of the email. Members can still search for it by name.
 $IE = @{ CFN=1; DUB=1; GWY=1; KIR=1; NOC=1; ORK=1; SNN=1; WAT=1 }
 $CD = @{ GCI=1; IOM=1; JER=1 }

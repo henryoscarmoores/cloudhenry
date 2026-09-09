@@ -45,13 +45,13 @@
     // The five that joined after this file was written, which is why
     // their join pages had no best-deal strip while the first twelve did.
     "bournemouth": "BOH", "cardiff": "CWL", "east-midlands": "EMA",
-    "dublin": "DUB", "exeter": "EXT", "london-heathrow": "LHR", "london-southend": "SEN", "london-city": "LCY", "prestwick": "PIK", "belfast-city": "BHD", "cork": "ORK", "shannon": "SNN", "southampton": "SOU", "aberdeen": "ABZ", "norwich": "NWI", "newquay": "NQY", "knock": "NOC", "teesside": "MME", "inverness": "INV"
+    "dublin": "DUB", "exeter": "EXT", "london-heathrow": "LHR", "london-southend": "SEN", "london-city": "LCY", "prestwick": "PIK", "belfast-city": "BHD", "cork": "ORK", "shannon": "SNN", "southampton": "SOU", "aberdeen": "ABZ", "norwich": "NWI", "newquay": "NQY", "knock": "NOC", "teesside": "MME", "inverness": "INV", "humberside": "HUY", "jersey": "JER", "guernsey": "GCI", "isle-of-man": "IOM", "kerry": "KIR", "derry": "LDY", "dundee": "DND"
   };
 
   var NAMES = {
     MAN:"Manchester",BHX:"Birmingham",LBA:"Leeds",STN:"London",LTN:"London",
     BRS:"Bristol",NCL:"Newcastle",GLA:"Glasgow",EDI:"Edinburgh",LGW:"London",
-    LPL:"Liverpool",BFS:"Belfast",BOH:"Bournemouth",CWL:"Cardiff",EMA:"East Midlands",EXT:"Exeter",LHR:"London Heathrow",SEN:"London Southend",LCY:"London City",PIK:"Glasgow Prestwick",BHD:"Belfast City",ORK:"Cork",SNN:"Shannon",SOU:"Southampton",ABZ:"Aberdeen",NWI:"Norwich",NQY:"Newquay",NOC:"Knock",MME:"Teesside",INV:"Inverness",
+    LPL:"Liverpool",BFS:"Belfast",BOH:"Bournemouth",CWL:"Cardiff",EMA:"East Midlands",EXT:"Exeter",LHR:"London Heathrow",SEN:"London Southend",LCY:"London City",PIK:"Glasgow Prestwick",BHD:"Belfast City",ORK:"Cork",SNN:"Shannon",SOU:"Southampton",ABZ:"Aberdeen",NWI:"Norwich",NQY:"Newquay",NOC:"Knock",MME:"Teesside",INV:"Inverness",HUY:"Humberside",JER:"Jersey",GCI:"Guernsey",IOM:"Isle of Man",KIR:"Kerry",LDY:"City of Derry",DND:"Dundee",
     BCN:"Barcelona",AYT:"Antalya",IST:"Istanbul",MOW:"Moscow",LED:"St Petersburg",
     PAR:"Paris",AGP:"Malaga",ALC:"Alicante",FAO:"Faro",KRK:"Krakow",AMS:"Amsterdam",
     PMI:"Palma",LIS:"Lisbon",ACE:"Lanzarote",MAD:"Madrid",BKK:"Bangkok",LON:"London",
