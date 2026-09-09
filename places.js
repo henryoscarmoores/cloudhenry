@@ -939,5 +939,14 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     TCO:["Tumaco","Colombia","🇨🇴"],
     TUR:["Tucurui","Brazil","🇧🇷"],
     VGD:["Vologda","Russia","🇷🇺"],
-    XCR:["Chalons-en-Champagne","France","🇫🇷"]
+    XCR:["Chalons-en-Champagne","France","🇫🇷"],
+    COR:["Cordoba","Argentina","🇦🇷"],
+    GGR:["Garoe","Somalia","🇸🇴"],
+    KHN:["Nanchang","China","🇨🇳"],
+    LXS:["Limnos","Greece","🇬🇷"],
+    MTY:["Monterrey","Mexico","🇲🇽"],
+    PBI:["West Palm Beach","USA","🇺🇸"],
+    RLG:["Rostock","Germany","🇩🇪"],
+    SAL:["San Salvador","El Salvador","🇸🇻"],
+    UDI:["Uberlandia","Brazil","🇧🇷"]
 };
