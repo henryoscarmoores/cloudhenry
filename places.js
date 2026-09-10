@@ -990,5 +990,14 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     MEC:["Manta","Ecuador","🇪🇨"],
     SLL:["Salalah","Oman","🇴🇲"],
     TLE:["Toliara","Madagascar","🇲🇬"],
-    UTH:["Udon Thani","Thailand","🇹🇭"]
+    UTH:["Udon Thani","Thailand","🇹🇭"],
+    FTE:["El Calafate","Argentina","🇦🇷"],
+    GDL:["Guadalajara","Mexico","🇲🇽"],
+    HVG:["Honningsvag","Norway","🇳🇴"],
+    IPC:["Easter Island","Chile","🇨🇱"],
+    JYV:["Jyvaskyla","Finland","🇫🇮"],
+    MLO:["Milos","Greece","🇬🇷"],
+    MOB:["Mobile","USA","🇺🇸"],
+    OSW:["Orsk","Russia","🇷🇺"],
+    TDX:["Trat","Thailand","🇹🇭"]
 };
