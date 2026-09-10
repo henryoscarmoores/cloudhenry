@@ -999,5 +999,13 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     MLO:["Milos","Greece","🇬🇷"],
     MOB:["Mobile","USA","🇺🇸"],
     OSW:["Orsk","Russia","🇷🇺"],
-    TDX:["Trat","Thailand","🇹🇭"]
+    TDX:["Trat","Thailand","🇹🇭"],
+    ADF:["Adiyaman","Turkiye","🇹🇷"],
+    BAR:["Qionghai","China","🇨🇳"],
+    DDG:["Dandong","China","🇨🇳"],
+    DYR:["Anadyr","Russia","🇷🇺"],
+    HEA:["Herat","Afghanistan","🇦🇫"],
+    HFT:["Hammerfest","Norway","🇳🇴"],
+    KWL:["Guilin","China","🇨🇳"],
+    UKA:["Ukunda","Kenya","🇰🇪"]
 };
