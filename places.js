@@ -979,5 +979,16 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     YQR:["Regina","Canada","🇨🇦"],
     YUM:["Yuma","USA","🇺🇸"],
     AOR:["Alor Setar","Malaysia","🇲🇾"],
-    CRV:["Crotone","Italy","🇮🇹"]
+    CRV:["Crotone","Italy","🇮🇹"],
+    AGR:["Agra","India","🇮🇳"],
+    CTG:["Cartagena","Colombia","🇨🇴"],
+    ECP:["Panama City","USA","🇺🇸"],
+    GIZ:["Jazan","Saudi Arabia","🇸🇦"],
+    HIA:["Huai'an","China","🇨🇳"],
+    KIS:["Kisumu","Kenya","🇰🇪"],
+    LPT:["Lampang","Thailand","🇹🇭"],
+    MEC:["Manta","Ecuador","🇪🇨"],
+    SLL:["Salalah","Oman","🇴🇲"],
+    TLE:["Toliara","Madagascar","🇲🇬"],
+    UTH:["Udon Thani","Thailand","🇹🇭"]
 };
