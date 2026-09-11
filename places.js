@@ -1020,5 +1020,11 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     KRY:["Karamay","China","🇨🇳"],
     LBS:["Labasa","Fiji","🇫🇯"],
     MGA:["Managua","Nicaragua","🇳🇮"],
-    TJQ:["Tanjung Pandan","Indonesia","🇮🇩"]
+    TJQ:["Tanjung Pandan","Indonesia","🇮🇩"],
+    FAT:["Fresno","USA","🇺🇸"],
+    FUO:["Foshan","China","🇨🇳"],
+    KQH:["Ajmer","India","🇮🇳"],
+    MDZ:["Mendoza","Argentina","🇦🇷"],
+    RJA:["Rajahmundry","India","🇮🇳"],
+    XUZ:["Xuzhou","China","🇨🇳"]
 };
