@@ -1007,5 +1007,10 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     HEA:["Herat","Afghanistan","🇦🇫"],
     HFT:["Hammerfest","Norway","🇳🇴"],
     KWL:["Guilin","China","🇨🇳"],
-    UKA:["Ukunda","Kenya","🇰🇪"]
+    UKA:["Ukunda","Kenya","🇰🇪"],
+    MKL:["Jackson","USA","🇺🇸"],
+    OMR:["Oradea","Romania","🇷🇴"],
+    PNL:["Pantelleria","Italy","🇮🇹"],
+    XIC:["Xichang","China","🇨🇳"],
+    ZHA:["Zhanjiang","China","🇨🇳"]
 };
