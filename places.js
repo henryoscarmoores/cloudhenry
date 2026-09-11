@@ -1012,5 +1012,13 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     OMR:["Oradea","Romania","🇷🇴"],
     PNL:["Pantelleria","Italy","🇮🇹"],
     XIC:["Xichang","China","🇨🇳"],
-    ZHA:["Zhanjiang","China","🇨🇳"]
+    ZHA:["Zhanjiang","China","🇨🇳"],
+    ELS:["East London","South Africa","🇿🇦"],
+    ERH:["Errachidia","Morocco","🇲🇦"],
+    FJR:["Fujairah","UAE","🇦🇪"],
+    HUE:["Humera","Ethiopia","🇪🇹"],
+    KRY:["Karamay","China","🇨🇳"],
+    LBS:["Labasa","Fiji","🇫🇯"],
+    MGA:["Managua","Nicaragua","🇳🇮"],
+    TJQ:["Tanjung Pandan","Indonesia","🇮🇩"]
 };
