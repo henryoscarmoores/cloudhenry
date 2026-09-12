@@ -253,7 +253,9 @@ foreach ($a in $AIRPORTS) {
       $isRet = [bool]$o.r
       $typ = if (-not $isRet -and $r.typical) { [int]$r.typical } else { 0 }
       $ddmm = { param($iso) $d = [datetime]::ParseExact($iso, "yyyy-MM-dd", $null); $d.ToString("ddMM") }
-      $url = "https://www.aviasales.com/search/" + $a.code + (& $ddmm $o.d) + $r.destination + $(if ($isRet) { & $ddmm $o.r } else { "" }) + "1"
+      # currency=gbp or Aviasales serves the landing page in dollars, which
+      # reads higher than the pound fare the email just advertised.
+      $url = "https://www.aviasales.com/search/" + $a.code + (& $ddmm $o.d) + $r.destination + $(if ($isRet) { & $ddmm $o.r } else { "" }) + "1?currency=gbp"
       $book = "https://tp.media/r?marker=764584&trs=562291&p=4114&u=" + [uri]::EscapeDataString($url)
       # Fares from the Ryanair feed link straight to Ryanair, same as the search does.
       $air = if ($o.PSObject.Properties['a']) { [string]$o.a } else { "" }

@@ -498,7 +498,11 @@
   // the Travelpayouts dashboard only counts clicks that pass through
   // tp.media, so Henry's own test clicks never showed up. trs is the
   // "Henrys-flight-club" traffic source, p is the Aviasales programme.
+  // Aviasales shows dollars to anyone it cannot place, so a member clicking
+  // a 13 pound fare landed on a page headed $22: a bigger number, a foreign
+  // currency, and it reads like a bait and switch. Pin GBP before encoding.
   function tracked(url) {
+    url += (url.indexOf("?") === -1 ? "?" : "&") + "currency=gbp";
     return "https://tp.media/r?marker=" + MARKER + "&trs=562291&p=4114&u=" + encodeURIComponent(url);
   }
   // Aviasales deep link. Format: ORIGIN + DDMM + DEST + [DDMM return] + pax
