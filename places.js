@@ -1034,5 +1034,12 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     ABJ:["Abidjan","Ivory Coast","🇨🇮"],
     GSP:["Greenville","USA","🇺🇸"],
     IXZ:["Port Blair","India","🇮🇳"],
-    NLA:["Ndola","Zambia","🇿🇲"]
+    NLA:["Ndola","Zambia","🇿🇲"],
+    AAP:["Samarinda","Indonesia","🇮🇩"],
+    AQI:["Qaisumah","Saudi Arabia","🇸🇦"],
+    FDE:["Forde","Norway","🇳🇴"],
+    GRR:["Grand Rapids","USA","🇺🇸"],
+    JUL:["Juliaca","Peru","🇵🇪"],
+    LFW:["Lome","Togo","🇹🇬"],
+    MJT:["Mytilene","Greece","🇬🇷"]
 };
