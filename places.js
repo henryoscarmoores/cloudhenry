@@ -1030,5 +1030,9 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     GDX:["Magadan","Russia","🇷🇺"],
     KKC:["Khon Kaen","Thailand","🇹🇭"],
     KLR:["Kalmar","Sweden","🇸🇪"],
-    MXX:["Mora","Sweden","🇸🇪"]
+    MXX:["Mora","Sweden","🇸🇪"],
+    ABJ:["Abidjan","Ivory Coast","🇨🇮"],
+    GSP:["Greenville","USA","🇺🇸"],
+    IXZ:["Port Blair","India","🇮🇳"],
+    NLA:["Ndola","Zambia","🇿🇲"]
 };
