@@ -1026,5 +1026,9 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     KQH:["Ajmer","India","🇮🇳"],
     MDZ:["Mendoza","Argentina","🇦🇷"],
     RJA:["Rajahmundry","India","🇮🇳"],
-    XUZ:["Xuzhou","China","🇨🇳"]
+    XUZ:["Xuzhou","China","🇨🇳"],
+    GDX:["Magadan","Russia","🇷🇺"],
+    KKC:["Khon Kaen","Thailand","🇹🇭"],
+    KLR:["Kalmar","Sweden","🇸🇪"],
+    MXX:["Mora","Sweden","🇸🇪"]
 };
