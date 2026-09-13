@@ -96,16 +96,10 @@ $AIRPORTS = @(
   @{ code="CWL"; name="Cardiff";          slug="cardiff" },
   @{ code="EMA"; name="East Midlands";   slug="east-midlands" },
   @{ code="DUB"; name="Dublin";          slug="dublin" },
-  @{ code="EXT"; name="Exeter";          slug="exeter" },
   @{ code="PIK"; name="Glasgow Prestwick"; slug="prestwick" },
   @{ code="ORK"; name="Cork"; slug="cork" },
   @{ code="SNN"; name="Shannon"; slug="shannon" },
-  @{ code="ABZ"; name="Aberdeen"; slug="aberdeen" },
-  @{ code="NWI"; name="Norwich"; slug="norwich" },
-  @{ code="NQY"; name="Newquay"; slug="newquay" },
-  @{ code="NOC"; name="Knock"; slug="knock" },
-  @{ code="MME"; name="Teesside"; slug="teesside" },
-  @{ code="KIR"; name="Kerry"; slug="kerry" }
+  @{ code="NOC"; name="Knock"; slug="knock" }
 )
 if ($OnlyOrigins) {
   $want = @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ } | ForEach-Object { $_.Trim().ToUpper() })   # -File hands a comma list over as one string
@@ -262,7 +256,10 @@ foreach ($a in $AIRPORTS) {
     }
   }
   $fares = @(Limit-Isles (@($best.Values | Sort-Object price)) 2)
-  if ($fares.Count -lt 6) { Write-Host "$($a.code): only $($fares.Count) fares in the window, skipped"; $skipped++; continue }
+  # Cardiff has paying members and only five places on sale (Henry, 13 Sep
+  # 2026: "just do 5 for Cardiff"), so it gets its email with five.
+  $minFares = if ($a.code -eq 'CWL') { 5 } else { 6 }
+  if ($fares.Count -lt $minFares) { Write-Host "$($a.code): only $($fares.Count) fares in the window, skipped"; $skipped++; continue }
 
   $n = $fares.Count
   $cheapest = $fares[0].price

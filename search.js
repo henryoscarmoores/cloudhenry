@@ -69,7 +69,7 @@
     ["MAN","Manchester"], ["BHX","Birmingham"], ["LBA","Leeds Bradford"],
     ["STN","London Stansted"], ["LTN","London Luton"], ["BRS","Bristol"],
     ["NCL","Newcastle"], ["GLA","Glasgow"], ["EDI","Edinburgh"],
-    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"], ["EMA","East Midlands"], ["DUB","Dublin"], ["EXT","Exeter"], ["PIK","Glasgow Prestwick"], ["ORK","Cork"], ["SNN","Shannon"], ["ABZ","Aberdeen"], ["NWI","Norwich"], ["NQY","Newquay"], ["NOC","Knock"], ["MME","Teesside"], ["KIR","Kerry"]
+    ["LGW","London Gatwick"], ["LPL","Liverpool"], ["BFS","Belfast"], ["BOH","Bournemouth"], ["CWL","Cardiff"], ["EMA","East Midlands"], ["DUB","Dublin"], ["PIK","Glasgow Prestwick"], ["ORK","Cork"], ["SNN","Shannon"], ["NOC","Knock"]
   ];
   function originName(code) {
     var n = code;
@@ -348,7 +348,7 @@
     if (!document.querySelector(".chfs-eyebrow")) {
       var eb = document.createElement("span");
       eb.className = "chfs-eyebrow";
-      eb.textContent = "26 airports in the UK and Ireland · fares straight from the airlines · checked three times a day";
+      eb.textContent = "20 airports in the UK and Ireland · fares straight from the airlines · checked three times a day";
       h.parentNode.insertBefore(eb, h);
     }
     var t = document.querySelector(".chfs-tally");
@@ -366,7 +366,7 @@
     }
     t.innerHTML = (TOTALS && TOTALS.fares)
       ? "<b>" + withCommas(TOTALS.fares) + " fares</b> on <b>" + withCommas(TOTALS.routes) + " routes</b>, priced " + part + when + ". Pick an airport and go."
-      : "Every fare we can find from 26 airports, priced " + part + when + ". Pick an airport and go.";
+      : "Every fare we can find from 20 airports, priced " + part + when + ". Pick an airport and go.";
   }
 
   renderTitle();

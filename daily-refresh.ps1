@@ -53,6 +53,12 @@ try {
   & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "build-fares.ps1") -MonthsAhead 7
   if ($LASTEXITCODE -ne 0) { throw "build-fares.ps1 exited $LASTEXITCODE" }
 
+  # Henry, 13 Sep 2026: "we need guaranteed flights only". Same step as the
+  # GitHub build: nothing but the airlines' own fares gets published.
+  Log "step 1a: keeping only airline-confirmed fares"
+  & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "confirmed-only.ps1")
+  if ($LASTEXITCODE -ne 0) { throw "confirmed-only.ps1 exited $LASTEXITCODE" }
+
   # Name any destination the feed found that places.js does not know.
   Log "step 1b: naming new destinations"
   try { & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoDir "name-places.ps1") } catch { Log "name-places failed: $_" "WARN" }

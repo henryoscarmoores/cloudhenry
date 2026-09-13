@@ -88,7 +88,7 @@ $limit = (Get-Date).AddDays($Horizon).ToString("yyyy-MM-dd")
 
 # ---- pick the fares --------------------------------------------------
 # One per airport, the biggest saving on a place people know, so the list
-# reads as 26 airports rather than one.
+# reads as 20 airports rather than one.
 $pool = @()
 foreach ($code in $AIRPORT_NAME.Keys) {
   $file = Join-Path $RepoDir ("fares-" + $code + ".json")
@@ -145,7 +145,7 @@ for ($i = 0; $i -lt $picks.Count; $i++) { $rowsHtml += FareRow $picks[$i] $i }
 $head = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#0E6FB6`" style=`"width:100%;background:#0E6FB6;border-radius:18px;`"><tr><td style=`"padding:26px 22px 22px;text-align:center;$FONT`">" +
   "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:#BEE3F8;`">Welcome aboard</div>" +
   "<div style=`"font-size:27px;font-weight:900;color:#FFFFFF;line-height:1.15;margin:8px 0 6px;letter-spacing:-.5px;`">You are in.</div>" +
-  "<div style=`"font-size:14.5px;color:#D7EDFA;line-height:1.5;max-width:34em;margin:0 auto;`">Thanks for joining. Here is what we found this morning across all 26 airports, so you can see what lands in your inbox every Monday.</div>" +
+  "<div style=`"font-size:14.5px;color:#D7EDFA;line-height:1.5;max-width:34em;margin:0 auto;`">Thanks for joining. Here is what we found this morning across all 20 airports, so you can see what lands in your inbox every Monday.</div>" +
   "</td></tr></table>"
 
 $statRow = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"8`" border=`"0`" style=`"width:100%;border-collapse:separate;margin-top:12px;`"><tr>" +
@@ -186,7 +186,7 @@ $post = @{ posts = @(@{
   lexical = $lexical
   status = "draft"
   visibility = "members"
-  custom_excerpt = "The best fares from all 26 airports today, and what lands in your inbox on Monday."
+  custom_excerpt = "The best fares from all 20 airports today, and what lands in your inbox on Monday."
   tags = @(@{ name = "#welcome-auto" })
 }) }
 $made = (Call POST "/posts/?source=html" $post).posts[0]

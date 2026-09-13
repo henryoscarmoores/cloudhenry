@@ -290,7 +290,7 @@
     var cta = card.querySelector(".ch-cta");
     var fine = card.querySelector(".ch-vf");
     var fromCity = homeOrigin ? ORIGIN_NAME[homeOrigin] : "";
-    if (t) t.textContent = fromCity ? "Every fare from " + fromCity + ", every date" : "Every fare, every date, all 26 airports";
+    if (t) t.textContent = fromCity ? "Every fare from " + fromCity + ", every date" : "Every fare, every date, all 20 airports";
     if (subs[0]) subs[0].textContent = "Tell us where, when and how much, and see everything we have found today. Members see every fare we find and go straight through to book it.";
     if (cta) {
       cta.textContent = "Search flights →";
