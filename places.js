@@ -1055,5 +1055,11 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     MHK:["Manhattan","USA","🇺🇸"],
     PNI:["Pohnpei","Micronesia","🇫🇲"],
     SFG:["Saint Martin","Saint Martin","🇲🇫"],
-    VUS:["Velikij Ustyug","Russia","🇷🇺"]
+    VUS:["Velikij Ustyug","Russia","🇷🇺"],
+    DOU:["Dourados","Brazil","🇧🇷"],
+    FDH:["Friedrichshafen","Germany","🇩🇪"],
+    HUU:["Huanuco","Peru","🇵🇪"],
+    OSY:["Namsos","Norway","🇳🇴"],
+    RAJ:["Rajkot","India","🇮🇳"],
+    SAT:["San Antonio","USA","🇺🇸"]
 };
