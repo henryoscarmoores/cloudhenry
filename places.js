@@ -1041,5 +1041,12 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     GRR:["Grand Rapids","USA","🇺🇸"],
     JUL:["Juliaca","Peru","🇵🇪"],
     LFW:["Lome","Togo","🇹🇬"],
-    MJT:["Mytilene","Greece","🇬🇷"]
+    MJT:["Mytilene","Greece","🇬🇷"],
+    BIM:["Bimini","Bahamas","🇧🇸"],
+    GPA:["Patras","Greece","🇬🇷"],
+    HHQ:["Hua Hin","Thailand","🇹🇭"],
+    HMB:["Sohag","Egypt","🇪🇬"],
+    MKE:["Milwaukee","USA","🇺🇸"],
+    NDR:["Nador","Morocco","🇲🇦"],
+    NJF:["Al-Najaf","Iraq","🇮🇶"]
 };
