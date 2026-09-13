@@ -2,7 +2,7 @@
  *
  * Their airport, the five cheapest fares out of it today from the live
  * feed, how many destinations members can see, and one button for the
- * 40 day trial. Used by the homepage box (home-join.js) and the airport
+ * paid membership. Used by the homepage box (home-join.js) and the airport
  * pages (join.js), so it lives in one place.
  *
  *   window.CH_WELCOME.render(container, { code:"MAN", email, signedIn, slug })
@@ -133,10 +133,10 @@
           html += '<p class="chw-sub">Your first ' + esc(city) + ' email lands on Monday. Members get every fare we find and go straight through to book any of them.</p>';
         }
         if (opts.signedIn) {
-          html += '<a class="chw-btn" href="#/portal/account/plans">Try 40 days free &rarr;</a>' +
+          html += '<a class="chw-btn" href="#/portal/account/plans">Join for £2.99 &rarr;</a>' +
                   '<p class="chw-tiny">Then £2.99 a month. Cancel any time, no contract.</p>';
         } else {
-          html += '<p class="chw-tiny"><b>Want all of them?</b> We have emailed a sign-in link to ' + esc(opts.email || "you") + '. Tap it and you are one press from 40 days free, then £2.99 a month. Cancel any time, no contract.</p>';
+          html += '<p class="chw-tiny"><b>Want all of them?</b> We have emailed a sign-in link to ' + esc(opts.email || "you") + '. Tap it and you are one press from joining for £2.99 a month. Cancel any time, no contract.</p>';
         }
         html += '<p class="chw-tiny">Not now? Your first ' + esc(city) + ' email lands on Monday.</p>';
         el.innerHTML = html;

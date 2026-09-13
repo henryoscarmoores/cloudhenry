@@ -53,7 +53,7 @@
       a.removeAttribute("target");
       a.removeAttribute("rel");
       a.classList.add("chfs-locked");
-      a.textContent = a.id === "chfsMain" ? "Try 40 days free to book" : "Try 40 days free";
+      a.textContent = a.id === "chfsMain" ? "Join for £2.99 to book" : "Join for £2.99";
     });
   }
 
@@ -1619,7 +1619,7 @@
         PAID = paid;
         // The first draw above ran before the member check answered, so
         // a paying member was looking at the locked version (no Book
-        // buttons, "Try 40 days free" on the live bar) until they touched
+        // buttons, "Join for £2.99" on the live bar) until they touched
         // a filter. Found on 6 Sep 2026 testing as a comped member.
         if (paid) { render(); return; }
         if (!paid) {
@@ -1629,8 +1629,8 @@
             t.id = "chfsTease";
             t.className = "chfs-tease";
             t.innerHTML = "<strong>These fares are real, and they go fast.</strong>" +
-              "<span>Look at any route you like. Members get the price and go straight through to book. 40 days free, then &pound;2.99 a month.</span>" +
-              "<a class=\"chfs-tease-cta\" href=\"#/portal/signup\">Try 40 days free</a>";
+              "<span>Look at any route you like. Members get the price and go straight through to book. &pound;2.99 a month or &pound;29 a year.</span>" +
+              "<a class=\"chfs-tease-cta\" href=\"#/portal/signup\">Join for &pound;2.99</a>";
             note.parentNode.insertBefore(t, note);
           }
         }

@@ -168,7 +168,7 @@ $cta = "<div style=`"text-align:center;margin-top:20px;$FONT`">" +
   "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`">" +
   "<a href=`"$Site/search/`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:15px 30px;text-decoration:none;$FONT`">Search every fare &rarr;</a>" +
   "</td></tr></table>" +
-  "<div style=`"font-size:12px;color:#7A90A5;margin-top:10px;`">40 days free, then $([char]0xA3)2.99 a month. Cancel any time, no contract.</div></div>"
+  "<div style=`"font-size:12px;color:#7A90A5;margin-top:10px;`">$([char]0xA3)2.99 a month or $([char]0xA3)29 a year. Cancel any time, no contract.</div></div>"
 
 $signoff = "<div style=`"margin-top:20px;font-size:13.5px;color:#46607A;$FONT`">Have a good day,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
 

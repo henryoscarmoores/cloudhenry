@@ -338,14 +338,14 @@ foreach ($a in $AIRPORTS) {
   # 3: the locked list and the button, list members only, email only.
   $lockedHtml = ""
   for ($i = 0; $i -lt $locked.Count; $i++) { $lockedHtml += FareRow $locked[$i] ($i + 3) $true }
-  $nudge = "<div style=`"text-align:center;margin:4px 0 12px;$FONT`"><span style=`"font-size:13.5px;color:#46607A;`">That is 3 of <b style=`"color:#0E3550;`">$n fares</b> from $(Esc $a.name) this week. </span><a href=`"$goLink`" style=`"font-size:13.5px;font-weight:800;color:#0E6FB6;text-decoration:none;border-bottom:2px solid #F5C242;`">See them all, 40 days free &rarr;</a></div>"
+  $nudge = "<div style=`"text-align:center;margin:4px 0 12px;$FONT`"><span style=`"font-size:13.5px;color:#46607A;`">That is 3 of <b style=`"color:#0E3550;`">$n fares</b> from $(Esc $a.name) this week. </span><a href=`"$goLink`" style=`"font-size:13.5px;font-weight:800;color:#0E6FB6;text-decoration:none;border-bottom:2px solid #F5C242;`">See them all &rarr;</a></div>"
   $tease = $nudge + "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;border-collapse:separate;background:#F0F6FB;border-radius:14px;margin-top:6px;`"><tr><td style=`"padding:8px 8px 0 8px;`">$lockedHtml</td></tr>" +
     "<tr><td style=`"padding:4px 16px 18px 16px;text-align:center;$FONT`">" +
     "<div style=`"width:38px;height:38px;line-height:38px;border-radius:50%;background:#F5C242;margin:0 auto 6px auto;font-size:18px;text-align:center;`">&#128274;</div>" +
     "<div style=`"font-size:17px;font-weight:800;color:#0E3550;letter-spacing:-.3px;`">$rest more fares from $(Esc $a.name)</div>" +
     "<div style=`"font-size:13px;color:#46607A;margin:2px 0 4px;`">$(if ($returnsUnder50) { "Including $returnsUnder50 returns under $([char]0xA3)50." } else { "One way and return, with the exact dates." })</div>" +
     "<div style=`"font-size:12.5px;color:#46607A;margin:0 0 12px;`">Plus the search: every fare from $(Esc $a.name), every date, five months ahead. Weekends, day trips, Christmas markets.</div>" +
-    "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$goLink`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:16px 32px;text-decoration:none;$FONT`">See all $n, 40 days free &rarr;</a></td></tr></table>" +
+    "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$goLink`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:16px 32px;text-decoration:none;$FONT`">See all $n &rarr;</a></td></tr></table>" +
     "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">Then $([char]0xA3)2.99 a month. Cancel any time, no contract. One tap, no password.</div>" +
     "</td></tr></table>"
 

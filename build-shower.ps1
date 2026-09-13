@@ -299,7 +299,7 @@ foreach ($a in $LIST) {
     "&#10003; Book straight through to the airline. We never touch your money<br>" +
     "&#10003; And you back me: 24, building this on my own, no big company behind it</div>" +
     "<div style=`"font-size:12.5px;color:#46607A;margin:8px 0 12px;`">That's less than a coffee. $(Esc $PLACES[$bestPick.dest].name) alone is $GBP$($bestPick.typical - $bestPick.price) under the usual price, so one good fare pays for the whole year.</div>" +
-    "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td><a href=`"$goLink`" style=`"text-decoration:none;`"><img src=`"$($CDNA)email-try.png`" width=`"224`" height=`"49`" alt=`"Try 40 days free`" style=`"display:block;border:0;width:224px;height:49px;`"></a></td></tr></table>" +
+    "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td><a href=`"$goLink`" style=`"text-decoration:none;`"><img src=`"$($CDNA)email-try.png`" width=`"224`" height=`"49`" alt=`"Join CloudHenry`" style=`"display:block;border:0;width:224px;height:49px;`"></a></td></tr></table>" +
     "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">Then $($GBP)2.99 a month or $($GBP)29 a year. Cancel any time, no contract. One tap, no password.</div>" +
     "</td></tr></table>"
   $cta = ""

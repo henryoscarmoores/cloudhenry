@@ -5,7 +5,7 @@
  * field sits under the picker and the button does the whole job: Ghost
  * creates the member with the airport label and emails a link that
  * lands them, signed in, on their airport page, where the one button is
- * "Try 40 days free".
+ * "Join for £2.99".
  *
  * Signed-in members do not see the box. A paying member gets the launchpad:
  * today's three cheapest fares out of their airport, the count of the rest,
@@ -115,7 +115,7 @@
     btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); go(); });
 
     var note = w.parentNode.querySelector(".ch-ap-note");
-    if (note) note.textContent = "40 days free, then £2.99 a month. Cancel any time, no contract.";
+    if (note) note.textContent = "£2.99 a month or £29 a year. Cancel any time, no contract.";
 
     // People who arrive wanting one specific trip should see the way to
     // the search at once, not scroll looking for it.
@@ -235,7 +235,7 @@
     box.className = "chmh";
     box.innerHTML = (city ? '<div class="chmh-strip"></div>' : '') +
       '<div class="chmh-btns">' +
-        (paid ? '<a class="chmh-btn y" href="/my-cloudhenry/">Open my deals &rarr;</a>' : '<a class="chmh-btn y" href="#/portal/account/plans">Try 40 days free &rarr;</a>') +
+        (paid ? '<a class="chmh-btn y" href="/my-cloudhenry/">Open my deals &rarr;</a>' : '<a class="chmh-btn y" href="#/portal/account/plans">Join for £2.99 &rarr;</a>') +
         '<a class="chmh-btn g" href="' + search + '">Search every flight</a></div>' +
       '<p class="chmh-foot">' +
         (paid ? (city ? 'Wrong airport? <a href="/my-cloudhenry/">Change it in your account</a>' : '<a href="/my-cloudhenry/">Set your airport &rarr;</a>')
