@@ -53,6 +53,13 @@ jobs:
         shell: powershell
         run: .\build-fares.ps1 -MonthsAhead 7 -FeedMonths 9
 
+      # Henry, 13 Sep 2026: "we need guaranteed flights only". Drop every
+      # fare that did not come from an airline's own feed before anything
+      # else reads the files.
+      - name: Keep only airline-confirmed fares
+        shell: powershell
+        run: .\confirmed-only.ps1
+
       # A destination the site cannot name is hidden, so name the new ones
       # from Travelpayouts' own city list before publishing.
       - name: Name new destinations
