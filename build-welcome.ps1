@@ -161,7 +161,7 @@ $fares = "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;tex
 $what = "<div style=`"margin-top:22px;padding:16px 18px;border-radius:14px;background:#F0F6FB;$FONT`">" +
   "<div style=`"font-size:15px;font-weight:800;color:#0E3550;margin-bottom:8px;`">What happens now</div>" +
   "<div style=`"font-size:14px;color:#46607A;line-height:1.6;`">" +
-  "Every Monday morning you get the cheapest fares we can find from your airport, checked by hand.<br>" +
+  "Every Monday morning you get the cheapest fares we can find from your airport, straight from the airlines.<br>" +
   "Members also get the full search: every fare, every date, seven months ahead, and go straight through to book.</div></div>"
 
 $cta = "<div style=`"text-align:center;margin-top:20px;$FONT`">" +
