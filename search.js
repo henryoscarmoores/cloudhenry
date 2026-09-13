@@ -348,7 +348,7 @@
     if (!document.querySelector(".chfs-eyebrow")) {
       var eb = document.createElement("span");
       eb.className = "chfs-eyebrow";
-      eb.textContent = "26 airports in the UK and Ireland · Ryanair, Wizz Air, Norwegian and more · checked three times a day";
+      eb.textContent = "26 airports in the UK and Ireland · fares straight from the airlines · checked three times a day";
       h.parentNode.insertBefore(eb, h);
     }
     var t = document.querySelector(".chfs-tally");
