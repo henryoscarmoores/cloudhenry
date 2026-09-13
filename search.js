@@ -816,24 +816,9 @@
   function renderLiveBar() {
     var old = document.getElementById("chfsLive");
     if (old) old.remove();
-    var url = liveSearchUrl();
-    if (!url) return;
-    var head = document.querySelector(".chfs-head");
-    if (!head) return;
-    var bar = document.createElement("div");
-    bar.id = "chfsLive";
-    bar.className = "chfs-live";
-    var wkMode = (state.trip === "weekend" && !state.from2);
-    var wk = wkMode ? nextWeekend() : null;
-    bar.innerHTML =
-      "<span>" + (wkMode
-        ? (build().length ? "Want this coming weekend checked live as well, " : "We hold a handful of weekend fares. Check this coming weekend live, ") +
-          fmt(wk[0]) + " to " + fmt(wk[1]) + "."
-        : "Want these exact dates checked live, including any we have not cached?") + "</span>" +
-      '<a href="' + url + '" target="_blank" rel="noopener sponsored">' +
-        (wkMode ? "Search this weekend live" : "Search these dates on Aviasales") + '</a>';
-    head.parentNode.insertBefore(bar, head);
-    applyGate(bar);   // the bar sits outside the grid
+    // No "search live" bar any more. Henry, 13 Sep 2026: every link has to
+    // go to a real flight, and Aviasales cannot start a search without a
+    // destination, so the weekend button landed on its error page.
   }
 
   // The airport code Aviasales gets when the reader has not picked one.
@@ -883,32 +868,23 @@
     grid.innerHTML = "";
     if (!rows.length) {
       if (state.from2) {
-        var dest = state.q.trim() ? state.q.trim().toUpperCase().slice(0, 3) : "";
-        var url = tracked("https://www.aviasales.com/search/" + liveOrigin() + ddmm(state.from2) +
-                  dest + (state.to2 ? ddmm(state.to2) : "") + "1");
+        // No Aviasales button here any more: it guessed a destination code
+        // from the first three letters typed, so it often searched nowhere.
         grid.innerHTML =
           '<div class="chfs-nodata">' +
-            '<strong>No cached fare for those dates yet</strong>' +
-            '<p>We refresh fares daily and these dates are not in this run. ' +
-            'You can still search them live.</p>' +
-            '<a href="' + url + '" target="_blank" rel="noopener sponsored">Search these dates on Aviasales</a>' +
+            '<strong>No flights on sale for those dates</strong>' +
+            '<p>The airlines have nothing from here on those dates right now. Try a few days either side.</p>' +
             tryAnyButton() +
           '</div>';
       } else if (state.trip === "weekend" || state.trip === "xmas" || state.trip === "daytrip") {
-        // Weekend and Christmas inventory is heavily London weighted.
-        // Telling a Leeds visitor to clear the destination is simply
-        // wrong; offering all twelve airports usually solves it.
-        var wk = nextWeekend();
-        var wkUrl = tracked("https://www.aviasales.com/search/" + liveOrigin() + ddmm(wk[0]) + ddmm(wk[1]) + "1");
+        // Weekend and Christmas trips are thinner outside London, so the
+        // way out is every airport, not a live search somewhere else.
         var what = state.trip === "xmas" ? "Christmas market trips" : state.trip === "daytrip" ? "day trips" : "weekend breaks";
         grid.innerHTML =
           '<div class="chfs-nodata">' +
-            '<strong>No ' + what + ' cached from ' + fromCity + ' yet</strong>' +
-            '<p>These fares are strongest from the London airports right now. ' +
-            (anyMode ? 'Try widening your dates or your budget.' : 'Widen the search to every UK airport, or check this coming weekend live.') + '</p>' +
+            '<strong>No ' + what + ' from ' + fromCity + ' right now</strong>' +
+            '<p>' + (anyMode ? 'Try widening your dates or your budget.' : 'Try every airport, or widen your dates or budget.') + '</p>' +
             tryAnyButton() +
-            '<a href="' + wkUrl + '" target="_blank" rel="noopener sponsored">Search ' +
-            fmt(wk[0]) + ' to ' + fmt(wk[1]) + ' live</a>' +
           '</div>';
       } else {
         grid.innerHTML = '<div class="chfs-empty"><strong>No flights match</strong>' +
