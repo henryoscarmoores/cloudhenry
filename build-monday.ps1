@@ -1,4 +1,4 @@
-﻿<#
+<#
   Builds the Monday email drafts, one per airport, from that morning's
   fares, in the approved design (mockups/monday-teaser-v2.html).
 
@@ -97,27 +97,15 @@ $AIRPORTS = @(
   @{ code="EMA"; name="East Midlands";   slug="east-midlands" },
   @{ code="DUB"; name="Dublin";          slug="dublin" },
   @{ code="EXT"; name="Exeter";          slug="exeter" },
-  @{ code="LHR"; name="London Heathrow"; slug="london-heathrow" },
-  @{ code="SEN"; name="London Southend"; slug="london-southend" },
-  @{ code="LCY"; name="London City"; slug="london-city" },
   @{ code="PIK"; name="Glasgow Prestwick"; slug="prestwick" },
-  @{ code="BHD"; name="Belfast City"; slug="belfast-city" },
   @{ code="ORK"; name="Cork"; slug="cork" },
   @{ code="SNN"; name="Shannon"; slug="shannon" },
-  @{ code="SOU"; name="Southampton"; slug="southampton" },
   @{ code="ABZ"; name="Aberdeen"; slug="aberdeen" },
   @{ code="NWI"; name="Norwich"; slug="norwich" },
   @{ code="NQY"; name="Newquay"; slug="newquay" },
   @{ code="NOC"; name="Knock"; slug="knock" },
   @{ code="MME"; name="Teesside"; slug="teesside" },
-  @{ code="INV"; name="Inverness"; slug="inverness" },
-  @{ code="HUY"; name="Humberside"; slug="humberside" },
-  @{ code="JER"; name="Jersey"; slug="jersey" },
-  @{ code="GCI"; name="Guernsey"; slug="guernsey" },
-  @{ code="IOM"; name="Isle of Man"; slug="isle-of-man" },
-  @{ code="KIR"; name="Kerry"; slug="kerry" },
-  @{ code="LDY"; name="City of Derry"; slug="derry" },
-  @{ code="DND"; name="Dundee"; slug="dundee" }
+  @{ code="KIR"; name="Kerry"; slug="kerry" }
 )
 if ($OnlyOrigins) {
   $want = @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ } | ForEach-Object { $_.Trim().ToUpper() })   # -File hands a comma list over as one string

@@ -68,7 +68,7 @@ $RepoDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $TokenFile = Join-Path $RepoDir ".token"
 $LogFile   = Join-Path $RepoDir "build-fares.log"
 
-$ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL","EMA","DUB","EXT","LHR","SEN","LCY","PIK","BHD","ORK","SNN","SOU","ABZ","NWI","NQY","NOC","MME","INV","HUY","JER","GCI","IOM","KIR","LDY","DND")
+$ORIGINS = @("MAN","BHX","LBA","STN","LTN","BRS","NCL","GLA","EDI","LGW","LPL","BFS","BOH","CWL","EMA","DUB","EXT","PIK","ORK","SNN","ABZ","NWI","NQY","NOC","MME","KIR")
 if ($OnlyOrigins) { $ORIGINS = @($OnlyOrigins | ForEach-Object { $_ -split "," } | Where-Object { $_ } | ForEach-Object { $_.Trim().ToUpper() }) }   # -File hands a comma list over as one string
 
 # Other UK airports. Kept in the data (someone may search for them) but
