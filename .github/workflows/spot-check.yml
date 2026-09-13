@@ -1,0 +1,41 @@
+# Asks Ryanair and Wizz Air again about a random sample of the fares the
+# site is showing, every morning, and commits spot-check.json.
+#
+# Henry, 13 Sep 2026: find a wrong fare before a customer does. The morning
+# health check routine (07:30 UK) reads spot-check.json and reports any fare
+# that is no longer on sale. Runs at 05:15 UTC so the result is in before
+# that; it checks whatever is live at the time, which is the last build.
+
+name: Daily fare spot-check
+
+on:
+  schedule:
+    - cron: "15 5 * * *"
+  workflow_dispatch:        # run by hand from the Actions tab
+
+permissions:
+  contents: write           # needed to push spot-check.json
+
+jobs:
+  check:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Ask the airlines again
+        shell: powershell
+        run: .\spot-check.ps1 -Sample 30
+
+      - name: Commit the result
+        shell: pwsh
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add spot-check.json
+          if (-not (git status --porcelain spot-check.json)) { Write-Host "no change"; exit 0 }
+          git commit -m "Spot-check fares $(Get-Date -Format 'yyyy-MM-dd')" -m "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          # The fare build may have pushed meanwhile; it never touches this file.
+          git pull --rebase origin main
+          git push

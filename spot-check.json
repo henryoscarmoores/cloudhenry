@@ -1,0 +1,103 @@
+{
+    "checked_at":  "2026-09-13T22:34:53Z",
+    "data_generated":  "2026-09-13T18:00:46Z",
+    "sample":  9,
+    "match":  5,
+    "up":  4,
+    "down":  0,
+    "gone":  0,
+    "unchecked":  0,
+    "not_sampled":  "Norwegian (blocked from GitHub\u0027s runners)",
+    "results":  [
+                    {
+                        "origin":  "LTN",
+                        "dest":  "PRN",
+                        "d":  "2026-10-12",
+                        "r":  "",
+                        "airline":  "W6",
+                        "shown":  34,
+                        "live":  37,
+                        "status":  "up"
+                    },
+                    {
+                        "origin":  "LGW",
+                        "dest":  "RMO",
+                        "d":  "2026-12-05",
+                        "r":  "",
+                        "airline":  "W6",
+                        "shown":  34,
+                        "live":  37,
+                        "status":  "up"
+                    },
+                    {
+                        "origin":  "LTN",
+                        "dest":  "TGM",
+                        "d":  "2026-10-26",
+                        "r":  "",
+                        "airline":  "W6",
+                        "shown":  31,
+                        "live":  33,
+                        "status":  "match"
+                    },
+                    {
+                        "origin":  "STN",
+                        "dest":  "CPH",
+                        "d":  "2026-10-11",
+                        "r":  "2026-10-11",
+                        "airline":  "FR",
+                        "shown":  201,
+                        "live":  206,
+                        "status":  "up"
+                    },
+                    {
+                        "origin":  "BRS",
+                        "dest":  "AGP",
+                        "d":  "2026-10-16",
+                        "r":  "2026-10-19",
+                        "airline":  "FR",
+                        "shown":  108,
+                        "live":  108,
+                        "status":  "match"
+                    },
+                    {
+                        "origin":  "NOC",
+                        "dest":  "EMA",
+                        "d":  "2026-10-20",
+                        "r":  "",
+                        "airline":  "FR",
+                        "shown":  22,
+                        "live":  22,
+                        "status":  "match"
+                    },
+                    {
+                        "origin":  "LPL",
+                        "dest":  "MLA",
+                        "d":  "2027-01-01",
+                        "r":  "2027-01-03",
+                        "airline":  "FR",
+                        "shown":  217,
+                        "live":  217,
+                        "status":  "match"
+                    },
+                    {
+                        "origin":  "LTN",
+                        "dest":  "TSF",
+                        "d":  "2026-10-07",
+                        "r":  "",
+                        "airline":  "FR",
+                        "shown":  15,
+                        "live":  15,
+                        "status":  "match"
+                    },
+                    {
+                        "origin":  "STN",
+                        "dest":  "CAG",
+                        "d":  "2026-11-24",
+                        "r":  "",
+                        "airline":  "FR",
+                        "shown":  31,
+                        "live":  34,
+                        "status":  "up"
+                    }
+                ]
+}
