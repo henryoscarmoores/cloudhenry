@@ -1048,5 +1048,12 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     HMB:["Sohag","Egypt","🇪🇬"],
     MKE:["Milwaukee","USA","🇺🇸"],
     NDR:["Nador","Morocco","🇲🇦"],
-    NJF:["Al-Najaf","Iraq","🇮🇶"]
+    NJF:["Al-Najaf","Iraq","🇮🇶"],
+    AQG:["Anqing","China","🇨🇳"],
+    FLO:["Florence","USA","🇺🇸"],
+    IXC:["Chandigarh","India","🇮🇳"],
+    MHK:["Manhattan","USA","🇺🇸"],
+    PNI:["Pohnpei","Micronesia","🇫🇲"],
+    SFG:["Saint Martin","Saint Martin","🇲🇫"],
+    VUS:["Velikij Ustyug","Russia","🇷🇺"]
 };
