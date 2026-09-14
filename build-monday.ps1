@@ -35,6 +35,8 @@
 param(
   [string[]] $OnlyOrigins,
   [switch]   $Replace,
+  [string]   $SlugSuffix = "",   # e.g. -free for the free-list copies, made after the paid send
+  [switch]   $EmailOnly,
   [int]      $Horizon = 60
 )
 $ErrorActionPreference = "Stop"
@@ -135,6 +137,21 @@ function Limit-Isles($Rows, [int] $Max) {
 # fares in each email; everything else is still in the full list.
 $POPULAR = @{}
 foreach ($c in "DUB AMS PAR CDG ORY BCN MAD VLC SVQ LIS OPO FCO ROM MIL MXP BGY VCE NAP PSA FLR BLQ CTA PMO PMI IBZ ALC AGP FAO TFS TCI LPA ACE FUE PRG KRK BUD VIE BER CPH OSL ARN HEL NCE MRS ATH SKG CFU HER RHO SOF BEG SPU DBV ZAD TIA MLA PFO LCA IST SAW AYT DLM BJV RAK AGA DXB NYC JFK BOS BRU GVA ZRH MUC FRA HAM DUS CGN STR SZG INN WAW GDN RIX VNO TLL BOJ VAR MRS BOD TLS LYS NTE OLB CAG BRI TRN VRN".Split(" ")) { $POPULAR[$c] = 1 }
+# Places people actually want to go (Henry, 14 Sep 2026: "desirable locations
+# even if they are a slightly higher price"). Winter sun is the search's own
+# list and only counts October to March; city breaks are the shower email's
+# list. A place on neither list only fills a gap.
+$WINTER_SUN = @{}; foreach ($c in "ACE LPA TCI TFS TFN FUE AGA RAK SSH HRG CAI DXB MLA PFO LCA AGP ALC FAO MIR TUN NBE AYT DLM FNC".Split(" ")) { $WINTER_SUN[$c] = 1 }
+$CITY_BREAK = @{}; foreach ($c in ("BCN LIS OPO FCO CIA MXP BGY LIN VCE TSF NAP PRG BUD VIE CPH AMS ATH IBZ PMI SVQ VLC MAD NCE MRS BER KRK CDG ORY BVA GVA SZG INN SPU DBV ZAD PSA FLR BLQ VRN TRN MUC HAM STR DUS CGN FRA BRU ARN OSL HEL KEF IST SAW RVN TOS BGO RIX TLL VNO WAW WMI GDN LJU ZAG TIA SOF OTP BOD LYS TLS NTE BIO BJV ADB TIV PUY BRI CTA PMO OLB CAG CFU RHO HER SKG").Split(" ")) { $CITY_BREAK[$c] = 1 }
+# 2 winter sun in season, 1 a city break or a place people know, 0 the rest.
+function Desire($fare) {
+  $mo = [int]([string]$fare.dep).Substring(5, 2)
+  if ($WINTER_SUN.ContainsKey($fare.dest) -and ($mo -ge 10 -or $mo -le 3)) { return 2 }
+  if ($CITY_BREAK.ContainsKey($fare.dest) -or $POPULAR.ContainsKey($fare.dest)) { return 1 }
+  return 0
+}
+# Desirable places first, cheapest first within each group.
+function Desirable-First($rows) { return @(@($rows) | Sort-Object @{ Expression = { if ((Desire $_) -gt 0) { 0 } else { 1 } } }, @{ Expression = { [int]$_.price } }) }
 
 # Names and flags from places.js.
 $PLACES = @{}
@@ -188,7 +205,7 @@ function FareRow($f, [int] $i, [bool] $blur) {
   $name = if ($p) { $p.name } else { $f.dest }
   $fc = if ($p) { FlagCode $p.flag } else { "" }
   $stripe = $STRIPES[$i % 3]
-  $when = if ($f.ret) { (DayShort $f.dep) + " to " + (DayShort $f.ret) + " · return" } else { (Day $f.dep) + " · one way" }
+  $when = if ($f.ret) { (DayShort $f.dep) + " to " + (DayShort $f.ret) + " &middot; return" } else { (Day $f.dep) + " &middot; one way" }
   $tag = ""
   if ($f.typical -and $f.typical -gt $f.price * 1.15) {
     $pct = [math]::Round((1 - $f.price / $f.typical) * 100)
@@ -224,16 +241,22 @@ foreach ($a in $AIRPORTS) {
   $data = Get-Content $file -Raw -Encoding UTF8 | ConvertFrom-Json
 
   # Cheapest option per destination departing within the horizon.
-  $best = @{}; $bestRet = @{}
+  $best = @{}; $bestRet = @{}; $bestOw = @{}
   foreach ($r in $data.fares) {
     if ((SameCountry $a.code $r.destination) -or $BOGUS.ContainsKey($r.destination) -or -not $PLACES.ContainsKey($r.destination)) { continue }
+    # "Usually" is the middle one-way price the airline itself is asking on
+    # this route across every date we hold (Henry, 14 Sep 2026: nothing from
+    # the old price list). The middle, not the average, so Christmas cannot
+    # inflate it, and only with eight dated fares or more to go on.
+    $owAir = @(@($r.options) | Where-Object { $_.p -and -not $_.r -and $_.PSObject.Properties['a'] -and $_.a } | ForEach-Object { [int]$_.p } | Sort-Object)
+    $routeTyp = if ($owAir.Count -ge 8) { $owAir[[int][math]::Floor(($owAir.Count - 1) / 2)] } else { 0 }
     foreach ($o in @($r.options)) {
       if (-not $o.p -or -not $o.d -or $o.d -lt $today -or $o.d -gt $limit) { continue }
       # Three changes of plane is an itinerary, not a flight deal, and it
       # has no place in an email that leads with a direct Ryanair fare.
       if ($o.PSObject.Properties['s'] -and $o.s -and [int]$o.s -gt 2) { continue }
       $isRet = [bool]$o.r
-      $typ = if (-not $isRet -and $r.typical) { [int]$r.typical } else { 0 }
+      $typ = if (-not $isRet) { $routeTyp } else { 0 }
       $ddmm = { param($iso) $d = [datetime]::ParseExact($iso, "yyyy-MM-dd", $null); $d.ToString("ddMM") }
       # currency=gbp or Aviasales serves the landing page in dollars, which
       # reads higher than the pound fare the email just advertised.
@@ -253,6 +276,7 @@ foreach ($a in $AIRPORTS) {
       # always a one-way, so without this the "cheapest return" slot was left
       # with whatever oddity happened to be cheaper as a return than a single.
       if ($isRet -and (-not $bestRet.ContainsKey($r.destination) -or $cand.price -lt $bestRet[$r.destination].price)) { $bestRet[$r.destination] = $cand }
+      if (-not $isRet -and (-not $bestOw.ContainsKey($r.destination) -or $cand.price -lt $bestOw[$r.destination].price)) { $bestOw[$r.destination] = $cand }
     }
   }
   $fares = @(Limit-Isles (@($best.Values | Sort-Object price)) 2)
@@ -266,19 +290,21 @@ foreach ($a in $AIRPORTS) {
   $withTyp = @($fares | Where-Object { $_.typical -gt 0 -and $_.typical -gt $_.price })
   $avgSave = if ($withTyp.Count) { [math]::Round((($withTyp | ForEach-Object { 1 - $_.price / $_.typical } | Measure-Object -Average).Average) * 100) } else { 0 }
   $returnsUnder50 = @($fares | Where-Object { $_.ret -and $_.price -le 50 }).Count
-  # A mix, not just the three cheapest singles: the cheapest one-way, the
-  # cheapest return, then the biggest saving. The blurred four: two of each.
-  $owAll = @($fares | Where-Object { -not $_.ret }); $rtAll = @(Limit-Isles (@($bestRet.Values | Sort-Object price)) 1)
-  $bySave = @($fares | Where-Object { $_.typical -gt 0 } | Sort-Object { $_.price / $_.typical })
-  # The headline three favour places people recognise. Cheapest-of-all
-  # from Stansted came out as Klagenfurt, Iasi and Szymany, which nobody
-  # opens an email for; the obscure bargains stay in the full list.
-  $owPop = @($owAll | Where-Object { $POPULAR.ContainsKey($_.dest) }); $rtPop = @($rtAll | Where-Object { $POPULAR.ContainsKey($_.dest) })
-  $bySavePop = @($bySave | Where-Object { $POPULAR.ContainsKey($_.dest) })
+  # Half one way, half return, and places people want to go even at a
+  # slightly higher price (Henry, 14 Sep 2026). The headline three: the best
+  # winter sun (or city break) one way, the best desirable return, then the
+  # biggest saving on a desirable one way. The blurred four: two of each.
+  $owAll = @(Desirable-First @(Limit-Isles (@($bestOw.Values | Sort-Object price)) 2))
+  $rtAll = @(Desirable-First @(Limit-Isles (@($bestRet.Values | Sort-Object price)) 1))
+  $owPop = @($owAll | Where-Object { (Desire $_) -gt 0 })
+  $rtPop = @(@($rtAll | Where-Object { (Desire $_) -gt 0 -and -not (Isles $_.dest) }) + @($rtAll | Where-Object { (Desire $_) -gt 0 -and (Isles $_.dest) }))
+  $bySave = @($owAll | Where-Object { $_.typical -gt 0 } | Sort-Object { $_.price / $_.typical })
+  $bySavePop = @($bySave | Where-Object { (Desire $_) -gt 0 })
+  $sunOw = @($owPop | Where-Object { (Desire $_) -eq 2 })
   $top = @()
-  if ($owPop.Count) { $top += $owPop[0] } elseif ($owAll.Count) { $top += $owAll[0] }
-  if ($rtPop.Count) { $top += $rtPop[0] } elseif ($rtAll.Count) { $top += $rtAll[0] }
-  foreach ($c in ($bySavePop + $bySave + $fares)) { if ($top.Count -ge 3) { break }; if (-not ($top | Where-Object { $_.dest -eq $c.dest })) { $top += $c } }
+  if ($sunOw.Count) { $top += $sunOw[0] } elseif ($owPop.Count) { $top += $owPop[0] } elseif ($owAll.Count) { $top += $owAll[0] }
+  foreach ($c in ($rtPop + $rtAll)) { if (-not ($top | Where-Object { $_.dest -eq $c.dest })) { $top += $c; break } }
+  foreach ($c in ($bySavePop + $owPop + $owAll + $fares)) { if ($top.Count -ge 3) { break }; if (-not ($top | Where-Object { $_.dest -eq $c.dest })) { $top += $c } }
   $used = @{}; foreach ($c in $top) { $used[$c.dest] = 1 }
   $locked = @()
   $locked += @(($owPop + $owAll) | Where-Object { -not $used.ContainsKey($_.dest) } | Select-Object -First 2)
@@ -288,7 +314,7 @@ foreach ($a in $AIRPORTS) {
   $rest = $n - 3
 
   $title = "$($a.name): $n fares this week, from $([char]0xA3)$cheapest"
-  $slugBase = ($a.slug + "-" + $dateTag)
+  $slugBase = ($a.slug + "-" + $dateTag + $SlugSuffix)
 
   # Already made today (unless -Replace)?
   $existing = (Call GET "/posts/?filter=$([uri]::EscapeDataString("tag:monday-auto+slug:~'" + $slugBase + "'"))&fields=id,slug,status,updated_at").posts
@@ -310,9 +336,9 @@ foreach ($a in $AIRPORTS) {
   $hero = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#1F7FC4`" style=`"width:100%;border-collapse:separate;background:#1F7FC4;background-image:linear-gradient(180deg,#0E6FB6 0%,#3E9BE0 75%,#7CC3F2 100%);border-radius:18px;`">" +
     "<tr><td style=`"padding:12px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;`"><tr><td align=`"left`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td><td></td><td align=`"right`" style=`"width:40px;`"><img src=`"$($CDNA)email-sun.png`" width=`"40`" height=`"40`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr>" +
     "<tr><td style=`"padding:6px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#FFFFFF`" style=`"width:100%;border-collapse:separate;background:#FFFFFF;border-radius:14px;`"><tr><td style=`"padding:16px 16px 14px 16px;text-align:center;$FONT`">" +
-    "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;color:#0E6FB6;`">$(Esc $a.name) · week of $weekLabel</div>" +
+    "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;color:#0E6FB6;`">$(Esc $a.name) &middot; week of $weekLabel</div>" +
     "<div style=`"font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1.05;color:#0E3550;margin-top:8px;`">$n cheap fares.<br><span style=`"color:#0E6FB6;`">Checked this morning.</span></div>" +
-    "<div style=`"font-size:13.5px;color:#46607A;margin-top:8px;`">Every one with what people usually pay beside it.</div>" +
+    "<div style=`"font-size:13.5px;color:#46607A;margin-top:8px;`">Every one with its usual price on that route beside it.</div>" +
     "<table align=`"center`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"margin-top:14px;`"><tr>$(Stat "$n" "fares found")$(Stat "$([char]0xA3)$cheapest" "cheapest")$(Stat "$avgSave%" "avg saving")</tr></table>" +
     "</td></tr></table></td></tr>" +
     "<tr><td style=`"padding:8px 14px 12px 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;`"><tr><td></td><td align=`"right`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr></table>"
@@ -331,11 +357,13 @@ foreach ($a in $AIRPORTS) {
     "<div style=`"font-size:13px;color:#46607A;margin:2px 0 4px;`">$(if ($returnsUnder50) { "Including $returnsUnder50 returns under $([char]0xA3)50." } else { "One way and return, with the exact dates." })</div>" +
     "<div style=`"font-size:12.5px;color:#46607A;margin:0 0 12px;`">Plus the search: every fare from $(Esc $a.name), every date, five months ahead. Weekends, day trips, Christmas markets.</div>" +
     "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$goLink`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:16px 32px;text-decoration:none;$FONT`">See all $n &rarr;</a></td></tr></table>" +
-    "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">Then $([char]0xA3)2.99 a month. Cancel any time, no contract. One tap, no password.</div>" +
+    "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">$([char]0xA3)2.99 a month. Cancel any time, no contract. One tap, no password.</div>" +
     "</td></tr></table>"
 
   # 5: everything, members only.
-  $ows = @($fares | Where-Object { -not $_.ret }); $rts = @($fares | Where-Object { $_.ret })
+  # Half and half, desirable places first (Henry, 14 Sep 2026). A place's cheapest fare is nearly
+  # always a single, so returns come from the cheapest return per place.
+  $ows = @($owAll); $rts = @($rtAll)
   # The search is half the membership and most members never open it.
   # Four tappable searches, prefilled for their airport, sit under the
   # fare list every week (Henry, 6 Sep 2026: "encourage usage of our
@@ -354,8 +382,8 @@ foreach ($a in $AIRPORTS) {
     "</table></div>"
 
   $full = ""
-  # Gmail clips anything over about 100KB, so the email carries the best thirteen after the top three and links to the rest.
-  $ows = @($ows | Select-Object -First 8); $rts = @($rts | Select-Object -First 5)
+  # Gmail clips anything over about 100KB, so the email carries six singles and six returns after the top three and links to the rest.
+  $ows = @($ows | Select-Object -First 6); $rts = @($rts | Select-Object -First 6)
   if ($ows.Count) { $full += "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:16px 0 8px;$FONT`">One way</div>"; $i = 0; foreach ($f in $ows) { $full += FareRow $f $i $false; $i++ } }
   if ($rts.Count) { $full += "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:16px 0 8px;$FONT`">Returns</div>"; $i = 0; foreach ($f in $rts) { $full += FareRow $f $i $false; $i++ } }
   $full += "<div style=`"text-align:center;margin-top:14px;$FONT`"><a href=`"$Site/search/?from=$($a.code)`" style=`"display:inline-block;background:#0E6FB6;color:#FFFFFF;font-weight:800;font-size:14px;padding:12px 22px;border-radius:999px;text-decoration:none;`">All $n fares from $(Esc $a.name), searchable &rarr;</a></div>"
@@ -379,7 +407,7 @@ foreach ($a in $AIRPORTS) {
   $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($cardAll, $cardTease, $cardTeaseWeb, $cardFull, $cardSign) } } | ConvertTo-Json -Depth 12 -Compress
 
   $post = @{ posts = @(@{
-    title = $title; slug = $slugBase; lexical = $lexical; status = "draft"; visibility = "public"
+    title = $title; slug = $slugBase; lexical = $lexical; status = "draft"; visibility = "public"; email_only = [bool]$EmailOnly
     tags = @(@{ name = "#paid-draft" }, @{ name = "#monday-auto" })   # internal tags (leading hash), so they never print on the page
     custom_excerpt = "$n cheap fares from $($a.name) this week, checked this morning, from $([char]0xA3)$cheapest."
     email_subject = "$($a.name): $n fares this week, from $([char]0xA3)$cheapest"
