@@ -333,7 +333,7 @@ foreach ($a in $LIST) {
 
   $bestPick = ($picks | Where-Object { $_.saving -gt 0 } | Sort-Object { $_.typical - $_.price } -Descending | Select-Object -First 1)
   $pays = if ($bestPick -and ($bestPick.typical - $bestPick.price) -ge 29) { "$(Esc $PLACES[$bestPick.dest].name) alone is $GBP$($bestPick.typical - $bestPick.price) under the usual price, so one good fare pays for the whole year." } else { "One good fare covers months of membership." }
-  $savingLine = if ($totalSaving -gt 0) { "&#10003; This one email has $GBP$totalSaving under the usual prices<br>" } else { "" }
+  $savingLine = if ($totalSaving -gt 0) { "&#10003; This one email has $GBP$('{0:N0}' -f [int]$totalSaving) under the usual prices<br>" } else { "" }
   $priceLine = if ($hasOffer) { "<div style=`"font-size:15px;color:#0E3550;margin:0 0 14px;`">Your first month: <b>$offerPrice</b> <span style=`"color:#7A90A5;text-decoration:line-through;`">$($GBP)2.99</span></div>" } else { "" }
   $button = if ($hasOffer) { "Get $OfferPercent% off &rarr;" } else { "Join for $($GBP)2.99 &rarr;" }
   $small = if ($hasOffer) { "Then $($GBP)2.99 a month. Cancel any time, no contract. Offer ends $OfferEnds. One tap, no password." } else { "$($GBP)2.99 a month or $($GBP)29 a year. Cancel any time, no contract. One tap, no password." }
