@@ -28,11 +28,19 @@
   // /members/api/member/ answers 200 with the member when signed in and
   // 204 when not, so it is a reliable client-side check.
   var PAID = false;
+  // Signed in at all, free or paid. A paying member who opens the site in
+  // Instagram's own browser, or on a new phone, is not signed in there, so
+  // every Book button says Join. Kay, 30 Aug 2026: "can't click anything
+  // just says subscribe to see flights when I have". They need a way to sign in.
+  var SIGNED_IN = false, CHECKED = false;
+  var IN_APP = /Instagram|FBAN|FBAV|FB_IAB|TikTok/i.test(navigator.userAgent || "");
 
   function checkMember() {
     return fetch("/members/api/member/", { credentials: "include" })
       .then(function (r) { return r.status === 200 ? r.json() : null; })
       .then(function (m) {
+        CHECKED = true;
+        SIGNED_IN = !!m;
         if (!m) return false;
         if (m.status === "paid" || m.status === "comped") return true;
         return !!(m.subscriptions && m.subscriptions.some(function (s) {
@@ -55,6 +63,16 @@
       a.classList.add("chfs-locked");
       a.textContent = a.id === "chfsMain" ? "Join for £2.99 to book" : "Join for £2.99";
     });
+    // Under the fare sheet's button, a way in for members who are not signed in here.
+    var main = (root || document).querySelector("#chfsMain");
+    if (main && CHECKED && !SIGNED_IN && !document.getElementById("chfsSheetSignin")) {
+      var s = document.createElement("div");
+      s.id = "chfsSheetSignin";
+      s.setAttribute("style", "margin-top:10px;font-size:13px;text-align:center;line-height:1.5;");
+      s.innerHTML = 'Already a member? <a href="#/portal/signin" style="font-weight:800;color:#0E6FB6;">Sign in</a>' +
+        (IN_APP ? '<br><span style="font-size:12px;opacity:.85;">Opened from Instagram? Open this page in Safari or Chrome first.</span>' : '');
+      main.parentNode.insertBefore(s, main.nextSibling);
+    }
   }
 
 
@@ -1598,6 +1616,18 @@
         // buttons, "Join for £2.99" on the live bar) until they touched
         // a filter. Found on 6 Sep 2026 testing as a comped member.
         if (paid) { render(); return; }
+        if (!paid && !SIGNED_IN && !document.getElementById("chfsSigninBar")) {
+          var head = document.querySelector(".chfs-head");
+          if (head) {
+            var b = document.createElement("div");
+            b.id = "chfsSigninBar";
+            b.setAttribute("style", "margin:0 0 14px;padding:12px 16px;border-radius:14px;background:#FFF4D1;color:#5A4210;font-size:14px;line-height:1.5;");
+            b.innerHTML = '<strong style="color:#3A2A08;">Already a member?</strong> ' +
+              '<a href="#/portal/signin" style="color:#0E6FB6;font-weight:800;text-decoration:none;border-bottom:2px solid #F5C242;">Sign in</a> and every Book button unlocks.' +
+              (IN_APP ? '<br><span style="font-size:13px;">Opened this from Instagram? Tap the three dots, choose Open in browser, then sign in. The sign-in link opens in your normal browser, not inside Instagram.</span>' : '');
+            head.parentNode.insertBefore(b, head);
+          }
+        }
         if (!paid) {
           var note = document.querySelector(".chfs-note");
           if (note && !document.getElementById("chfsTease")) {
