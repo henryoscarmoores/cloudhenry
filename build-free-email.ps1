@@ -40,6 +40,8 @@ param(
   [string] $OfferCode = "",
   [int] $OfferPercent = 25,
   [string] $OfferEnds = "midnight on Sunday 20 September",
+  [switch] $OfferEmail,   # the follow-up built around the offer: its own subject, header and sign-off
+  [string] $SlugPrefix = "free",
   [switch] $PlainLink,   # a plain link to the join or offer page, without the one-tap sign-in codes
   [switch] $Replace,
   [switch] $Send,
@@ -168,10 +170,12 @@ $stamp = (Get-Date).ToString("yyyy-MM-dd")
 if ($Send) {
   $sent = 0
   foreach ($a in $LIST) {
-    $slug = "free-" + $a.slug + "-" + $stamp
+    $slug = "$SlugPrefix-" + $a.slug + "-" + $stamp
     $d = @((Call GET "/posts/?limit=1&filter=$([uri]::EscapeDataString("slug:$slug"))").posts)
     if (-not $d -or $d[0].status -ne "draft") { Write-Host ("{0}: no draft to send ({1})" -f $a.code, $slug); continue }
     $segment = "label:loc-" + $a.slug + "+status:free"
+    $NEAREST = @{ "bristol" = "exeter,newquay"; "london-stansted" = "norwich,london-southend"; "london-gatwick" = "london-heathrow,london-city,jersey,guernsey"; "bournemouth" = "southampton"; "edinburgh" = "aberdeen,inverness,dundee"; "newcastle" = "teesside"; "leeds" = "humberside"; "belfast" = "belfast-city,derry"; "liverpool" = "isle-of-man"; "shannon" = "kerry" }
+    if ($OfferEmail -and $NEAREST.ContainsKey($a.slug)) { $segment = "label:[" + ((@("loc-" + $a.slug) + @($NEAREST[$a.slug].Split(",") | ForEach-Object { "loc-" + $_ })) -join ",") + "]+status:free" }
     $q = "?newsletter=$Newsletter&email_segment=" + [uri]::EscapeDataString($segment)
     $body = if ($Schedule) { @{ status = "scheduled"; published_at = $Schedule; updated_at = $d[0].updated_at } } else { @{ status = "published"; updated_at = $d[0].updated_at } }
     $r = Call PUT ("/posts/" + $d[0].id + "/" + $q) @{ posts = @($body) }
@@ -255,7 +259,7 @@ foreach ($a in $LIST) {
   # A section of one looks lost; a lone Christmas market fare is still a city break.
   if ($xmasPicks.Count -lt 2) { $cityPicks = @(@($cityPicks + $xmasPicks) | Sort-Object @{ Expression = { if ($_.ret) { 0 } else { 1 } } }, @{ Expression = { $_.price } }); $xmasPicks = @() }
   $picks = @($sunPicks + $cityPicks + $xmasPicks)
-  if ($picks.Count -lt 8) { Write-Host ("{0}: only {1} good fares, skipped" -f $a.code, $picks.Count); continue }
+  if ($picks.Count -lt 5) { Write-Host ("{0}: only {1} good fares, skipped" -f $a.code, $picks.Count); continue }
   $cheapest = ($picks | Measure-Object price -Minimum).Minimum
   $totalSaving = 0; foreach ($p in $picks) { if ($p.saving -gt 0) { $totalSaving += ($p.typical - $p.price) } }
   $countries = @($picks | ForEach-Object { $PLACES[$_.dest].country } | Sort-Object -Unique).Count
@@ -310,6 +314,10 @@ foreach ($a in $LIST) {
     "</td></tr></table></td></tr>" +
     "<tr><td style=`"padding:8px 14px 12px 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;`"><tr><td></td><td align=`"right`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr></table>"
 
+  if ($OfferEmail -and $hasOffer) {
+    $head = $head.Replace("&middot; on us this week", "&middot; welcome offer").Replace("Every fare.<br>", "$OfferPercent% off your first month.<br>").Replace("Nothing hidden.", "This week only.")
+    $head = $head.Replace("Normally you get three fares on a Monday and the rest blurred out. Today I'm showing you $($picks.Count) of the best, from sunshine to city breaks, exactly what members get every week.", "Here are $($picks.Count) of the best fares from $(Esc $a.name) right now, from sunshine to city breaks. Join by $OfferEnds and your first month is just $offerPrice.")
+  }
   $banner = ""
   if ($hasOffer) {
     $banner = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;border-collapse:separate;background:#FFF4D1;border-radius:14px;margin-top:14px;`"><tr><td style=`"padding:14px 16px;text-align:center;$FONT`">" +
@@ -346,11 +354,12 @@ foreach ($a in $LIST) {
 
   $signoff = "<div style=`"margin-top:18px;font-size:13.5px;color:#46607A;$FONT`">Your Monday email still comes either way, this one's just to show you what's behind the blur.<br><br>Speak Monday,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
 
+  if ($OfferEmail -and $hasOffer) { $signoff = $signoff.Replace("this one's just to show you what's behind the blur.", "this is a one-off welcome offer and it ends $OfferEnds.") }
   $html = $head + $banner + $fares + $price + $signoff
   $card = @{ type = "html"; version = 1; html = $html }
   $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($card) } } | ConvertTo-Json -Depth 12 -Compress
 
-  $slug = "free-" + $a.slug + "-" + $stamp
+  $slug = "$SlugPrefix-" + $a.slug + "-" + $stamp
   $existing = @((Call GET "/posts/?limit=5&filter=$([uri]::EscapeDataString("slug:$slug"))").posts)
   if ($existing.Count -gt 0 -and -not $Replace) { Write-Host ("{0}: draft already exists ({1}), skipped" -f $a.code, $slug); continue }
   foreach ($e in $existing) { if ($e.status -in @("draft", "scheduled")) { Call DELETE "/posts/$($e.id)/" | Out-Null } }
@@ -365,7 +374,7 @@ foreach ($a in $LIST) {
   $hook = $(if ($hasOffer) { "$OfferPercent% off your first month this week. " } else { "" }) + ($hookBits -join ", ") + "."
 
   $post = @{ posts = @(@{
-    title = "Secret access, one week only: every cheap flight from $($a.name)"
+    title = $(if ($OfferEmail -and $hasOffer) { "$OfferPercent% off your first month: every cheap flight from $($a.name)" } else { "Secret access, one week only: every cheap flight from $($a.name)" })
     slug = $slug
     lexical = $lexical
     status = "draft"
