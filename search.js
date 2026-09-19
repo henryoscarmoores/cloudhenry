@@ -1648,3 +1648,129 @@
         'Please refresh in a moment. (' + err.message + ')</div>';
     });
 })();
+
+
+/* Exact-dates calendar (Sept 2026): the same tap-tap range picker as the
+   hotels page, replacing the native date popups Henry found fiddly.
+   Self-contained: injects its own CSS and popover, drives the existing
+   #chfsFrom2/#chfsTo2 inputs by setting ISO values and firing change,
+   so the search logic above needs no changes. One-way trips (the
+   Returning field is hidden) become a single-date pick. */
+(function () {
+  "use strict";
+  var dep = document.getElementById("chfsFrom2");
+  var ret = document.getElementById("chfsTo2");
+  if (!dep || !ret) return;
+  var css = document.createElement("style");
+  css.textContent =
+    ".chfs-cal{position:absolute;z-index:60;top:calc(100% + 8px);left:0;background:#fff;border:1px solid rgba(14,53,80,.12);border-radius:18px;box-shadow:0 14px 40px rgba(14,53,80,.22);padding:14px;width:min(640px,94vw)}" +
+    ".chfs-cal[hidden]{display:none}" +
+    ".chfs-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}" +
+    ".chfs-cal-head button{border:1px solid rgba(14,53,80,.12);background:#fff;color:#0E3550;font:inherit;font-weight:800;font-size:16px;width:38px;height:38px;border-radius:12px;cursor:pointer}" +
+    ".chfs-cal-head button:hover{border-color:#0E6FB6;color:#0E6FB6}" +
+    ".chfs-cal-head button:disabled{opacity:.3;cursor:default}" +
+    ".chfs-cal-hint{font-size:12.5px;font-weight:700;color:#46607A}" +
+    ".chfs-cal-months{display:grid;gap:18px;grid-template-columns:1fr 1fr}" +
+    "@media(max-width:659px){.chfs-cal-months{grid-template-columns:1fr}.chfs-cal-months .chfs-cal-m:nth-child(2){display:none}.chfs-cal{left:50%;transform:translateX(-50%);max-width:calc(100vw - 24px)}}" +
+    ".chfs-cal-m h4{margin:0 0 6px;font-size:14.5px;font-weight:800;text-align:center;color:#0E3550}" +
+    ".chfs-cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}" +
+    ".chfs-cal-g .dow{font-size:10.5px;font-weight:800;letter-spacing:.06em;color:#7A90A5;text-align:center;padding:4px 0;text-transform:uppercase}" +
+    ".chfs-cal-g button{border:0;background:transparent;font:inherit;font-size:14px;font-weight:600;color:#0E3550;height:40px;border-radius:10px;cursor:pointer}" +
+    ".chfs-cal-g button:hover{background:#EDF3F9}" +
+    ".chfs-cal-g button:disabled{color:#C4D2DE;cursor:default;background:none}" +
+    ".chfs-cal-g button.mid{background:#DCEBF7;border-radius:0}" +
+    ".chfs-cal-g button.in,.chfs-cal-g button.out{background:#0E6FB6;color:#fff;font-weight:800}" +
+    ".chfs-cal-g button.in{border-radius:10px 0 0 10px}" +
+    ".chfs-cal-g button.out{border-radius:0 10px 10px 0}" +
+    ".chfs-cal-g button.in.out{border-radius:10px}";
+  document.head.appendChild(css);
+
+  var host = dep.parentElement; // .chfs-f#fDep
+  host.style.position = "relative";
+  var pop = document.createElement("div");
+  pop.className = "chfs-cal"; pop.hidden = true;
+  pop.innerHTML =
+    '<div class="chfs-cal-head">' +
+    '<button type="button" data-nav="-1" aria-label="Earlier month">&larr;</button>' +
+    '<span class="chfs-cal-hint"></span>' +
+    '<button type="button" data-nav="1" aria-label="Later month">&rarr;</button></div>' +
+    '<div class="chfs-cal-months"></div>';
+  host.appendChild(pop);
+  var hintEl = pop.querySelector(".chfs-cal-hint");
+  var monthsEl = pop.querySelector(".chfs-cal-months");
+
+  var now = new Date(); now.setHours(0, 0, 0, 0);
+  var MN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  var C = { view: new Date(now.getFullYear(), now.getMonth(), 1), phase: "dep" };
+  function pd(n) { return (n < 10 ? "0" : "") + n; }
+  function isoD(d) { return d.getFullYear() + "-" + pd(d.getMonth() + 1) + "-" + pd(d.getDate()); }
+  function val(inp) { return /^\d{4}-\d{2}-\d{2}$/.test(inp.value) ? new Date(inp.value + "T00:00:00") : null; }
+  function oneWay() { return document.getElementById("fRet").hidden; }
+  function setVal(inp, d) {
+    inp.value = isoD(d);
+    inp.dispatchEvent(new Event("change"));
+  }
+  function monthGrid(y, m) {
+    var wrap = document.createElement("div"); wrap.className = "chfs-cal-m";
+    var h = document.createElement("h4"); h.textContent = MN[m] + " " + y; wrap.appendChild(h);
+    var g = document.createElement("div"); g.className = "chfs-cal-g";
+    ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].forEach(function (d) {
+      var s = document.createElement("span"); s.className = "dow"; s.textContent = d; g.appendChild(s);
+    });
+    var lead = (new Date(y, m, 1).getDay() + 6) % 7;
+    for (var i = 0; i < lead; i++) g.appendChild(document.createElement("span"));
+    var dIn = val(dep), dOut = oneWay() ? null : val(ret);
+    var days = new Date(y, m + 1, 0).getDate();
+    for (var d = 1; d <= days; d++) {
+      var dt = new Date(y, m, d);
+      var b = document.createElement("button"); b.type = "button"; b.textContent = d;
+      if (dt < now) b.disabled = true;
+      if (dIn && dt.getTime() === dIn.getTime()) b.className += " in";
+      if (dOut && dt.getTime() === dOut.getTime()) b.className += " out";
+      if (dIn && dOut && dt > dIn && dt < dOut) b.className = "mid";
+      (function (dd) { b.addEventListener("click", function () { pick(dd); }); })(dt);
+      g.appendChild(b);
+    }
+    wrap.appendChild(g);
+    return wrap;
+  }
+  function paint() {
+    monthsEl.innerHTML = "";
+    monthsEl.appendChild(monthGrid(C.view.getFullYear(), C.view.getMonth()));
+    var n2 = new Date(C.view.getFullYear(), C.view.getMonth() + 1, 1);
+    monthsEl.appendChild(monthGrid(n2.getFullYear(), n2.getMonth()));
+    pop.querySelector('[data-nav="-1"]').disabled = C.view <= new Date(now.getFullYear(), now.getMonth(), 1);
+    hintEl.textContent = oneWay() ? "Pick your flying-out day"
+      : (C.phase === "dep" ? "Pick your flying-out day" : "Now pick the flight home");
+  }
+  function pick(d) {
+    var dIn = val(dep);
+    if (oneWay()) { setVal(dep, d); pop.hidden = true; paint(); return; }
+    if (C.phase === "dep" || !dIn || d <= dIn) {
+      setVal(dep, d);
+      if (val(ret) && val(ret) <= d) { ret.value = ""; ret.dispatchEvent(new Event("change")); }
+      C.phase = "ret";
+    } else {
+      setVal(ret, d); C.phase = "dep";
+      pop.hidden = true;
+    }
+    paint();
+  }
+  function open(phase) {
+    C.phase = phase;
+    var base = val(dep) || now;
+    C.view = new Date(base.getFullYear(), base.getMonth(), 1);
+    pop.hidden = false; paint();
+  }
+  [dep, ret].forEach(function (inp) {
+    inp.readOnly = true; inp.setAttribute("inputmode", "none");
+    inp.addEventListener("click", function (e) { e.preventDefault(); open(inp === dep ? "dep" : (val(dep) ? "ret" : "dep")); });
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(inp === dep ? "dep" : "ret"); } });
+  });
+  pop.querySelector('[data-nav="-1"]').addEventListener("click", function () { C.view = new Date(C.view.getFullYear(), C.view.getMonth() - 1, 1); paint(); });
+  pop.querySelector('[data-nav="1"]').addEventListener("click", function () { C.view = new Date(C.view.getFullYear(), C.view.getMonth() + 1, 1); paint(); });
+  document.addEventListener("click", function (e) {
+    if (!e.target.isConnected) return; // day clicks re-render the grid
+    if (!e.target.closest(".chfs-cal") && e.target !== dep && e.target !== ret) pop.hidden = true;
+  });
+})();

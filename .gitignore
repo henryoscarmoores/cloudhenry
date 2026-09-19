@@ -17,3 +17,4 @@ build-fares.log
 
 # Henry's Ghost staff access token, personal admin rights. Never commit.
 .ghoststaff
+.claude/
