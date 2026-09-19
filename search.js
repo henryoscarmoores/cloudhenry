@@ -1663,7 +1663,8 @@
   if (!dep || !ret) return;
   var css = document.createElement("style");
   css.textContent =
-    ".chfs-cal{position:absolute;z-index:60;top:calc(100% + 8px);left:0;background:#fff;border:1px solid rgba(14,53,80,.12);border-radius:18px;box-shadow:0 14px 40px rgba(14,53,80,.22);padding:14px;width:min(640px,94vw)}" +
+    ".chfs-cal{position:absolute;z-index:9999;background:#fff;border:1px solid rgba(14,53,80,.12);border-radius:18px;box-shadow:0 14px 40px rgba(14,53,80,.22);padding:14px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#0E3550;box-sizing:border-box}" +
+    ".chfs-cal *,.chfs-cal *::before,.chfs-cal *::after{box-sizing:border-box}" +
     ".chfs-cal[hidden]{display:none}" +
     ".chfs-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}" +
     ".chfs-cal-head button{border:1px solid rgba(14,53,80,.12);background:#fff;color:#0E3550;font:inherit;font-weight:800;font-size:16px;width:38px;height:38px;border-radius:12px;cursor:pointer}" +
@@ -1671,7 +1672,7 @@
     ".chfs-cal-head button:disabled{opacity:.3;cursor:default}" +
     ".chfs-cal-hint{font-size:12.5px;font-weight:700;color:#46607A}" +
     ".chfs-cal-months{display:grid;gap:18px;grid-template-columns:1fr 1fr}" +
-    "@media(max-width:659px){.chfs-cal-months{grid-template-columns:1fr}.chfs-cal-months .chfs-cal-m:nth-child(2){display:none}.chfs-cal{left:50%;transform:translateX(-50%);max-width:calc(100vw - 24px)}}" +
+    "@media(max-width:659px){.chfs-cal-months{grid-template-columns:1fr}.chfs-cal-months .chfs-cal-m:nth-child(2){display:none}}" +
     ".chfs-cal-m h4{margin:0 0 6px;font-size:14.5px;font-weight:800;text-align:center;color:#0E3550}" +
     ".chfs-cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}" +
     ".chfs-cal-g .dow{font-size:10.5px;font-weight:800;letter-spacing:.06em;color:#7A90A5;text-align:center;padding:4px 0;text-transform:uppercase}" +
@@ -1685,8 +1686,10 @@
     ".chfs-cal-g button.in.out{border-radius:10px}";
   document.head.appendChild(css);
 
-  var host = dep.parentElement; // .chfs-f#fDep
-  host.style.position = "relative";
+  // The popover lives on <body>, not inside the widget: the page's
+  // scroll-reveal transforms and row stacking contexts were painting
+  // the results bar over it. Body-level + z-index 9999 (same layer as
+  // the fare sheet) escapes every stacking context for good.
   var pop = document.createElement("div");
   pop.className = "chfs-cal"; pop.hidden = true;
   pop.innerHTML =
@@ -1695,9 +1698,18 @@
     '<span class="chfs-cal-hint"></span>' +
     '<button type="button" data-nav="1" aria-label="Later month">&rarr;</button></div>' +
     '<div class="chfs-cal-months"></div>';
-  host.appendChild(pop);
+  document.body.appendChild(pop);
   var hintEl = pop.querySelector(".chfs-cal-hint");
   var monthsEl = pop.querySelector(".chfs-cal-months");
+  function place() {
+    var r = dep.getBoundingClientRect();
+    var w = Math.min(640, document.documentElement.clientWidth - 24);
+    pop.style.width = w + "px";
+    var left = Math.min(Math.max(r.left + window.scrollX, 12), window.scrollX + document.documentElement.clientWidth - w - 12);
+    pop.style.left = left + "px";
+    pop.style.top = (r.bottom + window.scrollY + 8) + "px";
+  }
+  window.addEventListener("resize", function () { if (!pop.hidden) place(); });
 
   var now = new Date(); now.setHours(0, 0, 0, 0);
   var MN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -1760,7 +1772,7 @@
     C.phase = phase;
     var base = val(dep) || now;
     C.view = new Date(base.getFullYear(), base.getMonth(), 1);
-    pop.hidden = false; paint();
+    pop.hidden = false; place(); paint();
   }
   [dep, ret].forEach(function (inp) {
     inp.readOnly = true; inp.setAttribute("inputmode", "none");
