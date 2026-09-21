@@ -407,17 +407,21 @@ foreach ($a in $AIRPORTS) {
 
   # Cards. HTML cards carry visibility so Ghost sends the right version.
   $cardAll   = @{ type = "html"; version = 1; html = ($hero + $topHtml) }
-  $cardTease = @{ type = "html"; version = 1; html = $tease; visibility = @{ web = @{ nonMember = $false; memberSegment = "" }; email = @{ memberSegment = "status:free" } } }
+  $cardTease = @{ type = "html"; version = 1; html = $tease; visibility = @{ web = @{ nonMember = $false; memberSegment = "status:free" }; email = @{ memberSegment = "status:free" } } }
   # The web version of the same tease, for visitors and Freemium members
   # reading the post on the site: the one-tap sign-in link only works in
   # email, so the button opens the plan chooser instead. This is what
   # makes the post a public teaser rather than a wall.
   $teaseWeb = $tease.Replace($goLink, "#/portal/signup")
-  $cardTeaseWeb = @{ type = "html"; version = 1; html = $teaseWeb; visibility = @{ web = @{ nonMember = $true; memberSegment = "status:free" }; email = @{ memberSegment = "" } } }
+  # The web-only teaser used to be its own card with an empty email segment.
+  # In Ghost an empty email segment means EVERYONE, so paying members were
+  # emailed "80 more fares, join for 2.99" (Henry spotted it, 21 Sep 2026).
+  # Ghost has no way to hide a card from email, so the teaser is now a single
+  # card aimed at free members only, in email and on the web.
   $paywall   = @{ type = "paywall"; version = 1 }
   $cardFull  = @{ type = "html"; version = 1; html = $full; visibility = @{ web = @{ nonMember = $false; memberSegment = "status:-free" }; email = @{ memberSegment = "status:-free" } } }
   $cardSign  = @{ type = "html"; version = 1; html = $signoff }
-  $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($cardAll, $cardTease, $cardTeaseWeb, $cardFull, $cardSign) } } | ConvertTo-Json -Depth 12 -Compress
+  $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($cardAll, $cardTease, $cardFull, $cardSign) } } | ConvertTo-Json -Depth 12 -Compress
 
   $post = @{ posts = @(@{
     title = $title; slug = $slugBase; lexical = $lexical; status = "draft"; visibility = "public"; email_only = [bool]$EmailOnly
