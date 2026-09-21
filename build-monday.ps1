@@ -240,6 +240,19 @@ foreach ($a in $AIRPORTS) {
   if (-not (Test-Path $file)) { Write-Host "$($a.code): no fare file, skipped"; $skipped++; continue }
   $data = Get-Content $file -Raw -Encoding UTF8 | ConvertFrom-Json
 
+  # The freshness line has to match the data, not the calendar. If the
+  # morning build has not landed yet, the drafts are on last night's file
+  # and must say so (Henry, 13 Sep 2026: no fare claim that is not true).
+  $Fresh = "Checked this morning"
+  if ($data.generated) {
+    $gen = [datetime]::Parse($data.generated, $null, [Globalization.DateTimeStyles]::RoundtripKind).ToLocalTime()
+    $ageH = ((Get-Date) - $gen).TotalHours
+    if     ($gen.Date -eq (Get-Date).Date -and $gen.Hour -lt 12)             { $Fresh = "Checked this morning" }
+    elseif ($gen.Date -eq (Get-Date).AddDays(-1).Date -and $gen.Hour -ge 17) { $Fresh = "Checked last night" }
+    elseif ($ageH -lt 1.5)                                                   { $Fresh = "Checked in the last hour" }
+    else                                                                     { $Fresh = "Checked " + [math]::Round($ageH) + " hours ago" }
+  }
+
   # Cheapest option per destination departing within the horizon.
   $best = @{}; $bestRet = @{}; $bestOw = @{}
   foreach ($r in $data.fares) {
@@ -337,7 +350,7 @@ foreach ($a in $AIRPORTS) {
     "<tr><td style=`"padding:12px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"width:100%;`"><tr><td align=`"left`" style=`"width:60px;`"><img src=`"$($CDNA)email-cloud.png`" width=`"60`" height=`"25`" alt=`"`" style=`"display:block;`"></td><td></td><td align=`"right`" style=`"width:40px;`"><img src=`"$($CDNA)email-sun.png`" width=`"40`" height=`"40`" alt=`"`" style=`"display:block;`"></td></tr></table></td></tr>" +
     "<tr><td style=`"padding:6px 14px 0 14px;`"><table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#FFFFFF`" style=`"width:100%;border-collapse:separate;background:#FFFFFF;border-radius:14px;`"><tr><td style=`"padding:16px 16px 14px 16px;text-align:center;$FONT`">" +
     "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;color:#0E6FB6;`">$(Esc $a.name) &middot; week of $weekLabel</div>" +
-    "<div style=`"font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1.05;color:#0E3550;margin-top:8px;`">$n cheap fares.<br><span style=`"color:#0E6FB6;`">Checked this morning.</span></div>" +
+    "<div style=`"font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1.05;color:#0E3550;margin-top:8px;`">$n cheap fares.<br><span style=`"color:#0E6FB6;`">$Fresh.</span></div>" +
     "<div style=`"font-size:13.5px;color:#46607A;margin-top:8px;`">Every one with its usual price on that route beside it.</div>" +
     "<table align=`"center`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" style=`"margin-top:14px;`"><tr>$(Stat "$n" "fares found")$(Stat "$([char]0xA3)$cheapest" "cheapest")$(Stat "$avgSave%" "avg saving")</tr></table>" +
     "</td></tr></table></td></tr>" +
@@ -388,7 +401,7 @@ foreach ($a in $AIRPORTS) {
   if ($rts.Count) { $full += "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:16px 0 8px;$FONT`">Returns</div>"; $i = 0; foreach ($f in $rts) { $full += FareRow $f $i $false; $i++ } }
   $full += "<div style=`"text-align:center;margin-top:14px;$FONT`"><a href=`"$Site/search/?from=$($a.code)`" style=`"display:inline-block;background:#0E6FB6;color:#FFFFFF;font-weight:800;font-size:14px;padding:12px 22px;border-radius:999px;text-decoration:none;`">All $n fares from $(Esc $a.name), searchable &rarr;</a></div>"
   $full += $searchStrip
-  $full += "<div style=`"margin-top:14px;padding:12px 14px;border-radius:12px;background:#FFF4D1;font-size:13px;color:#5A4210;$FONT`"><b style=`"color:#3A2A08;`">Book fast.</b> The cheapest fares here are the kind that go within three days. Every price was checked this morning; airlines change them without warning.</div>"
+  $full += "<div style=`"margin-top:14px;padding:12px 14px;border-radius:12px;background:#FFF4D1;font-size:13px;color:#5A4210;$FONT`"><b style=`"color:#3A2A08;`">Book fast.</b> The cheapest fares here are the kind that go within three days. Every price was $($Fresh.ToLower()); airlines change them without warning.</div>"
 
   $signoff = "<div style=`"margin-top:16px;font-size:13.5px;color:#46607A;$FONT`">Have a good day,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
 
@@ -409,7 +422,7 @@ foreach ($a in $AIRPORTS) {
   $post = @{ posts = @(@{
     title = $title; slug = $slugBase; lexical = $lexical; status = "draft"; visibility = "public"; email_only = [bool]$EmailOnly
     tags = @(@{ name = "#paid-draft" }, @{ name = "#monday-auto" })   # internal tags (leading hash), so they never print on the page
-    custom_excerpt = "$n cheap fares from $($a.name) this week, checked this morning, from $([char]0xA3)$cheapest."
+    custom_excerpt = "$n cheap fares from $($a.name) this week, $($Fresh.ToLower()), from $([char]0xA3)$cheapest."
     email_subject = "$($a.name): $n fares this week, from $([char]0xA3)$cheapest"
   }) }
   $made = Call POST "/posts/" $post
