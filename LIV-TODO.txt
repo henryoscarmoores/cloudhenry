@@ -1,0 +1,105 @@
+LIV X CLOUDHENRY
+To do list while Henry is filming
+
+Henry left: Monday 21 September 2026
+Henry back: around Friday 16 October 2026
+
+There is one job, and it happens once a week. Everything you need is in
+the file "1. READ ME FIRST". Tick these off as you go.
+
+
+=====================================================================
+MONDAY 28 SEPTEMBER
+=====================================================================
+
+  [ ]  Open Windows PowerShell
+
+  [ ]  Type:   cd C:\Users\henne\cloudhenry
+
+  [ ]  Type:   .\monday.ps1
+                 (builds the emails and checks them, sends nothing)
+
+  [ ]  Read the screen. Did the last line say EVERYTHING PASSED?
+
+         YES  ->  carry on
+         NO   ->  do not send. Photo the screen, message Henry, stop.
+
+  [ ]  Type:   .\monday.ps1 -Send -SkipBuild
+                 (this is the one that actually sends them)
+
+  [ ]  Wait for it to say DONE
+
+  [ ]  Message Henry one line to say it went, and how many
+
+
+=====================================================================
+MONDAY 5 OCTOBER
+=====================================================================
+
+  [ ]  cd C:\Users\henne\cloudhenry
+  [ ]  .\monday.ps1
+  [ ]  Check it says EVERYTHING PASSED
+  [ ]  .\monday.ps1 -Send -SkipBuild
+  [ ]  Wait for DONE
+  [ ]  Message Henry
+
+
+=====================================================================
+MONDAY 12 OCTOBER
+=====================================================================
+
+  [ ]  cd C:\Users\henne\cloudhenry
+  [ ]  .\monday.ps1
+  [ ]  Check it says EVERYTHING PASSED
+  [ ]  .\monday.ps1 -Send -SkipBuild
+  [ ]  Wait for DONE
+  [ ]  Message Henry
+
+
+=====================================================================
+IF SOMETHING GOES WRONG
+=====================================================================
+
+The script will not send if anything is wrong, so you cannot break it
+by running it. If you see the word STOP:
+
+  [ ]  Do not send
+  [ ]  Take a photo of the whole screen
+  [ ]  Message Henry with the photo
+  [ ]  Leave it. A week with no email is fine. A wrong email is not.
+
+If the script will not start at all, or says it cannot find the Ghost
+key, that is a computer problem, not something you did. Message Henry.
+
+
+=====================================================================
+NOT YOUR JOB
+=====================================================================
+
+Only CloudHenry, the cheap flights business. Nothing else.
+
+  Not his Instagram or any social media
+  Not answering his emails
+  Not Henry's Comps, the competition site and prize draws
+  Not H Moores Media, his brand deals and invoices
+
+If any of that lands, forward it to Henry and leave it.
+
+And two things never to do, even if it looks obvious:
+
+  Never press the green Publish button inside Ghost. It is set to send
+  to all 2,500 people, including the 2,300 who have not paid. The
+  script always picks the right group for you.
+
+  Never change a price or a flight by hand. Every price comes straight
+  from the airline that morning.
+
+
+=====================================================================
+USEFUL TO KNOW
+=====================================================================
+
+  How many people   about 225 paying members, about 2,300 on the free list
+  How long it takes about 5 minutes to check, about 5 minutes to send
+  Best time         Monday morning, before lunch
+  Where it sends    Ghost, at cloudhenry.ghost.io
