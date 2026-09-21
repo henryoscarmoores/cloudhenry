@@ -1,0 +1,102 @@
+THE MONDAY EMAIL
+For Liv, while Henry is away. Thank you for picking this up.
+
+
+WHAT THIS IS
+------------
+Every Monday morning CloudHenry sends out cheap flight deals. Two emails
+go out, and each one goes to a different group of people:
+
+  1. The paying members. About 225 people who pay 2.99 a month. They get
+     the full list of flights for their own airport.
+
+  2. The free list. About 2,300 people who signed up but do not pay. They
+     get a different email, with 30 hand picked deals.
+
+Everyone gets the email for the airport they chose when they signed up,
+so Manchester people get Manchester flights. That happens automatically.
+You do not have to pick anything.
+
+
+WHAT YOU DO
+-----------
+Monday morning, ideally before lunch.
+
+  Step 1. Open the app called "Windows PowerShell" from the Start menu.
+
+  Step 2. Copy and paste this line, then press Enter:
+
+              cd C:\Users\henne\cloudhenry
+
+  Step 3. Copy and paste this line, then press Enter:
+
+              .\monday.ps1
+
+          It takes about five minutes. It builds the emails and then
+          checks them. It does NOT send anything yet.
+
+  Step 4. Read what it says on the screen.
+
+          If the last line is EVERYTHING PASSED, carry on to step 5.
+
+          If you see STOP anywhere, do not send. Take a photo of the
+          screen and message Henry. Something is wrong with the flight
+          data and it is better to skip a week than send bad prices.
+
+  Step 5. To actually send them, paste this and press Enter:
+
+              .\monday.ps1 -Send -SkipBuild
+
+          It sends the paying members first, then the free list. It
+          prints each airport as it goes. When it says DONE, you are
+          finished for the week.
+
+That is the whole job.
+
+
+WHAT THE CHECKS ARE DOING
+-------------------------
+You do not need to understand these, but in case you are curious, the
+script refuses to send if:
+
+  - the flight prices are more than a day old
+  - any flight in the email has already departed or is too far ahead
+  - any of the flights it tests have stopped existing
+  - the "join for 2.99" advert has leaked into the paying members' email,
+    which would mean selling them something they already pay for
+
+It also opens twenty real flight links at random and checks the flights
+are still on sale. That is the bit that matters most. Henry cares a lot
+that every button in the email goes to a real, bookable flight.
+
+
+TWO THINGS TO NEVER DO
+----------------------
+  1. Never send from inside Ghost by clicking the green Publish button.
+     Ghost defaults to "All subscribers", which would send the paying
+     members' email to all 2,500 people including the 2,300 who have not
+     paid. The script always picks the right group. Let it do it.
+
+  2. Never change the prices or the wording in an email by hand. Every
+     price comes from the airline that morning. If a price looks wrong,
+     message Henry rather than editing it.
+
+
+IF SOMETHING GOES WRONG
+-----------------------
+Nothing you can do here is permanent until the sending step, and the
+script will not send if a check fails. If you are unsure at any point,
+stop and message Henry. A week with no email is completely fine. A week
+with a wrong email is not.
+
+If the script will not run at all, or says it cannot find the Ghost key,
+that is a computer problem and not something you did. Message Henry.
+
+
+WHO IS WHO
+----------
+  Ghost        the website and the email system, cloudhenry.ghost.io
+  A draft      an email that is written but not sent
+  Paying / free  the two groups the emails go to
+
+Henry is back around 16 October.
