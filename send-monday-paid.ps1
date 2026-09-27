@@ -21,7 +21,8 @@
 param(
   [switch] $WhatIf,
   [string[]] $OnlySlugs,
-  [int] $Tolerance = 3
+  [int] $Tolerance = 3,
+  [string] $Schedule   # ISO time in UTC, e.g. 2026-09-28T06:30:00.000Z. Empty means send now.
 )
 $ErrorActionPreference = "Stop"
 $RepoDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -71,14 +72,34 @@ foreach ($slug in $LIST) {
   $post = @((Call GET ("/posts/?limit=1&filter=" + [uri]::EscapeDataString("slug:$slug-$stamp"))).posts)
   if (-not $post -or $post[0].status -ne "draft") { Write-Host ("{0}: no draft to send" -f $slug); continue }
 
-  if ($WhatIf) { Write-Host ("{0}: would send to {1} ({2} paying)" -f $slug, $segment, $expected); continue }
+  if ($WhatIf) {
+    $what = if ($Schedule) { "would schedule for $Schedule" } else { "would send now" }
+    Write-Host ("{0}: {1} to {2} ({3} paying)" -f $slug, $what, $segment, $expected)
+    continue
+  }
 
   $q = "?newsletter=$Newsletter&email_segment=" + [uri]::EscapeDataString($segment)
-  $r = Call PUT ("/posts/" + $post[0].id + "/" + $q) @{ posts = @(@{ status = "published"; updated_at = $post[0].updated_at }) }
+  $body = if ($Schedule) { @{ status = "scheduled"; published_at = $Schedule; updated_at = $post[0].updated_at } }
+          else           { @{ status = "published"; updated_at = $post[0].updated_at } }
+  $r = Call PUT ("/posts/" + $post[0].id + "/" + $q) @{ posts = @($body) }
+
+  $chk = (Call GET ("/posts/" + $post[0].id + "/?include=email,email_segment")).posts[0]
+
+  if ($Schedule) {
+    # Nothing has gone yet, so there is no email to count. What has to be
+    # right is the audience Ghost has stored against the scheduled post.
+    $seg = [string]$chk.email_segment
+    Write-Host ("{0}: scheduled for {1}, audience '{2}' ({3} paying)" -f $slug, $chk.published_at, $seg, $expected)
+    if ($seg -ne $segment) {
+      throw "STOPPED. $slug was scheduled with audience '$seg' instead of '$segment'. Unschedule it in Ghost and tell Henry. Nothing further scheduled."
+    }
+    $sent++
+    Start-Sleep -Seconds 2
+    continue
+  }
 
   # What Ghost says it actually mailed. If this is wildly more than the
   # airport has, the segment did not apply and we stop before the next one.
-  $chk = (Call GET ("/posts/" + $post[0].id + "/?include=email")).posts[0]
   $count = if ($chk.email -and $chk.email.email_count) { [int]$chk.email.email_count } else { -1 }
   $filter = if ($chk.email) { [string]$chk.email.recipient_filter } else { "" }
   Write-Host ("{0}: sent, expected {1}, Ghost says {2}, filter '{3}'" -f $slug, $expected, $count, $filter)
@@ -88,4 +109,4 @@ foreach ($slug in $LIST) {
   $sent++
   Start-Sleep -Seconds 4
 }
-Write-Host "Sent $sent paid Monday emails."
+Write-Host $(if ($Schedule) { "Scheduled $sent paid Monday emails." } else { "Sent $sent paid Monday emails." })

@@ -14,7 +14,8 @@
 [CmdletBinding()]
 param(
   [switch] $Send,
-  [switch] $SkipBuild
+  [switch] $SkipBuild,
+  [string] $At        # e.g. -At "07:30" to schedule for Monday morning instead of sending now
 )
 $ErrorActionPreference = "Stop"
 $Repo = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -168,19 +169,45 @@ Write-Host ""
 
 if (-not $Send) {
   Write-Host "  Nothing has been sent yet." -ForegroundColor White
-  Write-Host "  Have a look at the emails in Ghost, then run this to send them:" -ForegroundColor White
+  Write-Host "  To send them right now:" -ForegroundColor White
   Write-Host "      .\monday.ps1 -Send -SkipBuild" -ForegroundColor Cyan
+  Write-Host "  Or to set them going by themselves on Monday morning:" -ForegroundColor White
+  Write-Host "      .\monday.ps1 -Send -SkipBuild -At `"07:30`"" -ForegroundColor Cyan
   Write-Host ""
   exit 0
 }
 
 # ---------------------------------------------------------------- 6. send
-Head "5. Sending"
+# Work out the scheduled time, if one was asked for. Times are typed as
+# UK clock time. Ghost wants UTC, which in British Summer Time is an hour
+# behind, so let .NET do the conversion rather than guessing.
+$sched = ""
+if ($At) {
+  $hm = $null
+  if (-not [datetime]::TryParseExact($At, @('HH:mm','H:mm'), $null, 'None', [ref]$hm)) {
+    throw "I did not understand the time '$At'. Write it like -At `"07:30`"."
+  }
+  $when = $monday.Date.AddHours($hm.Hour).AddMinutes($hm.Minute)
+  if ($when -le (Get-Date)) { throw "$($when.ToString('dddd dd MMM HH:mm')) has already passed. Pick a later time." }
+  $sched = $when.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.000Z")
+  Head "5. Scheduling"
+  Write-Host ("  Both sets will go out at {0} UK time." -f $when.ToString('dddd dd MMMM, HH:mm')) -ForegroundColor White
+} else {
+  Head "5. Sending"
+}
+
 Write-Host "  Paying members first." -ForegroundColor White
-& (Join-Path $Repo "send-monday-paid.ps1")
+if ($sched) { & (Join-Path $Repo "send-monday-paid.ps1") -Schedule $sched }
+else        { & (Join-Path $Repo "send-monday-paid.ps1") }
 Write-Host ""
 Write-Host "  Now the free list." -ForegroundColor White
-& (Join-Path $Repo "build-free-email.ps1") -Send
+if ($sched) { & (Join-Path $Repo "build-free-email.ps1") -Send -Schedule $sched }
+else        { & (Join-Path $Repo "build-free-email.ps1") -Send }
 Write-Host ""
-Write-Host "  DONE. Both sets have gone out." -ForegroundColor Green
+if ($sched) {
+  Write-Host ("  DONE. Both sets are scheduled for {0} UK time." -f $when.ToString('dddd dd MMMM, HH:mm')) -ForegroundColor Green
+  Write-Host "  You do not need to do anything on the morning. Ghost sends them." -ForegroundColor Green
+} else {
+  Write-Host "  DONE. Both sets have gone out." -ForegroundColor Green
+}
 Write-Host ""
