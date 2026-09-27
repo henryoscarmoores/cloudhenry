@@ -183,11 +183,16 @@ if (-not $Send) {
 # behind, so let .NET do the conversion rather than guessing.
 $sched = ""
 if ($At) {
-  $hm = $null
-  if (-not [datetime]::TryParseExact($At, @('HH:mm','H:mm'), $null, 'None', [ref]$hm)) {
-    throw "I did not understand the time '$At'. Write it like -At `"07:30`"."
+  # Read the time by hand. PowerShell 5.1 cannot pick the right
+  # TryParseExact overload here and throws a confusing error instead.
+  if ($At -notmatch '^\s*(\d{1,2})[:.](\d{2})\s*$') {
+    throw "I did not understand the time '$At'. Write it like -At `"09:00`"."
   }
-  $when = $monday.Date.AddHours($hm.Hour).AddMinutes($hm.Minute)
+  $hh = [int]$Matches[1]; $mm = [int]$Matches[2]
+  if ($hh -gt 23 -or $mm -gt 59) {
+    throw "'$At' is not a real time. Write it like -At `"09:00`", on a 24 hour clock."
+  }
+  $when = $monday.Date.AddHours($hh).AddMinutes($mm)
   if ($when -le (Get-Date)) { throw "$($when.ToString('dddd dd MMM HH:mm')) has already passed. Pick a later time." }
   $sched = $when.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.000Z")
   Head "5. Scheduling"

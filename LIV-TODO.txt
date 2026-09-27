@@ -57,6 +57,35 @@ MONDAY 12 OCTOBER
 
 
 =====================================================================
+DOING IT THE NIGHT BEFORE INSTEAD
+=====================================================================
+
+If you are working early on the Monday, set it up on the Sunday evening
+and let it send itself.
+
+Everything is the same, except the last line becomes:
+
+    .\monday.ps1 -Send -SkipBuild -At "09:00"
+
+The time in quotes is when it goes out on the Monday, UK time. Change it
+to whatever suits. Once it says DONE, there is nothing to do in the
+morning at all.
+
+
+=====================================================================
+WHICH WORD ACTUALLY SENDS
+=====================================================================
+
+  -Send        THIS is the one that sends. Be careful with it.
+  -SkipBuild   only means "use the emails already made". Never sends.
+  -At "09:00"  schedules it instead of sending straight away.
+
+So .\monday.ps1 on its own is completely safe and you can run it as
+often as you like. Even with -Send it checks everything first and stops
+if anything is wrong, so you cannot send a broken email by accident.
+
+
+=====================================================================
 IF SOMETHING GOES WRONG
 =====================================================================
 

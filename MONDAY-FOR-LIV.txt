@@ -68,6 +68,38 @@ Monday morning, ideally before lunch.
 That is the whole job.
 
 
+IF YOU WOULD RATHER DO IT THE NIGHT BEFORE
+------------------------------------------
+You can set it up on the Sunday evening and let it send itself on the
+Monday morning. Useful if you are working early.
+
+Do steps 1 to 4 exactly the same, then instead of step 5 use:
+
+        .\monday.ps1 -Send -SkipBuild -At "09:00"
+
+The time in quotes is when it goes out on the Monday, in UK time. Change
+it to whatever you want, "07:30" or "10:00" and so on.
+
+It will tell you the day and time it has set, and after that you do not
+need to touch anything. Ghost sends them on its own.
+
+
+WHICH WORD ACTUALLY SENDS
+-------------------------
+This trips people up, so to be clear:
+
+  -Send        THIS is the one that sends. Be careful with it.
+  -SkipBuild   only means "do not rebuild, use the ones already made".
+               On its own it never sends anything.
+  -At "09:00"  schedules instead of sending straight away.
+
+So .\monday.ps1 and .\monday.ps1 -SkipBuild are both completely safe.
+You can run them as often as you like.
+
+And even with -Send, it still runs every check first and stops dead if
+anything is wrong. You cannot send a broken email by accident.
+
+
 WHAT THE CHECKS ARE DOING
 -------------------------
 You do not need to understand these, but in case you are curious, the
