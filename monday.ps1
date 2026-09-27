@@ -20,6 +20,11 @@ $ErrorActionPreference = "Stop"
 $Repo = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $Repo
 $stamp = Get-Date -Format "yyyy-MM-dd"
+# The paying members' drafts are always named after the Monday they are for,
+# not the day they were built, so running this on a Sunday still finds them.
+$monday = Get-Date
+if ($monday.DayOfWeek -ne 'Monday') { while ($monday.DayOfWeek -ne 'Monday') { $monday = $monday.AddDays(1) } }
+$mondayStamp = $monday.ToString("yyyy-MM-dd")
 $problems = @()
 $notes    = @()
 
@@ -52,7 +57,7 @@ $AIR = @('manchester','birmingham','leeds','london-stansted','london-luton','bri
          'prestwick','cork','shannon','knock')
 
 Write-Host ""
-Write-Host "  THE MONDAY EMAIL, $stamp" -ForegroundColor White
+Write-Host "  THE MONDAY EMAIL for Monday $mondayStamp" -ForegroundColor White
 Write-Host "  =============================="
 
 # --------------------------------------------------------- 1. fresh fares
@@ -81,7 +86,7 @@ Head "3. Checking every email"
 $today = (Get-Date).Date
 $totalLinks = 0; $badDates = 0; $upsell = @(); $big = @(); $missing = @()
 foreach ($s in $AIR) {
-  $post = @((G "/posts/?limit=1&filter=$([uri]::EscapeDataString("slug:$s-$stamp"))&formats=lexical").posts)
+  $post = @((G "/posts/?limit=1&filter=$([uri]::EscapeDataString("slug:$s-$mondayStamp"))&formats=lexical").posts)
   if (-not $post) { $missing += $s; continue }
   $obj = $post[0].lexical | ConvertFrom-Json
   $paid = ""; $all = ""
@@ -121,7 +126,7 @@ Head "4. Opening real flight links"
 $UA = @{ 'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'; 'Accept' = 'application/json' }
 $sample = @(); $seen = @{}
 foreach ($s in @('manchester','london-stansted','birmingham','edinburgh','bristol')) {
-  $post = @((G "/posts/?limit=1&filter=$([uri]::EscapeDataString("slug:$s-$stamp"))&formats=lexical").posts)
+  $post = @((G "/posts/?limit=1&filter=$([uri]::EscapeDataString("slug:$s-$mondayStamp"))&formats=lexical").posts)
   if (-not $post) { continue }
   $obj = $post[0].lexical | ConvertFrom-Json
   $h = ""

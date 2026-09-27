@@ -27,7 +27,11 @@ $ErrorActionPreference = "Stop"
 $RepoDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Admin = "https://cloudhenry.ghost.io/ghost/api/admin"
 $Newsletter = "default-newsletter"
-$stamp = Get-Date -Format "yyyy-MM-dd"
+# Drafts are named after the Monday they are for, not the day they were
+# built, so this still finds them when run on a Sunday.
+$monday = Get-Date
+while ($monday.DayOfWeek -ne 'Monday') { $monday = $monday.AddDays(1) }
+$stamp = $monday.ToString("yyyy-MM-dd")
 
 $key = $env:GHOST_ADMIN_KEY
 if (-not $key -and (Test-Path (Join-Path $RepoDir ".ghostkey"))) { $key = (Get-Content (Join-Path $RepoDir ".ghostkey") -Raw).Trim() }
