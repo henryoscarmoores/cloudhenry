@@ -1,5 +1,5 @@
 ﻿{
-    "updated":  "2026-10-04T18:56:02Z",
+    "updated":  "2026-10-04T23:27:42Z",
     "days":  [
                  {
                      "date":  "2026-09-05",
@@ -611,7 +611,7 @@
                      "paid":  237,
                      "comped":  1,
                      "trialing":  157,
-                     "new_24h":  2,
+                     "new_24h":  1,
                      "new_7d":  28,
                      "via_homepage":  2428,
                      "via_airport_page":  185,
