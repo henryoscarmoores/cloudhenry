@@ -299,7 +299,14 @@ foreach ($a in $AIRPORTS) {
   if ($fares.Count -lt $minFares) { Write-Host "$($a.code): only $($fares.Count) fares in the window, skipped"; $skipped++; continue }
 
   $n = $fares.Count
-  $cheapest = $fares[0].price
+  # The title and excerpt sit on the public homepage, where the search hides
+  # the British Isles from anyone flying out of a UK airport. Quoting the
+  # Shannon fare as the "from" price sent people looking for a price the site
+  # then refused to show them (Henry, 16 Oct 2026). Irish airports are not
+  # filtered that way, so they keep the straight cheapest. $fares is already
+  # cheapest first, so the first one left is the one we want.
+  $shown = @($fares | Where-Object { $IE.ContainsKey($a.code) -or -not (Isles $_.dest) })
+  $cheapest = if ($shown.Count) { $shown[0].price } else { $fares[0].price }
   $withTyp = @($fares | Where-Object { $_.typical -gt 0 -and $_.typical -gt $_.price })
   $avgSave = if ($withTyp.Count) { [math]::Round((($withTyp | ForEach-Object { 1 - $_.price / $_.typical } | Measure-Object -Average).Average) * 100) } else { 0 }
   $returnsUnder50 = @($fares | Where-Object { $_.ret -and $_.price -le 50 }).Count
@@ -426,7 +433,7 @@ foreach ($a in $AIRPORTS) {
   $post = @{ posts = @(@{
     title = $title; slug = $slugBase; lexical = $lexical; status = "draft"; visibility = "public"; email_only = [bool]$EmailOnly
     tags = @(@{ name = "#paid-draft" }, @{ name = "#monday-auto" })   # internal tags (leading hash), so they never print on the page
-    custom_excerpt = "$n cheap fares from $($a.name) this week, $($Fresh.ToLower()), from $([char]0xA3)$cheapest."
+    custom_excerpt = "$n cheap fares from $($a.name) this week, from $([char]0xA3)$cheapest."
     email_subject = "$($a.name): $n fares this week, from $([char]0xA3)$cheapest"
   }) }
   $made = Call POST "/posts/" $post
