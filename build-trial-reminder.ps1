@@ -162,29 +162,40 @@ $GBP  = [char]0xA3
 function Build([datetime] $End) {
   $long  = LongDay $End
   $short = ShortDay $End
+  # The same day group is being charged as this lands, so "cancel before
+  # the 16th and you will not be charged" would be a lie to them. They get
+  # the refund first instead (Henry, 16 Oct 2026).
+  $same = ($End -eq (Get-Date).Date)
+
+  $title  = if ($same) { "It ends today." } else { "It ends on $long." }
+  $sub    = if ($same) { "Your first payment comes out today. Here is exactly what happens, and what to do if you would rather it did not." }
+            else       { "Your first payment comes out that day. Here is exactly what happens, and how to stop it if you would rather." }
+  $whenBox = if ($same) { "today" } else { $short }
+  $whatH   = if ($same) { "What happens today" } else { "What happens on $short" }
+  $outB    = if ($same) { "Cancel now and you stop any further payments. If today's payment has already gone through, email us and we will refund it in full, no questions. Two clicks from your account page to cancel. No phone call, no notice period, no one trying to talk you out of it." }
+             else       { "Cancel before $short and you will not be charged a penny. Two clicks from your account page. No phone call, no notice period, no one trying to talk you out of it." }
 
   $head = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#0E6FB6`" style=`"width:100%;background:#0E6FB6;border-radius:18px;`"><tr><td style=`"padding:26px 22px 22px;text-align:center;$FONT`">" +
     "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:#BEE3F8;`">Your free trial</div>" +
-    "<div style=`"font-size:27px;font-weight:900;color:#FFFFFF;line-height:1.15;margin:8px 0 6px;letter-spacing:-.5px;`">It ends on $long.</div>" +
-    "<div style=`"font-size:14.5px;color:#D7EDFA;line-height:1.5;max-width:34em;margin:0 auto;`">Your first payment comes out that day. Here is exactly what happens, and how to stop it if you would rather.</div>" +
+    "<div style=`"font-size:27px;font-weight:900;color:#FFFFFF;line-height:1.15;margin:8px 0 6px;letter-spacing:-.5px;`">$title</div>" +
+    "<div style=`"font-size:14.5px;color:#D7EDFA;line-height:1.5;max-width:34em;margin:0 auto;`">$sub</div>" +
     "</td></tr></table>"
 
   $stats = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"8`" border=`"0`" style=`"width:100%;border-collapse:separate;margin-top:12px;`"><tr>" +
-    "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">$short</div><div style=`"font-size:11px;color:#5B7387;`">first payment</div></td>" +
+    "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">$whenBox</div><div style=`"font-size:11px;color:#5B7387;`">first payment</div></td>" +
     "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">2 clicks</div><div style=`"font-size:11px;color:#5B7387;`">to cancel</div></td>" +
     "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">14 days</div><div style=`"font-size:11px;color:#5B7387;`">to change your mind</div></td>" +
     "</tr></table>"
 
   $what = "<div style=`"margin-top:22px;padding:16px 18px;border-radius:14px;background:#F0F6FB;$FONT`">" +
-    "<div style=`"font-size:15px;font-weight:800;color:#0E3550;margin-bottom:8px;`">What happens on $short</div>" +
+    "<div style=`"font-size:15px;font-weight:800;color:#0E3550;margin-bottom:8px;`">$whatH</div>" +
     "<div style=`"font-size:14px;color:#46607A;line-height:1.6;`">" +
     "Your 40 days are up and the plan you chose when you joined starts, either $($GBP)2.99 a month or $($GBP)29 for the year. Your account page shows which one and the exact amount.<br><br>" +
     "We email you a receipt the moment it goes through. Nothing else changes, the fares keep landing every week.</div></div>"
 
   $out = "<div style=`"margin-top:12px;padding:16px 18px;border-radius:14px;border:1px solid #E3EEF6;$FONT`">" +
     "<div style=`"font-size:15px;font-weight:800;color:#0E3550;margin-bottom:8px;`">If you would rather not</div>" +
-    "<div style=`"font-size:14px;color:#46607A;line-height:1.6;`">" +
-    "Cancel before $short and you will not be charged a penny. Two clicks from your account page. No phone call, no notice period, no one trying to talk you out of it.</div></div>"
+    "<div style=`"font-size:14px;color:#46607A;line-height:1.6;`">$outB</div></div>"
 
   $cta = "<div style=`"text-align:center;margin-top:20px;$FONT`">" +
     "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`">" +
@@ -214,14 +225,16 @@ foreach ($g in $groups) {
   $card = @{ type = "html"; version = 1; html = (Build $end) }
   $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($card) } } | ConvertTo-Json -Depth 12 -Compress
 
+  $sameDay = ($end -eq $today)
   $post = @{ posts = @(@{
-    title = "Your free trial ends on " + (LongDay $end)
+    title = if ($sameDay) { "Your free trial ends today" } else { "Your free trial ends on " + (LongDay $end) }
     slug = $slug
     lexical = $lexical
     status = "draft"
     visibility = "members"
-    custom_excerpt = "Your first payment comes out on " + (ShortDay $end) + ". Here is what happens, and how to cancel if you would rather."
-    email_subject = "Your free trial ends on " + (ShortDay $end)
+    custom_excerpt = if ($sameDay) { "Your first payment comes out today. Here is what happens, and what to do if you would rather it did not." }
+                     else          { "Your first payment comes out on " + (ShortDay $end) + ". Here is what happens, and how to cancel if you would rather." }
+    email_subject = if ($sameDay) { "Your free trial ends today" } else { "Your free trial ends on " + (ShortDay $end) }
     tags = @(@{ name = "#trial-reminder" })
   }) }
   Call POST "/posts/?source=html" $post | Out-Null
