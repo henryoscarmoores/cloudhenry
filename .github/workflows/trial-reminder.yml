@@ -1,0 +1,52 @@
+# One off, October 2026. The 157 members still on a 40 day trial reach the
+# end of it between 15 and 23 October, and nothing was warning them, which
+# the terms page has always promised it would. Henry is away from his
+# machine, so this runs the same script on a runner that holds the Ghost
+# key. It is the only way to send these without a PC to hand.
+#
+# Three modes, meant to be used in this order:
+#   whatif  reads only, prints the dates and head counts, writes nothing
+#   build   labels each member with their end date, writes the drafts
+#   send    publishes each draft to its own label, the emails go out
+#
+# Nothing is scheduled and nothing should be. The trial was removed on
+# 13 September 2026 so no new one can start, and after 23 October this
+# has nothing left to find and says so.
+
+name: Trial ending reminder
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "whatif reads only, build writes drafts, send emails members"
+        required: true
+        default: "whatif"
+        type: choice
+        options:
+          - whatif
+          - build
+          - send
+
+permissions:
+  contents: read
+
+jobs:
+  reminder:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run the trial reminder
+        shell: powershell
+        env:
+          GHOST_ADMIN_KEY: ${{ secrets.GHOST_ADMIN_KEY }}
+          MODE: ${{ github.event.inputs.mode }}
+        run: |
+          switch ($env:MODE) {
+            "whatif" { .\build-trial-reminder.ps1 -WhatIf }
+            "build"  { .\build-trial-reminder.ps1 -Replace }
+            "send"   { .\build-trial-reminder.ps1 -Send }
+            default  { throw "Unknown mode '$($env:MODE)'. Use whatif, build or send." }
+          }
