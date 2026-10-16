@@ -268,6 +268,11 @@ foreach ($g in $groups) {
     lexical = $lexical
     status = "draft"
     visibility = "members"
+    # Email only, or publishing it to send it also puts "Your free trial
+    # ends on ..." on the homepage, in front of people who cannot have a
+    # trial and must never be offered one. Learned the hard way on the
+    # first send, 16 Oct 2026.
+    email_only = $true
     custom_excerpt = if ($pastDay) { "Your trial finished on " + (ShortDay $end) + " and the payment has gone through. Here is how to get it back if you would rather not have it." }
                      elseif ($sameDay) { "Your first payment comes out today. Here is what happens, and what to do if you would rather it did not." }
                      else          { "Your first payment comes out on " + (ShortDay $end) + ". Here is what happens, and how to cancel if you would rather." }
