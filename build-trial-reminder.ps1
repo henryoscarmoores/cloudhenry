@@ -39,6 +39,7 @@ param(
   [switch] $WhatIf,
   [switch] $Replace,
   [switch] $Send,
+  [switch] $Hide,
   [string] $Date,
   [int] $Tolerance = 3
 )
@@ -88,6 +89,24 @@ function Esc([string] $s) { if ($null -eq $s) { return "" }; $s.Replace("&","&am
 # "Sunday 18 October", the way a person says a date out loud.
 function LongDay([datetime] $d) { return $d.ToString("dddd d MMMM", [Globalization.CultureInfo]::GetCultureInfo("en-GB")) }
 function ShortDay([datetime] $d) { return $d.ToString("d MMM", [Globalization.CultureInfo]::GetCultureInfo("en-GB")) }
+
+# ---- hide mode: take the sent posts back off the public site --------------
+# Ghost has to publish a post in order to email it, so each reminder also
+# landed on the homepage, eight cards reading "Your free trial ends on ..."
+# shown to visitors who cannot have a trial at all. The emails are sent and
+# stay sent. This only takes the pages down (16 Oct 2026).
+if ($Hide) {
+  $posts = @((Call GET "/posts/?limit=all&filter=$([uri]::EscapeDataString("slug:~'trial-reminder-'"))&fields=id,slug,status,updated_at").posts)
+  $hidden = 0
+  foreach ($p in $posts) {
+    if ($p.status -ne "published") { Write-Host ("{0}: already {1}, left alone" -f $p.slug, $p.status); continue }
+    Call PUT "/posts/$($p.id)/" @{ posts = @(@{ status = "draft"; updated_at = $p.updated_at }) } | Out-Null
+    Write-Host ("{0}: taken off the site" -f $p.slug)
+    $hidden++
+  }
+  Write-Host "Hid $hidden trial reminder posts. The emails that went out stay sent."
+  exit 0
+}
 
 # ---- who is still on a trial, and when does it end ------------------------
 Write-Host "Reading members..."

@@ -27,6 +27,7 @@ on:
           - whatif
           - build
           - send
+          - hide
 
 permissions:
   contents: read
@@ -48,5 +49,6 @@ jobs:
             "whatif" { .\build-trial-reminder.ps1 -WhatIf }
             "build"  { .\build-trial-reminder.ps1 -Replace }
             "send"   { .\build-trial-reminder.ps1 -Send }
-            default  { throw "Unknown mode '$($env:MODE)'. Use whatif, build or send." }
+            "hide"   { .\build-trial-reminder.ps1 -Hide }
+            default  { throw "Unknown mode '$($env:MODE)'. Use whatif, build, send or hide." }
           }
