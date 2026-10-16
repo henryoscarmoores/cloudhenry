@@ -120,7 +120,10 @@ if ($Send) {
   $sent = 0
   foreach ($g in $groups) {
     $d = [datetime]::ParseExact($g.Name, "yyyy-MM-dd", $null)
-    if ($d -lt $today) { Write-Host ("{0}: trial already ended, not sending a warning after the fact" -f $g.Name); continue }
+    # Already charged still gets an email, it just says so and offers the
+    # money back. Past the refund window there is nothing useful left to
+    # say, so that one stays quiet.
+    if ($d -lt $today.AddDays(-14)) { Write-Host ("{0}: charged over 14 days ago, past the refund window, not emailing" -f $g.Name); continue }
     $slug = "trial-reminder-" + $g.Name
     $draft = @((Call GET "/posts/?limit=1&filter=$([uri]::EscapeDataString("slug:$slug"))").posts)
     if (-not $draft -or $draft[0].status -ne "draft") { Write-Host ("{0}: no draft to send" -f $g.Name); continue }
@@ -162,17 +165,25 @@ $GBP  = [char]0xA3
 function Build([datetime] $End) {
   $long  = LongDay $End
   $short = ShortDay $End
+  # Three versions, because the same words are wrong at different moments.
   # The same day group is being charged as this lands, so "cancel before
-  # the 16th and you will not be charged" would be a lie to them. They get
-  # the refund first instead (Henry, 16 Oct 2026).
+  # the 16th and you will not be charged" would be a lie to them. The past
+  # group has already paid, so a warning is no use and only the refund is.
+  # Saying nothing to them is the expensive option: an unexplained charge
+  # is how a chargeback starts, and that costs the money and a fee on top
+  # (Henry, 16 Oct 2026).
   $same = ($End -eq (Get-Date).Date)
+  $past = ($End -lt (Get-Date).Date)
 
-  $title  = if ($same) { "It ends today." } else { "It ends on $long." }
-  $sub    = if ($same) { "Your first payment comes out today. Here is exactly what happens, and what to do if you would rather it did not." }
+  $title  = if ($past) { "It has ended, and we have charged you." } elseif ($same) { "It ends today." } else { "It ends on $long." }
+  $sub    = if ($past) { "Your trial finished on $short and your first payment has gone through. Here is what you paid for, and how to get it back if you would rather not have it." }
+            elseif ($same) { "Your first payment comes out today. Here is exactly what happens, and what to do if you would rather it did not." }
             else       { "Your first payment comes out that day. Here is exactly what happens, and how to stop it if you would rather." }
-  $whenBox = if ($same) { "today" } else { $short }
-  $whatH   = if ($same) { "What happens today" } else { "What happens on $short" }
-  $outB    = if ($same) { "Cancel now and you stop any further payments. If today's payment has already gone through, email us and we will refund it in full, no questions. Two clicks from your account page to cancel. No phone call, no notice period, no one trying to talk you out of it." }
+  $whenBox = if ($past) { "paid" } elseif ($same) { "today" } else { $short }
+  $whenSub = if ($past) { "on $short" } else { "first payment" }
+  $whatH   = if ($past) { "What you have paid for" } elseif ($same) { "What happens today" } else { "What happens on $short" }
+  $outB    = if ($past) { "We should have told you this was coming and we did not, so there is no argument to have. Email us and we will refund it in full. If you would rather simply stop here, cancel in two clicks from your account page. No phone call, no notice period." }
+             elseif ($same) { "Cancel now and you stop any further payments. If today's payment has already gone through, email us and we will refund it in full, no questions. Two clicks from your account page to cancel. No phone call, no notice period, no one trying to talk you out of it." }
              else       { "Cancel before $short and you will not be charged a penny. Two clicks from your account page. No phone call, no notice period, no one trying to talk you out of it." }
 
   $head = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"0`" border=`"0`" bgcolor=`"#0E6FB6`" style=`"width:100%;background:#0E6FB6;border-radius:18px;`"><tr><td style=`"padding:26px 22px 22px;text-align:center;$FONT`">" +
@@ -182,7 +193,7 @@ function Build([datetime] $End) {
     "</td></tr></table>"
 
   $stats = "<table width=`"100%`" cellpadding=`"0`" cellspacing=`"8`" border=`"0`" style=`"width:100%;border-collapse:separate;margin-top:12px;`"><tr>" +
-    "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">$whenBox</div><div style=`"font-size:11px;color:#5B7387;`">first payment</div></td>" +
+    "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">$whenBox</div><div style=`"font-size:11px;color:#5B7387;`">$whenSub</div></td>" +
     "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">2 clicks</div><div style=`"font-size:11px;color:#5B7387;`">to cancel</div></td>" +
     "<td width=`"33%`" bgcolor=`"#F0F6FB`" style=`"background:#F0F6FB;border-radius:12px;padding:12px 8px;text-align:center;$FONT`"><div style=`"font-size:19px;font-weight:900;color:#0E3550;`">14 days</div><div style=`"font-size:11px;color:#5B7387;`">to change your mind</div></td>" +
     "</tr></table>"
@@ -206,7 +217,9 @@ function Build([datetime] $End) {
   $refund = "<div style=`"margin-top:20px;padding:12px 14px;border-radius:12px;background:#FFF4D1;font-size:13px;color:#5A4210;$FONT`">" +
     "<b style=`"color:#3A2A08;`">Changed your mind after the fact?</b> Email us within 14 days of the payment and we refund the lot. We would rather you were happy than stuck.</div>"
 
-  $signoff = "<div style=`"margin-top:20px;font-size:13.5px;color:#46607A;$FONT`">Thanks for giving it a go,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
+  $signoff = "<div style=`"margin-top:20px;font-size:13.5px;color:#46607A;line-height:1.6;$FONT`">" +
+    "And if you are unhappy with any of it, or the emails are not what you hoped for, just reply and tell me. I read them myself and I would rather hear it than not.<br><br>" +
+    "Thanks for giving it a go,<br><b style=`"color:#0E3550;`">Henry</b><br>@henryoscarmoores</div>"
 
   return $head + $stats + $what + $out + $cta + $refund + $signoff
 }
@@ -214,7 +227,7 @@ function Build([datetime] $End) {
 $made = 0
 foreach ($g in $groups) {
   $end = [datetime]::ParseExact($g.Name, "yyyy-MM-dd", $null)
-  if ($end -lt $today) { Write-Host ("{0}: trial already ended, no draft" -f $g.Name); continue }
+  if ($end -lt $today.AddDays(-14)) { Write-Host ("{0}: charged over 14 days ago, past the refund window, no draft" -f $g.Name); continue }
   $slug = "trial-reminder-" + $g.Name
   $existing = @((Call GET "/posts/?limit=1&filter=$([uri]::EscapeDataString("slug:$slug"))").posts)
   if ($existing -and $existing.Count -gt 0) {
@@ -226,15 +239,20 @@ foreach ($g in $groups) {
   $lexical = @{ root = @{ type = "root"; version = 1; direction = "ltr"; format = ""; indent = 0; children = @($card) } } | ConvertTo-Json -Depth 12 -Compress
 
   $sameDay = ($end -eq $today)
+  $pastDay = ($end -lt $today)
+  $subject = if ($pastDay) { "Your free trial has ended and we have charged you" }
+             elseif ($sameDay) { "Your free trial ends today" }
+             else { "Your free trial ends on " + (ShortDay $end) }
   $post = @{ posts = @(@{
-    title = if ($sameDay) { "Your free trial ends today" } else { "Your free trial ends on " + (LongDay $end) }
+    title = $subject
     slug = $slug
     lexical = $lexical
     status = "draft"
     visibility = "members"
-    custom_excerpt = if ($sameDay) { "Your first payment comes out today. Here is what happens, and what to do if you would rather it did not." }
+    custom_excerpt = if ($pastDay) { "Your trial finished on " + (ShortDay $end) + " and the payment has gone through. Here is how to get it back if you would rather not have it." }
+                     elseif ($sameDay) { "Your first payment comes out today. Here is what happens, and what to do if you would rather it did not." }
                      else          { "Your first payment comes out on " + (ShortDay $end) + ". Here is what happens, and how to cancel if you would rather." }
-    email_subject = if ($sameDay) { "Your free trial ends today" } else { "Your free trial ends on " + (ShortDay $end) }
+    email_subject = $subject
     tags = @(@{ name = "#trial-reminder" })
   }) }
   Call POST "/posts/?source=html" $post | Out-Null
