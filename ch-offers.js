@@ -19,7 +19,7 @@
   var path = location.pathname.replace(/\/+$/, "");
   var onHome = (path === "");
   var onJoin = /^\/join-[a-z-]+$/.test(path);
-  if (!onHome && !onJoin) return;
+  if (!onHome) return;   // join pages need join.js changing, see note below
   if (window.__chOffers) return;
 
   var ENDS = new Date("2026-11-01T23:59:59Z");
