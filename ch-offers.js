@@ -97,16 +97,15 @@
     wrap.innerHTML =
       card({ best: true, flash: "Best value", kicker: "Full year",
              was: "£29", now: "£20", save: "Save £9",
-             sub: "Every fare from your airport, every week, all year.",
+             sub: "Every fare from your airport, all year.<br>Then it's £29 a year.",
              href: "/annual-20/", cta: "Get a year for £20" }) +
       card({ kicker: "Monthly", was: "£2.99", now: "99p", save: "67% off",
-             sub: "Every fare from your airport, every week.",
+             sub: "Every fare from your airport, every week.<br>Then it's £2.99 a month.",
              href: "/first-month-99p/", cta: "Start for 99p" });
 
     var foot = document.createElement("div");
     foot.className = "ch-off-foot";
-    foot.innerHTML = "£20 for the first year, then £29. 99p for the first month, then £2.99 a month. " +
-      "Cancel any time, no contract. Both offers end <b>1 November</b>.";
+    foot.innerHTML = "Cancel any time, no contract. Both offers end <b>1 November</b>.";
 
     var after = anchor.nextSibling;
     anchor.parentNode.insertBefore(wrap, after);
