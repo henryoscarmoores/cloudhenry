@@ -75,6 +75,16 @@
     if (window.__chOffers) return;
     var anchor = document.querySelector(".ch-ap-note") ||
                  document.querySelector(".ch-airportpick");
+
+    // Join pages have no airport picker, the price sits above the email
+    // capture instead. Anchor to that block so the discounted price is
+    // what someone reads before they type an address.
+    if (!anchor && onJoin) {
+      var em = document.querySelector('input[type="email"]');
+      while (em && em.parentNode && em.getBoundingClientRect().width < 220) em = em.parentNode;
+      if (em && em.parentNode) anchor = em;
+    }
+
     if (!anchor || !anchor.parentNode) return;
     window.__chOffers = true;
 
