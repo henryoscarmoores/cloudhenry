@@ -114,17 +114,9 @@
     // the old price line is now said better by the cards
     if (anchor.classList.contains("ch-ap-note")) anchor.style.display = "none";
 
-    // The free email capture only, never its parent. #ch-airportpick also
-    // holds the airport select and button, and hiding the container once
-    // took the whole picker off the homepage.
-    // HOMEPAGE ONLY. On a join page the email box is the signup itself,
-    // and hiding it would stop anyone joining at all.
-    if (onHome) {
-      var kill = document.querySelectorAll(".ch-hj-email, .ch-hj-btn, .ch-hj-err, .ch-hj-note");
-      for (var i = 0; i < kill.length; i++) { kill[i].style.display = "none"; }
-      var ecap = document.getElementById("ch-emailcap");
-      if (ecap) ecap.style.display = "none";
-    }
+    // Nothing is hidden. The airport and email step stays, it is what
+    // attaches the airport label, and Henry wants it kept. The cards
+    // simply sit above it so the paid price is read first.
 
     // The why-join heading still quoted the old price, directly under cards
     // saying something different. One page, one number.
