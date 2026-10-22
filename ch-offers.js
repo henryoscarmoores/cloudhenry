@@ -101,11 +101,20 @@
     // the old price line is now said better by the cards
     if (anchor.classList.contains("ch-ap-note")) anchor.style.display = "none";
 
-    // leftover free email capture in the hero
-    var free = document.querySelector(".ch-hj-email");
-    if (free) {
-      var box = free.closest("form") || free.parentNode;
-      if (box) box.style.display = "none";
+    // The free email capture only, never its parent. #ch-airportpick also
+    // holds the airport select and button, and hiding the container once
+    // took the whole picker off the homepage.
+    var kill = document.querySelectorAll(".ch-hj-email, .ch-hj-btn, .ch-hj-err, .ch-hj-note");
+    for (var i = 0; i < kill.length; i++) { kill[i].style.display = "none"; }
+
+    // The why-join heading still quoted the old price, directly under cards
+    // saying something different. One page, one number.
+    var hs = document.querySelectorAll("h2");
+    for (var j = 0; j < hs.length; j++) {
+      if (/One good fare pays for the year/i.test(hs[j].textContent)) {
+        hs[j].textContent = "\u00a320 for the year. One good fare covers it many times over.";
+        break;
+      }
     }
     var ec = document.getElementById("ch-emailcap");
     if (ec) ec.style.display = "none";
