@@ -16,7 +16,10 @@
  */
 (function () {
   "use strict";
-  if (location.pathname.replace(/\/+$/, "") !== "") return;
+  var path = location.pathname.replace(/\/+$/, "");
+  var onHome = (path === "");
+  var onJoin = /^\/join-[a-z-]+$/.test(path);
+  if (!onHome && !onJoin) return;
   if (window.__chOffers) return;
 
   var ENDS = new Date("2026-11-01T23:59:59Z");
@@ -104,8 +107,14 @@
     // The free email capture only, never its parent. #ch-airportpick also
     // holds the airport select and button, and hiding the container once
     // took the whole picker off the homepage.
-    var kill = document.querySelectorAll(".ch-hj-email, .ch-hj-btn, .ch-hj-err, .ch-hj-note");
-    for (var i = 0; i < kill.length; i++) { kill[i].style.display = "none"; }
+    // HOMEPAGE ONLY. On a join page the email box is the signup itself,
+    // and hiding it would stop anyone joining at all.
+    if (onHome) {
+      var kill = document.querySelectorAll(".ch-hj-email, .ch-hj-btn, .ch-hj-err, .ch-hj-note");
+      for (var i = 0; i < kill.length; i++) { kill[i].style.display = "none"; }
+      var ecap = document.getElementById("ch-emailcap");
+      if (ecap) ecap.style.display = "none";
+    }
 
     // The why-join heading still quoted the old price, directly under cards
     // saying something different. One page, one number.
@@ -116,8 +125,6 @@
         break;
       }
     }
-    var ec = document.getElementById("ch-emailcap");
-    if (ec) ec.style.display = "none";
   }
 
   var n = 0, t = setInterval(function () {
