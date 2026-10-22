@@ -97,10 +97,10 @@
     wrap.innerHTML =
       card({ best: true, flash: "Best value", kicker: "Full year",
              was: "£29", now: "£20", save: "Save £9",
-             sub: "Every fare from your airport, all year. Then £29.",
+             sub: "Every fare from your airport, all year.<br>Renews at £29 a year.",
              href: "/annual-20/", cta: "Get a year for £20" }) +
       card({ kicker: "Monthly", was: "£2.99", now: "99p", save: "67% off",
-             sub: "Your first month. Then £2.99, cancel any time.",
+             sub: "Your first month.<br>Then £2.99 a month, cancel any time.",
              href: "/first-month-99p/", cta: "Start for 99p" });
 
     var foot = document.createElement("div");
