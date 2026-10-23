@@ -299,7 +299,13 @@ async function handleGo(request, env) {
   const exp = parseInt(u.searchParams.get("e") || "0", 10);
   const sig = u.searchParams.get("s") || "";
   let to = u.searchParams.get("to") || "/my-cloudhenry/";
-  if (!/^\/[A-Za-z0-9\-_\/]*\/?(\?[A-Za-z0-9=&%\-_]*)?$/.test(to)) to = "/my-cloudhenry/";
+  // Ghost opens its own account and plan screens on a #/portal/... fragment,
+  // so a fragment built from the same safe characters is allowed as well. It
+  // was not before, which quietly broke the recovery emails: "to" was rewritten
+  // to /my-cloudhenry/ here, the signature then no longer matched what the
+  // email had signed, and every member who tapped "Update my card" was sent to
+  // /sign-in/ to ask for a second email instead of to their card. (23 Oct 2026)
+  if (!/^\/[A-Za-z0-9\-_\/]*\/?(\?[A-Za-z0-9=&%\-_]*)?(#[A-Za-z0-9\-_\/]*)?$/.test(to)) to = "/my-cloudhenry/";
 
   // Three checks before anyone is signed in (added 6 Sep 2026, when Henry
   // asked for the site to be hack proof):
