@@ -97,11 +97,10 @@
     css();
     w.classList.add("ch-hj");
 
-    var email = document.createElement("input");
-    email.type = "email"; email.className = "ch-hj-email"; email.name = "email";
-    email.placeholder = "you@example.com"; email.autocomplete = "email"; email.setAttribute("aria-label", "Email address");
-    w.insertBefore(email, btn);
-
+    // No email field any more. Capturing an address here created a free
+    // member through the Worker, which is the one route that let someone
+    // onto the list without paying. The picker now just remembers the
+    // airport and hands straight over to Ghost checkout.
     var err = document.createElement("p"); err.className = "ch-hj-err"; err.hidden = true; w.appendChild(err);
 
     // The picker used to enable the button only once an airport was chosen
@@ -109,9 +108,8 @@
     // fields and submits from here.
     var fresh = btn.cloneNode(true);
     btn.parentNode.replaceChild(fresh, btn); btn = fresh;
-    btn.disabled = false; btn.textContent = "Send me deals →";
+    btn.disabled = false; btn.textContent = "Get a year for £20 →";
     sel.addEventListener("change", function () { err.hidden = true; });
-    email.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); go(); } });
     btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); go(); });
 
     var note = w.parentNode.querySelector(".ch-ap-note");
@@ -128,40 +126,23 @@
     sel.addEventListener("change", pointSearch); pointSearch();
     guestTiles(searchLink, sel);
 
-    function fail(msg) { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Send me deals →"; }
+    function fail(msg) { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Get a year for £20 →"; }
     function go() {
-      var slug = sel.value, addr = email.value.trim();
+      var slug = sel.value;
       if (!slug) { fail("Pick your airport first."); sel.focus(); return; }
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(addr)) { fail("That email does not look right."); email.focus(); return; }
-      err.hidden = true; btn.disabled = true; btn.textContent = "Sending";
+      err.hidden = true;
       var code = CODES[slug] || "";
-      try { localStorage.setItem("ch-airport", code); } catch (x) {}
 
-      // The Worker creates the member on the spot, airport attached, so
-      // they are on the list before this function returns. Ghost will not
-      // start a paid checkout for someone who is not signed in, so a
-      // sign-in link goes out as well; the welcome screen explains that
-      // the trial is one tap away after it.
-      fetch(JOIN_URL, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: addr, airport: slug, source: "homepage", website: "", src: src(), campaign: camp() })
-      }).then(function (r) {
-        return r.json().then(function (j) { return { ok: r.ok && j && j.ok, msg: j && j.error }; });
-      }).then(function (res) {
-        if (!res.ok) { fail(res.msg || "Something went wrong. Please try again."); return; }
-        integrity().then(function (tok) {
-          return fetch("/members/api/send-magic-link/", {
-            method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: addr, emailType: "signin", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + "/" + slug + "/?intent=trial" + (src() ? "&ref=" + encodeURIComponent(src()) : "") })
-          });
-        }).catch(function () {});
-        var done = document.createElement("div");
-        done.className = "ch-hj-done";
-        w.parentNode.replaceChild(done, w);
-        if (note) note.remove();
-        if (window.CH_WELCOME) window.CH_WELCOME.render(done, { code: code, email: addr, signedIn: false, slug: slug });
-        else done.innerHTML = "<b>You are in</b>Your first deals from " + esc(slug.replace(/^join-/, "").replace(/-/g, " ")) + " land on Monday.";
-      }).catch(function () { fail("Could not reach the server. Please try again."); });
+      // The airport is remembered here and set on the account after
+      // payment, from the member area. Nothing is created now: this used
+      // to POST to the Worker, which made a free member before anyone had
+      // paid, and that was the only way onto the list without a card.
+      try { localStorage.setItem("ch-airport", code); } catch (x) {}
+      try { localStorage.setItem("ch-airport-slug", slug); } catch (x) {}
+
+      // Same destination as the two price cards, which are the routes
+      // that demonstrably complete a checkout.
+      location.hash = "#/portal/signup";
     }
   }
 
