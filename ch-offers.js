@@ -99,9 +99,9 @@
              was: "£29", now: "£20", save: "Save £9",
              sub: "Every fare from your airport, every week, all year.",
              href: "#/portal/signup", cta: "Get a year for £20" }) +
-      card({ kicker: "Monthly", was: "£2.99", now: "99p", save: "67% off",
+      card({ kicker: "Monthly", was: "", now: "£3.99", save: "",
              sub: "Every fare from your airport, every week.",
-             href: "#/portal/signup", cta: "Start for 99p" });
+             href: "#/portal/signup", cta: "Start for £3.99" });
 
     var foot = document.createElement("div");
     foot.className = "ch-off-foot";

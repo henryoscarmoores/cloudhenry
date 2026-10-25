@@ -61,7 +61,7 @@
       a.removeAttribute("target");
       a.removeAttribute("rel");
       a.classList.add("chfs-locked");
-      a.textContent = a.id === "chfsMain" ? "Join for £2.99 to book" : "Join for £2.99";
+      a.textContent = a.id === "chfsMain" ? "Join for £20 to book" : "Join for £20";
     });
     // Under the fare sheet's button, a way in for members who are not signed in here.
     var main = (root || document).querySelector("#chfsMain");
@@ -1635,8 +1635,8 @@
             t.id = "chfsTease";
             t.className = "chfs-tease";
             t.innerHTML = "<strong>These fares are real, and they go fast.</strong>" +
-              "<span>Look at any route you like. Members get the price and go straight through to book. &pound;2.99 a month or &pound;29 a year.</span>" +
-              "<a class=\"chfs-tease-cta\" href=\"#/portal/signup\">Join for &pound;2.99</a>";
+              "<span>Look at any route you like. Members get the price and go straight through to book. &pound;20 for the year or &pound;3.99 a month.</span>" +
+              "<a class=\"chfs-tease-cta\" href=\"#/portal/signup\">Join for &pound;20</a>";
             note.parentNode.insertBefore(t, note);
           }
         }

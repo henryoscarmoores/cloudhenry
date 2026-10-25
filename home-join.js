@@ -115,7 +115,7 @@
     btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); go(); });
 
     var note = w.parentNode.querySelector(".ch-ap-note");
-    if (note) note.textContent = "£2.99 a month or £29 a year. Cancel any time, no contract.";
+    if (note) note.textContent = "£20 for the year, or £3.99 a month. Cancel any time, no contract.";
 
     // People who arrive wanting one specific trip should see the way to
     // the search at once, not scroll looking for it.
@@ -235,11 +235,11 @@
     box.className = "chmh";
     box.innerHTML = (city ? '<div class="chmh-strip"></div>' : '') +
       '<div class="chmh-btns">' +
-        (paid ? '<a class="chmh-btn y" href="/my-cloudhenry/">Open my deals &rarr;</a>' : '<a class="chmh-btn y" href="#/portal/account/plans">Join for £2.99 &rarr;</a>') +
+        (paid ? '<a class="chmh-btn y" href="/my-cloudhenry/">Open my deals &rarr;</a>' : '<a class="chmh-btn y" href="#/portal/account/plans">Join for £20 a year &rarr;</a>') +
         '<a class="chmh-btn g" href="' + search + '">Search every flight</a></div>' +
       '<p class="chmh-foot">' +
         (paid ? (city ? 'Wrong airport? <a href="/my-cloudhenry/">Change it in your account</a>' : '<a href="/my-cloudhenry/">Set your airport &rarr;</a>')
-              : 'Then £2.99 a month. Cancel any time, no contract.' + (city ? '' : ' <a href="/my-cloudhenry/">Set your airport &rarr;</a>')) + '</p>';
+              : '£20 for the year, or £3.99 a month. Cancel any time, no contract.' + (city ? '' : ' <a href="/my-cloudhenry/">Set your airport &rarr;</a>')) + '</p>';
     var note = w.parentNode.querySelector(".ch-ap-note");
     w.parentNode.replaceChild(box, w);
     if (note) note.remove();
