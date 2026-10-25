@@ -1,16 +1,21 @@
-/* CloudHenry homepage offer cards.
+/* CloudHenry homepage price cards.
  *
- * Two live Ghost offers, both genuine discounts off prices actually charged:
- *   annual-20        2900p -> 2000p  first year, then 29
- *   first-month-99p   299p ->   99p  first month, then 2.99
+ * These are the standing prices on the tier, not a timed offer:
+ *   £20 a year   the one worth selling
+ *   £3.99 month  £47.88 over a year, which is what the strike-through says
+ *
+ * The £47.88 is arithmetic, not a price we ever charged, so it is a fair
+ * comparison to strike through. Never put a "was" price here that was not
+ * genuinely charged for 28 days; that is the one thing Trading Standards
+ * act on.
  *
  * Sits directly under the hero so the price is the first thing a visitor
  * sees, which is the whole point. The airport picker stays above it for
  * anyone who wants the guided route; members who come in through a card
  * set their airport afterwards in the member area.
  *
- * The cards remove themselves after the offers end, so a dead deadline
- * can never sit on the page if nobody archives the offers in Ghost.
+ * No end date. These cards used to delete themselves on 1 Nov 2026, which
+ * would have taken the pricing off the homepage mid-trip.
  *
  * No em dashes in any copy, per Henry.
  */
@@ -21,9 +26,6 @@
   var onJoin = /^\/join-[a-z-]+$/.test(path);
   if (!onHome) return;   // join pages need join.js changing, see note below
   if (window.__chOffers) return;
-
-  var ENDS = new Date("2026-11-01T23:59:59Z");
-  if (new Date() > ENDS) return;
 
   var CSS = [
     ".ch-offers{display:flex;gap:12px;max-width:640px;margin:20px auto 0;padding:0 14px;",
@@ -96,7 +98,7 @@
     wrap.className = "ch-offers";
     wrap.innerHTML =
       card({ best: true, flash: "Best value", kicker: "Full year",
-             was: "£29", now: "£20", save: "Save £9",
+             was: "£47.88", now: "£20", save: "Save £27.88",
              sub: "Every fare from your airport, every week, all year.",
              href: "#/portal/signup", cta: "Get a year for £20" }) +
       card({ kicker: "Monthly", was: "", now: "£3.99", save: "",
@@ -105,7 +107,7 @@
 
     var foot = document.createElement("div");
     foot.className = "ch-off-foot";
-    foot.innerHTML = "These prices run until <b>1 November</b>. Cancel any time, no contract.";
+    foot.innerHTML = "Paying monthly comes to <b>£47.88</b> over a year. The same thing up front is <b>£20</b>, which is £1.67 a month. One cheap flight covers it many times over. Cancel any time, no contract.";
 
     var after = anchor.nextSibling;
     anchor.parentNode.insertBefore(wrap, after);
