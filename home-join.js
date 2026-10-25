@@ -104,12 +104,27 @@
     var err = document.createElement("p"); err.className = "ch-hj-err"; err.hidden = true; w.appendChild(err);
 
     // The picker used to enable the button only once an airport was chosen
-    // and then leave the page. Take the button over: it now needs both
-    // fields and submits from here.
+    // and then leave the page. Take the button over: it now carries the
+    // chosen airport in its own label and opens checkout.
     var fresh = btn.cloneNode(true);
     btn.parentNode.replaceChild(fresh, btn); btn = fresh;
-    btn.disabled = false; btn.textContent = "Get a year for £20 →";
-    sel.addEventListener("change", function () { err.hidden = true; });
+    btn.disabled = false;
+
+    // Name the airport on the button. Paying without seeing where your
+    // flights come from reads as broken, and the airport pages already
+    // say "Get a year from Manchester for £20".
+    function cityOf() {
+      var o = sel.options[sel.selectedIndex];
+      if (!o || !sel.value) return "";
+      return o.textContent.replace(/\s*\([A-Z]{3}\)\s*$/, "").trim();
+    }
+    function label() {
+      var c = cityOf();
+      btn.textContent = c ? "Get a year from " + c + " for £20 →" : "Get a year for £20 →";
+    }
+    sel.addEventListener("change", function () { err.hidden = true; label(); });
+    label();
+
     btn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); go(); });
 
     var note = w.parentNode.querySelector(".ch-ap-note");
@@ -126,7 +141,7 @@
     sel.addEventListener("change", pointSearch); pointSearch();
     guestTiles(searchLink, sel);
 
-    function fail(msg) { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Get a year for £20 →"; }
+    function fail(msg) { err.textContent = msg; err.hidden = false; btn.disabled = false; label(); }
     function go() {
       var slug = sel.value;
       if (!slug) { fail("Pick your airport first."); sel.focus(); return; }
