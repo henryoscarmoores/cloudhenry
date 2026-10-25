@@ -103,39 +103,17 @@
       if (window.CH_WELCOME) window.CH_WELCOME.render(box, { code: code, email: mm.email, signedIn: true, slug: slug });
       if (params.intent === "trial" && !/#\/portal/.test(location.hash)) setTimeout(function () { location.hash = "#/portal/account/plans"; }, 400);
     } else {
+      // No email field. This used to POST the address to the Worker,
+      // which made a free member before anyone had paid. The airport is
+      // remembered instead and Ghost collects the email and the card
+      // together at checkout.
       box.innerHTML =
-        '<form class="ch-join-row" novalidate>' +
-          '<input type="email" name="email" required autocomplete="email" placeholder="you@example.com" aria-label="Email address" value="' + escapeHtml(params.email || "") + '">' +
-          '<button type="submit">Join from ' + city + ' &rarr;</button>' +
-        '</form>' +
-        '<div class="ch-join-note">You are on the list the moment you press. We also email you a link to join for £20 a year.</div>' +
-        '<div class="ch-join-err" hidden></div>';
-      var form = box.querySelector("form"), input = box.querySelector("input"), btn = box.querySelector("button"), err = box.querySelector(".ch-join-err");
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        var email = input.value.trim();
-        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "That email does not look right."; err.hidden = false; input.focus(); return; }
-        err.hidden = true; btn.disabled = true; btn.textContent = "Sending";
-        function fail(msg) { err.textContent = msg; err.hidden = false; btn.disabled = false; btn.textContent = "Join from " + city + " →"; }
-        // The Worker creates the member instantly with the airport label.
-        // Ghost will not start a checkout for someone not signed in, so a
-        // sign-in link goes out too; the welcome screen says so.
-        fetch(JOIN_URL, {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email, airport: slug, source: "airport-page", website: "", src: src(), campaign: camp() })
-        }).then(function (r) {
-          return r.json().then(function (j) { return { ok: r.ok && j && j.ok, msg: j && j.error }; });
-        }).then(function (res) {
-          if (!res.ok) { fail(res.msg || "Something went wrong. Please try again."); return; }
-          integrity().then(function (tok) {
-            return fetch("/members/api/send-magic-link/", {
-              method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email: email, emailType: "signin", honeypot: "", autoRedirect: true, integrityToken: tok, redirect: location.origin + location.pathname + "?intent=trial" + (src() ? "&ref=" + encodeURIComponent(src()) : "") })
-            });
-          }).catch(function () {});
-          if (window.CH_WELCOME) window.CH_WELCOME.render(box, { code: code, email: email, signedIn: false, slug: slug });
-          else box.innerHTML = '<div class="ch-join-note"><b>You are in.</b> Your first ' + city + ' email lands on Monday.</div>';
-        }).catch(function () { fail("Could not reach the server. Please try again."); });
+        '<a class="ch-join-cta" href="#/portal/signup">Get a year from ' + city + ' for £20 &rarr;</a>' +
+        '<div class="ch-join-note">£20 for the year or £3.99 a month, cancel any time. Your ' + city + ' email starts the Monday after you join.</div>';
+      var cta2 = box.querySelector(".ch-join-cta");
+      cta2.addEventListener("click", function () {
+        try { localStorage.setItem("ch-airport", code); } catch (x) {}
+        try { localStorage.setItem("ch-airport-slug", slug); } catch (x) {}
       });
     }
     cta.parentNode.replaceChild(box, cta);
