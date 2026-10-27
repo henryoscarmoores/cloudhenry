@@ -155,9 +155,12 @@
       try { localStorage.setItem("ch-airport", code); } catch (x) {}
       try { localStorage.setItem("ch-airport-slug", slug); } catch (x) {}
 
-      // Same destination as the two price cards, which are the routes
-      // that demonstrably complete a checkout.
-      location.hash = "#/portal/signup";
+      // Straight to their airport page, not to #/portal/signup. That hash
+      // gets bounced to /choose-city/, which asks "STEP 1 OF 2, which
+      // airport do you fly from?" to somebody who just answered exactly
+      // that question on this page. They pick, they get asked again, they
+      // leave. The slug is already known here, so skip the whole step.
+      location.href = "/" + slug + "/";
     }
   }
 

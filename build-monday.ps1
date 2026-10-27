@@ -347,6 +347,13 @@ foreach ($a in $AIRPORTS) {
   $goExp = [long][double]::Parse((Get-Date -UFormat %s)) + 21 * 86400
   $goLink = "$Worker/go?u=%%{uuid}%%&k=%%{key}%%&to=" + [uri]::EscapeDataString($goTo) + "&e=$goExp&s=" + (Go-Sign $goTo $goExp)
 
+  # Paying members need their own signed link. Without one they arrive at
+  # /search/ with no session and search.js rewrites every Book button to
+  # "Join", which is what a member cancelled over in October: "says
+  # subscribe to see flights when I have".
+  $goSearch = "/search/?from=" + $a.code
+  $goLinkSearch = "$Worker/go?u=%%{uuid}%%&k=%%{key}%%&to=" + [uri]::EscapeDataString($goSearch) + "&e=$goExp&s=" + (Go-Sign $goSearch $goExp)
+
   # 1 + 2: header and top three, for everyone.
   # The header. Phone mail apps in dark mode darken light colours, so the
   # words sit in a white card inside the sky: inverted, that becomes light
@@ -377,7 +384,7 @@ foreach ($a in $AIRPORTS) {
     "<div style=`"font-size:13px;color:#46607A;margin:2px 0 4px;`">$(if ($returnsUnder50) { "Including $returnsUnder50 returns under $([char]0xA3)50." } else { "One way and return, with the exact dates." })</div>" +
     "<div style=`"font-size:12.5px;color:#46607A;margin:0 0 12px;`">Plus the search: every fare from $(Esc $a.name), every date, five months ahead. Weekends, day trips, Christmas markets.</div>" +
     "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$goLink`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:16px 32px;text-decoration:none;$FONT`">See all $n &rarr;</a></td></tr></table>" +
-    "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">$([char]0xA3)2.99 a month. Cancel any time, no contract. One tap, no password.</div>" +
+    "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">$([char]0xA3)20 for the year, or $([char]0xA3)3.99 a month. Cancel any time, no contract. One tap, no password.</div>" +
     "</td></tr></table>"
 
   # 5: everything, members only.
@@ -392,7 +399,14 @@ foreach ($a in $AIRPORTS) {
   # Each chip is a table cell, not a styled link: Ghost's phone CSS and
   # Gmail's dark mode strip the styling off links and ran the four pills
   # together as one blue sentence (Henry's screenshot, 7 Sep 2026).
-  $chip = { param($label, $qs) "<td width=`"50%`" bgcolor=`"#FFFFFF`" style=`"background:#FFFFFF;border:1px solid #CFE0EE;border-radius:12px;padding:11px 8px;text-align:center;$FONT`"><a href=`"$Site/search/?from=$($a.code)&$qs`" style=`"color:#0E3550;font-weight:800;font-size:14px;text-decoration:none;display:block;`">$label &rarr;</a></td>" }
+  # These four chips sit in the paying members' card, so they get signed
+  # links too. A plain /search/ URL lands a member there with no session
+  # and search.js then offers them a subscription they already have.
+  $chip = { param($label, $qs)
+    $chipTo = "/search/?from=" + $a.code + "&" + $qs
+    $chipLink = "$Worker/go?u=%%{uuid}%%&k=%%{key}%%&to=" + [uri]::EscapeDataString($chipTo) + "&e=$goExp&s=" + (Go-Sign $chipTo $goExp)
+    "<td width=`"50%`" bgcolor=`"#FFFFFF`" style=`"background:#FFFFFF;border:1px solid #CFE0EE;border-radius:12px;padding:11px 8px;text-align:center;$FONT`"><a href=`"$chipLink`" style=`"color:#0E3550;font-weight:800;font-size:14px;text-decoration:none;display:block;`">$label &rarr;</a></td>"
+  }
   $searchStrip = "<div style=`"margin-top:18px;padding:14px 10px 12px;border-radius:14px;background:#F0F6FB;text-align:center;$FONT`">" +
     "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin-bottom:6px;`">Your search, one tap</div>" +
     "<div style=`"font-size:13.5px;color:#46607A;margin-bottom:10px;`">Every fare from $(Esc $a.name), every date, five months ahead. Try one:</div>" +
@@ -406,7 +420,7 @@ foreach ($a in $AIRPORTS) {
   $ows = @($ows | Select-Object -First 6); $rts = @($rts | Select-Object -First 6)
   if ($ows.Count) { $full += "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:16px 0 8px;$FONT`">One way</div>"; $i = 0; foreach ($f in $ows) { $full += FareRow $f $i $false; $i++ } }
   if ($rts.Count) { $full += "<div style=`"font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7A90A5;margin:16px 0 8px;$FONT`">Returns</div>"; $i = 0; foreach ($f in $rts) { $full += FareRow $f $i $false; $i++ } }
-  $full += "<div style=`"text-align:center;margin-top:14px;$FONT`"><a href=`"$Site/search/?from=$($a.code)`" style=`"display:inline-block;background:#0E6FB6;color:#FFFFFF;font-weight:800;font-size:14px;padding:12px 22px;border-radius:999px;text-decoration:none;`">All $n fares from $(Esc $a.name), searchable &rarr;</a></div>"
+  $full += "<div style=`"text-align:center;margin-top:14px;$FONT`"><a href=`"$goLinkSearch`" style=`"display:inline-block;background:#0E6FB6;color:#FFFFFF;font-weight:800;font-size:14px;padding:12px 22px;border-radius:999px;text-decoration:none;`">All $n fares from $(Esc $a.name), searchable &rarr;</a></div>"
   $full += $searchStrip
   $full += "<div style=`"margin-top:14px;padding:12px 14px;border-radius:12px;background:#FFF4D1;font-size:13px;color:#5A4210;$FONT`"><b style=`"color:#3A2A08;`">Book fast.</b> The cheapest fares here are the kind that go within three days. Every price was $($Fresh.ToLower()); airlines change them without warning.</div>"
 

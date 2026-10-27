@@ -22,7 +22,13 @@ param(
   [switch] $WhatIf,
   [string[]] $OnlySlugs,
   [int] $Tolerance = 3,
-  [string] $Schedule   # ISO time in UTC, e.g. 2026-09-28T06:30:00.000Z. Empty means send now.
+  [string] $Schedule,  # ISO time in UTC, e.g. 2026-09-28T06:30:00.000Z. Empty means send now.
+  # Sends the free list their version instead. The same post carries both
+  # cards (the locked tease for status:free, the full list for status:-free),
+  # so this is the same build, segmented the other way. Use -SlugSuffix -free
+  # on build-monday.ps1 first and pass the same suffix here.
+  [switch] $Free,
+  [string] $SlugSuffix = ""
 )
 $ErrorActionPreference = "Stop"
 $RepoDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -58,18 +64,19 @@ function Call([string] $Method, [string] $Path, $Body) {
 }
 
 # Smallest audience first, so a mistake is cheap.
-$LIST = @('cork','cardiff','dublin','bournemouth','glasgow','east-midlands','london-luton','liverpool',
-          'belfast','edinburgh','newcastle','london-stansted','leeds','bristol','london-gatwick',
-          'birmingham','manchester')
+$LIST = @('knock','prestwick','shannon','cork','cardiff','dublin','bournemouth','glasgow','east-midlands',
+          'london-luton','liverpool','belfast','edinburgh','newcastle','london-stansted','leeds','bristol',
+          'london-gatwick','birmingham','manchester')
 if ($OnlySlugs) { $LIST = @($LIST | Where-Object { $OnlySlugs -contains $_ }) }
 
 $sent = 0
 foreach ($slug in $LIST) {
-  $segment = "label:loc-$slug+status:-free"
+  $segment = if ($Free) { "label:loc-$slug+status:free" } else { "label:loc-$slug+status:-free" }
+  $who     = if ($Free) { "free" } else { "paying" }
   $expected = [int](Call GET ("/members/?limit=1&filter=" + [uri]::EscapeDataString($segment))).meta.pagination.total
-  if ($expected -lt 1) { Write-Host ("{0}: no paying members, skipped" -f $slug); continue }
+  if ($expected -lt 1) { Write-Host ("{0}: no $who members, skipped" -f $slug); continue }
 
-  $post = @((Call GET ("/posts/?limit=1&filter=" + [uri]::EscapeDataString("slug:$slug-$stamp"))).posts)
+  $post = @((Call GET ("/posts/?limit=1&filter=" + [uri]::EscapeDataString("slug:$slug-$stamp$SlugSuffix"))).posts)
   if (-not $post -or $post[0].status -ne "draft") { Write-Host ("{0}: no draft to send" -f $slug); continue }
 
   if ($WhatIf) {
