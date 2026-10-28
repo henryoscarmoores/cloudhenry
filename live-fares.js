@@ -298,7 +298,7 @@
     }
     if (fine) fine.innerHTML = memberPaid
       ? 'You are a member · every fare is yours to book'
-      : '<span class="ch-hlb">£20 for the year</span> · or £3.99 a month · cancel anytime';
+      : '<span class="ch-hlb">£18 for the year</span> · or £3.99 a month · cancel anytime';
   }
 
   function paintCaption() {

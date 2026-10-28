@@ -1,7 +1,7 @@
 /* CloudHenry homepage price cards.
  *
  * These are the standing prices on the tier, not a timed offer:
- *   £20 a year   the one worth selling
+ *   £18 a year   the one worth selling
  *   £3.99 month  £47.88 over a year, which is what the strike-through says
  *
  * The £47.88 is arithmetic, not a price we ever charged, so it is a fair
@@ -98,16 +98,16 @@
     wrap.className = "ch-offers";
     wrap.innerHTML =
       card({ best: true, flash: "Best value", kicker: "Full year",
-             was: "£47.88", now: "£20", save: "Save £27.88",
+             was: "£47.88", now: "£18", save: "Save £29.88",
              sub: "Every fare from your airport, every week, all year.",
-             href: "#/portal/signup", cta: "Get a year for £20" }) +
+             href: "#/portal/signup", cta: "Get a year for £18" }) +
       card({ kicker: "Monthly", was: "", now: "£3.99", save: "",
              sub: "Every fare from your airport, every week.",
              href: "#/portal/signup", cta: "Start for £3.99" });
 
     var foot = document.createElement("div");
     foot.className = "ch-off-foot";
-    foot.innerHTML = "Paying monthly comes to <b>£47.88</b> over a year. The same thing up front is <b>£20</b>, which is £1.67 a month. One cheap flight covers it many times over. Cancel any time, no contract.";
+    foot.innerHTML = "Paying monthly comes to <b>£47.88</b> over a year. The same thing up front is <b>£18</b>, which is £1.50 a month. One cheap flight covers it many times over. Cancel any time, no contract.";
 
     var after = anchor.nextSibling;
     anchor.parentNode.insertBefore(wrap, after);

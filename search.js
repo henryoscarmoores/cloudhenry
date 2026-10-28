@@ -61,7 +61,7 @@
       a.removeAttribute("target");
       a.removeAttribute("rel");
       a.classList.add("chfs-locked");
-      a.textContent = a.id === "chfsMain" ? "Join for £20 to book" : "Join for £20";
+      a.textContent = a.id === "chfsMain" ? "Join for £18 to book" : "Join for £18";
     });
     // Under the fare sheet's button, a way in for members who are not signed in here.
     var main = (root || document).querySelector("#chfsMain");

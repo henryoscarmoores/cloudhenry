@@ -384,7 +384,7 @@ foreach ($a in $AIRPORTS) {
     "<div style=`"font-size:13px;color:#46607A;margin:2px 0 4px;`">$(if ($returnsUnder50) { "Including $returnsUnder50 returns under $([char]0xA3)50." } else { "One way and return, with the exact dates." })</div>" +
     "<div style=`"font-size:12.5px;color:#46607A;margin:0 0 12px;`">Plus the search: every fare from $(Esc $a.name), every date, five months ahead. Weekends, day trips, Christmas markets.</div>" +
     "<table cellpadding=`"0`" cellspacing=`"0`" border=`"0`" align=`"center`"><tr><td bgcolor=`"#F5C242`" style=`"background:#F5C242;border-radius:999px;`"><a href=`"$goLink`" style=`"display:inline-block;color:#12384F;font-weight:900;font-size:17px;padding:16px 32px;text-decoration:none;$FONT`">See all $n &rarr;</a></td></tr></table>" +
-    "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">$([char]0xA3)20 for the year, or $([char]0xA3)3.99 a month. Cancel any time, no contract. One tap, no password.</div>" +
+    "<div style=`"font-size:11.5px;color:#7A90A5;margin-top:10px;`">$([char]0xA3)18 for the year, or $([char]0xA3)3.99 a month. Cancel any time, no contract. One tap, no password.</div>" +
     "</td></tr></table>"
 
   # 5: everything, members only.

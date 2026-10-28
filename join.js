@@ -93,8 +93,8 @@
       box.innerHTML = '<a class="ch-join-cta" href="/my-cloudhenry/">You are a member. Open My CloudHenry &rarr;</a>' +
                       '<small>Signed in as ' + escapeHtml(mm.email) + '</small>';
     } else if (mm) {
-      box.innerHTML = '<a class="ch-join-cta" href="#/portal/account/plans">Join for £20 a year &rarr;</a>' +
-                      '<div class="ch-join-note">£20 for the year or £3.99 a month, cancel any time. Your ' + city + ' email starts on Monday.</div>' +
+      box.innerHTML = '<a class="ch-join-cta" href="#/portal/account/plans">Join for £18 a year &rarr;</a>' +
+                      '<div class="ch-join-note">£18 for the year or £3.99 a month, cancel any time. Your ' + city + ' email starts on Monday.</div>' +
                       '<small>Signed in as ' + escapeHtml(mm.email) + '</small>';
       // Signed in, on the list, not yet paying: the welcome screen with
       // their fares. Arriving from the sign-in email with ?intent=trial
@@ -108,8 +108,8 @@
       // remembered instead and Ghost collects the email and the card
       // together at checkout.
       box.innerHTML =
-        '<a class="ch-join-cta" href="#/portal/signup">Get a year from ' + city + ' for £20 &rarr;</a>' +
-        '<div class="ch-join-note">£20 for the year or £3.99 a month, cancel any time. Your ' + city + ' email starts the Monday after you join.</div>';
+        '<a class="ch-join-cta" href="#/portal/signup">Get a year from ' + city + ' for £18 &rarr;</a>' +
+        '<div class="ch-join-note">£18 for the year or £3.99 a month, cancel any time. Your ' + city + ' email starts the Monday after you join.</div>';
       var cta2 = box.querySelector(".ch-join-cta");
       cta2.addEventListener("click", function () {
         try { localStorage.setItem("ch-airport", code); } catch (x) {}
