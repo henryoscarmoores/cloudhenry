@@ -1,5 +1,5 @@
 ﻿{
-    "updated":  "2026-10-29T20:54:51Z",
+    "updated":  "2026-10-30T00:53:15Z",
     "days":  [
                  {
                      "date":  "2026-09-05",
@@ -1163,6 +1163,28 @@
                      "trialing":  0,
                      "new_24h":  7,
                      "new_7d":  32,
+                     "via_homepage":  2506,
+                     "via_airport_page":  195,
+                     "no_airport":  14,
+                     "sources":  {
+                                     "instagram":  361,
+                                     "google":  321,
+                                     "facebook":  1215,
+                                     "chatgptcom":  1,
+                                     "snapchat":  1,
+                                     "other":  3,
+                                     "ig":  86
+                                 }
+                 },
+                 {
+                     "date":  "2026-10-30",
+                     "total":  2780,
+                     "free":  2595,
+                     "paid":  184,
+                     "comped":  1,
+                     "trialing":  0,
+                     "new_24h":  6,
+                     "new_7d":  27,
                      "via_homepage":  2506,
                      "via_airport_page":  195,
                      "no_airport":  14,
