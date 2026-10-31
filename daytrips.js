@@ -129,6 +129,19 @@
    whole feed, which is what the sentence above them describes; the
    current filtered view is reported by the status rail inside the
    console, so the two never contradict each other. */
+/* position:sticky needs a scroll container that actually scrolls. The
+   theme sets body{overflow:hidden auto}, and because html's overflow is
+   not visible that never propagates to the viewport — body becomes its
+   own scroll container, html does the scrolling, and body's scrollport
+   therefore never moves, so the console silently never docked. It
+   measured -355px at a 500px scroll. overflow-x:clip gives the same
+   horizontal-overflow protection for the theme's clouds WITHOUT creating
+   a scroll container, which is the whole reason clip exists. Scoped to a
+   class this script sets on body, so it touches no other page; where
+   clip is unsupported the declaration drops and the bar simply scrolls
+   away as it does today. */
+body.ch-edt-host{overflow-x:clip;overflow-y:visible;}
+
 .ch-edt-plate{margin:0;padding:18px 18px 16px;background:#0E3550;border-radius:16px 16px 0 0;box-shadow:0 2px 4px rgba(14,53,80,.07),0 12px 28px rgba(14,53,80,.14);}
 .ch-edt-lede{margin:0;max-width:44em;font-size:14px;line-height:1.55;font-weight:500;color:#E8F3FB;}
 .ch-edt-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:15px 0 0;padding:14px 0 0;border-top:1px solid rgba(255,255,255,.14);}
@@ -656,6 +669,9 @@
     var st = document.createElement("style");
     st.textContent = CSS;
     document.head.appendChild(st);
+    // Lets body.ch-edt-host above take the body out of being its own
+    // dead scroll container, which is what stops the console docking.
+    try { document.body.classList.add("ch-edt-host"); } catch (e) {}
     root.innerHTML = '<div class="ch-edt-empty"><b>Live feed</b>Loading today&rsquo;s day trips&hellip;</div>';
     fetch(DATA, { cache: "no-store" })
       .then(function (r) { return r.json(); })
