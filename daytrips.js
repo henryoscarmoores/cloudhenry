@@ -114,6 +114,9 @@
 
     ".ch-edt-rest{display:block;width:100%;margin:14px 0 0;font:inherit;font-size:14px;font-weight:800;color:var(--ink,#0E3550);background:#fff;border:1px solid var(--line,#E3EEF6);border-radius:14px;padding:13px;cursor:pointer;transition:background .15s ease,border-color .15s ease;}" +
     ".ch-edt-rest:hover{background:#F4FAFE;border-color:#B9DCF0;}" +
+    /* display:block outranks the browser's own [hidden] rule, so hiding
+       the button left an empty bar under the grid. */
+    ".ch-edt-rest[hidden]{display:none;}" +
 
     ".ch-edt-empty{padding:28px 18px;text-align:center;color:var(--mut,#5A7488);font-weight:600;background:#F7FBFE;border:1px dashed var(--line,#E3EEF6);border-radius:14px;}" +
 
