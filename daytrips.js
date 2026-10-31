@@ -107,8 +107,8 @@
     ".ch-edt-arrow{color:var(--y,#F5C242);font-weight:900;}" +
 
     ".ch-edt-foot{margin-top:auto;display:flex;align-items:baseline;justify-content:space-between;gap:8px;border-top:1px solid var(--line,#E3EEF6);padding-top:9px;}" +
-    ".ch-edt-date{font-size:12px;color:var(--mut,#5A7488);font-weight:700;}" +
-    ".ch-edt-price{font-size:19px;font-weight:900;letter-spacing:-.5px;}" +
+    ".ch-edt-date{font-size:12px;color:var(--mut,#5A7488);font-weight:700;white-space:nowrap;}" +
+    ".ch-edt-price{font-size:19px;font-weight:900;letter-spacing:-.5px;white-space:nowrap;}" +
     ".ch-edt-price small{font-size:10.5px;font-weight:700;color:var(--mut,#5A7488);letter-spacing:0;}" +
     ".ch-edt-more{font-size:11.5px;color:var(--mut,#5A7488);font-weight:600;margin:6px 0 0;}" +
 
@@ -129,6 +129,9 @@
          each and drop the arrow, which has nothing left to point at. */
       ".ch-edt-run{flex-direction:column;align-items:flex-start;gap:1px;padding:7px 9px;font-size:13px;}" +
       ".ch-edt-arrow{display:none;}" +
+      /* "Sun 8 Nov" beside "£86 both ways" needs 160px and has 130, so
+         it broke across three lines rather than two. */
+      ".ch-edt-foot{flex-direction:column;align-items:flex-start;gap:1px;}" +
     "}";
 
   function esc(s) {
