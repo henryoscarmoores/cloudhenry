@@ -179,21 +179,16 @@
     var sub = t.country ? esc(t.country) : "";
     if (showOrigin) sub += (sub ? " &middot; " : "") + "from " + esc(from);
 
-    // Two different facts, kept apart: other days you could go from this
-    // airport, and other airports that fly the same trip.
-    var sameOrigin = r.rows.filter(function (x) { return x.origin === t.origin; });
-    var otherDays = sameOrigin.length - 1;
-    var alsoFrom = Object.keys(r.origins)
-      .filter(function (o) { return o !== t.origin; })
-      .map(function (o) { return AIRPORTS[o] || o; })
-      .sort();
+    // The card shows the longest day, which is rarely the cheapest one:
+    // Dublin leads at fifteen hours for £86 while another date does it
+    // for £32. Saying so stops the headline price reading as the price
+    // of the city. Naming the other airports was tried and dropped —
+    // they only ever appear before the reader has said where they fly
+    // from, which is exactly when the names mean nothing to them.
+    var more = r.n - 1;
     var bits = [];
     if (air) bits.push(esc(air));
-    if (otherDays > 0) bits.push(otherDays + " other date" + (otherDays === 1 ? "" : "s") + " from &pound;" + r.min);
-    if (alsoFrom.length) {
-      bits.push("also from " + esc(alsoFrom.slice(0, 2).join(", ")) +
-        (alsoFrom.length > 2 ? " +" + (alsoFrom.length - 2) : ""));
-    }
+    if (more > 0) bits.push(more + " more date" + (more === 1 ? "" : "s") + " from &pound;" + r.min);
     return '<article class="ch-edt-card">' +
       '<p class="ch-edt-h"><b>' + hrs + "</b><span>hours there</span></p>" +
       '<h3 class="ch-edt-city">' + esc(t.city || t.destination) + "</h3>" +
