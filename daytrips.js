@@ -139,22 +139,28 @@
     return DAYS[d.getUTCDay()] + " " + (+p[2]) + " " + MONS[+p[1] - 1];
   }
 
-  // One card per route, keeping its best day. Everything else about that
-  // route becomes a count, because fifteen Dublin cards is not a page.
+  // One card per city, keeping its best day. The feed holds fifteen
+  // Dublins across six airports, and collapsing only by route still put
+  // Dublin in three of the first six cards while the page claimed
+  // twenty-seven cities. The other days and the other airports are worth
+  // knowing, so they go on the card as a line of text rather than as
+  // fourteen more cards.
   function collapse(trips, sort) {
-    var byRoute = {};
+    var byCity = {};
     trips.forEach(function (t) {
-      var k = t.origin + "-" + t.destination;
-      if (!byRoute[k]) { byRoute[k] = { best: t, n: 0, min: t.price }; }
-      var r = byRoute[k];
+      var k = t.destination;
+      if (!byCity[k]) { byCity[k] = { best: t, n: 0, min: t.price, origins: {}, rows: [] }; }
+      var r = byCity[k];
       r.n++;
+      r.origins[t.origin] = true;
+      r.rows.push(t);
       if (t.price < r.min) r.min = t.price;
       var better = sort === "price"
         ? (t.price < r.best.price || (t.price === r.best.price && t.ground > r.best.ground))
         : (t.ground > r.best.ground || (t.ground === r.best.ground && t.price < r.best.price));
       if (better) r.best = t;
     });
-    return Object.keys(byRoute).map(function (k) { return byRoute[k]; })
+    return Object.keys(byCity).map(function (k) { return byCity[k]; })
       .sort(function (a, b) {
         if (sort === "price") {
           if (a.best.price !== b.best.price) return a.best.price - b.best.price;
@@ -170,9 +176,24 @@
     var from = AIRPORTS[t.origin] || t.origin;
     var air = AIRLINES[t.airline] || t.airline || "";
     var hrs = Math.floor(t.ground);
-    var others = r.n - 1;
     var sub = t.country ? esc(t.country) : "";
     if (showOrigin) sub += (sub ? " &middot; " : "") + "from " + esc(from);
+
+    // Two different facts, kept apart: other days you could go from this
+    // airport, and other airports that fly the same trip.
+    var sameOrigin = r.rows.filter(function (x) { return x.origin === t.origin; });
+    var otherDays = sameOrigin.length - 1;
+    var alsoFrom = Object.keys(r.origins)
+      .filter(function (o) { return o !== t.origin; })
+      .map(function (o) { return AIRPORTS[o] || o; })
+      .sort();
+    var bits = [];
+    if (air) bits.push(esc(air));
+    if (otherDays > 0) bits.push(otherDays + " other date" + (otherDays === 1 ? "" : "s") + " from &pound;" + r.min);
+    if (alsoFrom.length) {
+      bits.push("also from " + esc(alsoFrom.slice(0, 2).join(", ")) +
+        (alsoFrom.length > 2 ? " +" + (alsoFrom.length - 2) : ""));
+    }
     return '<article class="ch-edt-card">' +
       '<p class="ch-edt-h"><b>' + hrs + "</b><span>hours there</span></p>" +
       '<h3 class="ch-edt-city">' + esc(t.city || t.destination) + "</h3>" +
@@ -182,9 +203,7 @@
         '<span class="ch-edt-date">' + esc(pretty(t.date)) + "</span>" +
         '<span class="ch-edt-price">&pound;' + esc(t.price) + " <small>both ways</small></span>" +
       "</div>" +
-      '<p class="ch-edt-more">' + esc(air) +
-        (others > 0 ? " &middot; " + others + " other date" + (others === 1 ? "" : "s") + " from &pound;" + r.min : "") +
-      "</p>" +
+      '<p class="ch-edt-more">' + bits.join(" &middot; ") + "</p>" +
       "</article>";
   }
 
@@ -202,8 +221,6 @@
     }
 
     var totalRoutes = collapse(trips, "ground");
-    var allCities = {};
-    totalRoutes.forEach(function (r) { allCities[r.best.destination] = true; });
 
     var codes = Object.keys(trips.reduce(function (a, t) { a[t.origin] = 1; return a; }, {}))
       .sort(function (a, b) { return (AIRPORTS[a] || a) < (AIRPORTS[b] || b) ? -1 : 1; });
@@ -239,7 +256,7 @@
     root.innerHTML =
       '<div class="ch-edt">' +
         '<p class="ch-edt-lede">Fly out in the morning, home the same night. No hotel, no luggage, no days off. ' +
-          "<b>" + totalRoutes.length + " trips</b> to <b>" + Object.keys(allCities).length + " cities</b>, " +
+          "<b>" + totalRoutes.length + " cities</b> from <b>" + codes.length + " UK airports</b>, " +
           "every one direct both ways.</p>" +
         '<div class="ch-edt-filters">' +
           '<span class="ch-edt-lab">Flying from</span>' +
@@ -274,13 +291,13 @@
       elRefine.innerHTML =
         HOURS.map(function (h) {
           return chip("hours", h.v, h.label,
-            h.v ? byH.filter(function (r) { return r.best.ground >= h.v; }).length : byH.length,
+            h.v ? byH.filter(function (r) { return r.best.ground >= h.v; }).length : null,
             state.hours === h.v);
         }).join("") +
         '<span class="ch-edt-div"></span>' +
         PRICES.map(function (p) {
           return chip("price", p.v, p.label,
-            p.v ? byP.filter(function (r) { return r.best.price < p.v; }).length : byP.length,
+            p.v ? byP.filter(function (r) { return r.best.price < p.v; }).length : null,
             state.price === p.v);
         }).join("") +
         '<span class="ch-edt-div"></span>' +
