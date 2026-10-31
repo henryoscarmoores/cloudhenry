@@ -115,7 +115,7 @@
       '<p class="ch-edt-h"><b>' + hrs + "</b><span>hours there</span></p>" +
       '<h3 class="ch-edt-city">' + esc(t.city || t.destination) + "</h3>" +
       '<p class="ch-edt-sub">' + (t.country ? esc(t.country) + " &middot; " : "") + "from " + esc(from) + "</p>" +
-      '<p class="ch-edt-run">' + esc(t.out) + ' <i>out</i> <span class="ch-edt-arrow">&rarr;</span> ' + esc(t.back) + " <i>back</i></p>" +
+      '<p class="ch-edt-run">' + esc(t.out) + ' <i>out</i> <span class="ch-edt-arrow">&rarr;</span> ' + esc(t.back) + " <i>return</i></p>" +
       '<div class="ch-edt-foot">' +
         '<span class="ch-edt-date">' + esc(pretty(t.date)) + "</span>" +
         '<span class="ch-edt-price">&pound;' + esc(t.price) + " <small>rtn</small></span>" +
