@@ -1,5 +1,5 @@
 ﻿{
-    "updated":  "2026-10-31T00:57:40Z",
+    "updated":  "2026-10-31T13:35:44Z",
     "days":  [
                  {
                      "date":  "2026-09-05",
@@ -1200,12 +1200,12 @@
                  },
                  {
                      "date":  "2026-10-31",
-                     "total":  2780,
-                     "free":  2599,
-                     "paid":  180,
+                     "total":  2781,
+                     "free":  2602,
+                     "paid":  178,
                      "comped":  1,
                      "trialing":  0,
-                     "new_24h":  0,
+                     "new_24h":  1,
                      "new_7d":  16,
                      "via_homepage":  2506,
                      "via_airport_page":  195,
