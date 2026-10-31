@@ -261,11 +261,15 @@
       var list = routesFor(null);
       var byH = routesFor("hours"), byP = routesFor("price");
 
+      // Rebuilding the strip resets its scroll, which on a phone throws
+      // you back to Birmingham every time you touch the hours.
+      var keepScroll = elFrom.scrollLeft;
       elFrom.innerHTML =
-        chip("origin", "", "All airports", totalRoutes.length, !state.origin) +
+        chip("origin", "", "All airports", routesFor("origin").length, !state.origin) +
         codes.map(function (c) {
           return chip("origin", c, esc(AIRPORTS[c] || c), countOrigin(c), state.origin === c);
         }).join("");
+      elFrom.scrollLeft = keepScroll;
 
       elRefine.innerHTML =
         HOURS.map(function (h) {
