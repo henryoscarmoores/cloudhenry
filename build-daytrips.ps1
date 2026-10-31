@@ -92,7 +92,7 @@ if ($OnlyOrigins) { $ORIGINS = @($OnlyOrigins | ForEach-Object { $_ -split "," }
 # City and country names come from places.js so this script never carries
 # its own copy of the list.
 $CITY_OF = @{}; $COUNTRY_OF = @{}
-$placesSrc = Get-Content (Join-Path $RepoDir "places.js") -Raw
+$placesSrc = Get-Content (Join-Path $RepoDir "places.js") -Raw -Encoding UTF8
 foreach ($m in [regex]::Matches($placesSrc, '([A-Z]{3}):\["([^"]*)","([^"]*)"')) {
   $CITY_OF[$m.Groups[1].Value]    = $m.Groups[2].Value
   $COUNTRY_OF[$m.Groups[1].Value] = $m.Groups[3].Value
