@@ -100,6 +100,9 @@
     ".ch-edt-sub{font-size:12px;color:var(--mut,#5A7488);font-weight:600;margin:3px 0 10px;}" +
 
     ".ch-edt-run{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:800;color:var(--ink,#0E3550);background:#F4FAFE;border:1px solid #E3F1FA;border-radius:10px;padding:8px 10px;margin:0 0 10px;}" +
+    /* Each leg is one flex item. Left as five loose ones they wrapped
+       individually on a phone and turned a 22px row into an 83px tower. */
+    ".ch-edt-leg{white-space:nowrap;}" +
     ".ch-edt-run i{font-style:normal;color:var(--mut,#5A7488);font-weight:600;font-size:11.5px;}" +
     ".ch-edt-arrow{color:var(--y,#F5C242);font-weight:900;}" +
 
@@ -122,6 +125,10 @@
       ".ch-edt-grid{grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px;}" +
       ".ch-edt-h b{font-size:28px;}.ch-edt-city{font-size:16.5px;}" +
       ".ch-edt-div{display:none;}" +
+      /* Two legs will not sit side by side in 158px, so give them a line
+         each and drop the arrow, which has nothing left to point at. */
+      ".ch-edt-run{flex-direction:column;align-items:flex-start;gap:1px;padding:7px 9px;font-size:13px;}" +
+      ".ch-edt-arrow{display:none;}" +
     "}";
 
   function esc(s) {
@@ -194,7 +201,11 @@
       '<p class="ch-edt-h"><b>' + hrs + "</b><span>hours there</span></p>" +
       '<h3 class="ch-edt-city">' + esc(t.city || t.destination) + "</h3>" +
       '<p class="ch-edt-sub">' + (sub || "&nbsp;") + "</p>" +
-      '<p class="ch-edt-run">' + esc(t.out) + ' <i>out</i> <span class="ch-edt-arrow">&rarr;</span> ' + esc(t.back) + " <i>return</i></p>" +
+      '<p class="ch-edt-run">' +
+        '<span class="ch-edt-leg">' + esc(t.out) + " <i>out</i></span>" +
+        '<span class="ch-edt-arrow">&rarr;</span>' +
+        '<span class="ch-edt-leg">' + esc(t.back) + " <i>return</i></span>" +
+      "</p>" +
       '<div class="ch-edt-foot">' +
         '<span class="ch-edt-date">' + esc(pretty(t.date)) + "</span>" +
         '<span class="ch-edt-price">&pound;' + esc(t.price) + " <small>both ways</small></span>" +
