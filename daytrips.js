@@ -144,7 +144,15 @@ body.ch-edt-host{overflow-x:clip;overflow-y:visible;}
 
 .ch-edt-plate{margin:0;padding:18px 18px 16px;background:#0E3550;border-radius:16px 16px 0 0;box-shadow:0 2px 4px rgba(14,53,80,.07),0 12px 28px rgba(14,53,80,.14);}
 .ch-edt-lede{margin:0;max-width:44em;font-size:14px;line-height:1.55;font-weight:500;color:#E8F3FB;}
-.ch-edt-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:15px 0 0;padding:14px 0 0;border-top:1px solid rgba(255,255,255,.14);}
+/* These four figures are the whole feed, not the filtered view, because
+   they are the proposition: shrinking them to "5 cities, 1 airport" the
+   moment a reader picks their own airport argues against the page. But
+   unlabelled they read as describing the grid, and filtered to
+   Manchester the plate said CHEAPEST £30 over five cards whose cheapest
+   was £52. The scope line is what makes both true at once — the plate
+   is the feed, the rail inside the console is the view. */
+.ch-edt-scope{margin:15px 0 0;padding:14px 0 0;border-top:1px solid rgba(255,255,255,.14);font-size:10px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;line-height:1;color:#9AA8B6;}
+.ch-edt-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:11px 0 0;}
 .ch-edt-stats>div{min-width:0;padding:0 14px;border-left:1px solid rgba(255,255,255,.12);}
 .ch-edt-stats>div:first-child{padding-left:0;border-left:0;}
 .ch-edt-stats dt{margin:0 0 6px;font-size:10px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;line-height:1.2;color:#9AA8B6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -310,7 +318,7 @@ body.ch-edt-host{overflow-x:clip;overflow-y:visible;}
 @media(max-width:560px){
   .ch-edt-plate{padding:15px 14px 14px;border-radius:14px 14px 0 0;}
   .ch-edt-lede{font-size:13.5px;}
-  .ch-edt-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 0;margin-top:13px;padding-top:12px;}
+  .ch-edt-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 0;margin-top:10px;}
   .ch-edt-stats>div{padding:0 12px;}
   .ch-edt-stats>div:nth-child(odd){padding-left:0;border-left:0;}
   .ch-edt-stats dd{font-size:17px;}
@@ -545,6 +553,7 @@ body.ch-edt-host{overflow-x:clip;overflow-y:visible;}
         '<div class="ch-edt-plate">' +
           '<p class="ch-edt-lede">Fly out in the morning, home the same night. No hotel, no luggage, ' +
             "no days off. Every trip in today&rsquo;s feed is direct both ways.</p>" +
+          '<p class="ch-edt-scope">Today&rsquo;s feed</p>' +
           '<dl class="ch-edt-stats">' +
             "<div><dt>Cities</dt><dd>" + totalRoutes.length + "</dd></div>" +
             "<div><dt>UK airports</dt><dd>" + codes.length + "</dd></div>" +
