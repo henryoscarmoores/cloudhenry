@@ -41,7 +41,8 @@
   var AIRLINES = {
     FR: "Ryanair", U2: "easyJet", RK: "Ryanair UK", LS: "Jet2",
     BA: "British Airways", EI: "Aer Lingus", W6: "Wizz Air", VY: "Vueling",
-    TK: "Turkish Airlines", TP: "TAP", SK: "SAS", LH: "Lufthansa"
+    TK: "Turkish Airlines", TP: "TAP", SK: "SAS", LH: "Lufthansa",
+    W9: "Wizz Air UK", PC: "Pegasus", DE: "Condor"
   };
 
   var HOURS = [
@@ -244,8 +245,17 @@
     function routesFor(skip) {
       return collapse(trips.filter(function (t) { return match(t, skip); }), state.sort);
     }
+    // Not "cities whose best fare happens to leave from here" — that is
+    // what counting the collapsed rows gives you, and it greyed out
+    // Birmingham, Cork, Dublin, Glasgow and Newcastle as having nothing
+    // when every one of them had trips. It is cities you can reach from
+    // here at all, under whatever else is filtered.
     function countOrigin(c) {
-      return routesFor("origin").filter(function (r) { return r.best.origin === c; }).length;
+      var seen = {};
+      trips.forEach(function (t) {
+        if (t.origin === c && match(t, "origin")) seen[t.destination] = true;
+      });
+      return Object.keys(seen).length;
     }
 
     root.innerHTML =
