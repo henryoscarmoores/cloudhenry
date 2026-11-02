@@ -37,7 +37,8 @@
   function bookUrl(t) {
     var url;
     if (t.link) {
-      url = "https://www.aviasales.com" + t.link;
+      // Pin sterling, or Aviasales shows the price in whatever currency the browser guesses.
+      url = "https://www.aviasales.com" + t.link + "&currency=gbp";
     } else {
       var d = String(t.date).slice(8, 10) + String(t.date).slice(5, 7);
       url = "https://www.aviasales.com/search/" + t.origin + d + t.destination + d + "1?currency=gbp";
