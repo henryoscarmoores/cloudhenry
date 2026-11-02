@@ -225,7 +225,7 @@
         "<p><i>Out</i><b>" + esc(t.out) + "</b><small>" + duration(t.minsOut) + "</small></p>" +
         "<p><i>Back</i><b>" + esc(t.back) + "</b><small>" + duration(t.minsBack) + "</small></p>" +
       "</div>" +
-      '<p class="ch-sq-foot"><b>&pound;' + esc(t.price) + "</b><small>both ways</small>" + book + "</p>" +
+      '<p class="ch-sq-foot"><b>&pound;' + esc(t.price) + "</b><small>when checked</small>" + book + "</p>" +
       "</article>";
   }
 
