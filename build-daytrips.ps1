@@ -137,6 +137,8 @@ foreach ($origin in $ORIGINS) {
         flightOut   = [string]$x.flight_number
         minsOut     = [int]$x.duration_to
         minsBack    = [int]$x.duration_back
+        # Aviasales' own link to this exact itinerary (ticket and price), not a search.
+        link        = [string]$x.link
       })
       $found++
     }

@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-11-02T21:22:36Z",
+    "generated":  "2026-11-02T21:51:54Z",
     "currency":  "GBP",
     "minGround":  5,
     "origins":  [
@@ -35,11 +35,12 @@
                       "out":  "06:20",
                       "back":  "22:55",
                       "ground":  15.7,
-                      "price":  82,
+                      "price":  101,
                       "airline":  "FR",
                       "flightOut":  "447",
                       "minsOut":  55,
-                      "minsBack":  55
+                      "minsBack":  55,
+                      "link":  "/search/LPL0811DUB08111?t=FR17941188001794122100000055LPLDUB17941785001794181800000055DUBLPL_d6d9b2aea15391b8978aa00714e76b7d_11006\u0026search_date=02112026\u0026expected_price_uuid=01a19e3c-f8bb-8030-696a-22030a124b36\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=cRxJ9K9XI9aYr1XIWtqr2A\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=101"
                   },
                   {
                       "origin":  "STN",
@@ -50,11 +51,12 @@
                       "out":  "06:45",
                       "back":  "22:00",
                       "ground":  13.9,
-                      "price":  32,
+                      "price":  37,
                       "airline":  "FR",
                       "flightOut":  "210",
                       "minsOut":  80,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/STN1211DUB12111?t=FR17944659001794470700000080STNDUB17945208001794525600000080DUBSTN_0cd82d2295bb9f9aab7f61e10412acb2_4032\u0026search_date=02112026\u0026expected_price_uuid=01a19e3d-5dd2-8031-2b6d-93f732d62483\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=iLLylxCQ2XnsFEKOXXr6bw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=37"
                   },
                   {
                       "origin":  "STN",
@@ -69,7 +71,8 @@
                       "airline":  "RK",
                       "flightOut":  "175",
                       "minsOut":  95,
-                      "minsBack":  90
+                      "minsBack":  90,
+                      "link":  "/search/STN0301GLA03011?t=RK17989557001798961400000095STNGLA17990115001799016900000090GLASTN_e2a7158dd148444c98a9827a96a4ae75_7780\u0026search_date=29102026\u0026expected_price_uuid=01a186b1-901c-8030-af97-ecd5b9f4135b\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=WVwCKSzV8JgQOIIuZEn24A\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=72"
                   },
                   {
                       "origin":  "NCL",
@@ -84,7 +87,8 @@
                       "airline":  "FR",
                       "flightOut":  "017",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/NCL1611DUB16111?t=FR17948124001794816300000065NCLDUB17948640001794868200000070DUBNCL_563f8aae61f5ef6bb603018b185d2a01_4469\u0026search_date=30102026\u0026expected_price_uuid=01a18a8a-a1bd-8031-268e-ae1674742ca3\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=SPKPTRihupj5qe0ynNiNKQ\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=41"
                   },
                   {
                       "origin":  "NCL",
@@ -99,7 +103,8 @@
                       "airline":  "FR",
                       "flightOut":  "17",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/NCL0911DUB09111?t=FR17942076001794211500000065NCLDUB17942592001794263400000070DUBNCL_91650db2390c398d96473e2c94c8f066_5525\u0026search_date=30102026\u0026expected_price_uuid=01a18a88-fdb3-8030-2ac2-6bacb1f71a9f\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=SPKPTRihupj5qe0ynNiNKQ\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=51"
                   },
                   {
                       "origin":  "STN",
@@ -114,7 +119,8 @@
                       "airline":  "FR",
                       "flightOut":  "8318",
                       "minsOut":  115,
-                      "minsBack":  125
+                      "minsBack":  125,
+                      "link":  "/search/STN3011MIL30111?t=FR17960190001796029500000115STNMXP17960766001796080500000125BGYSTN_2d58792486b8d8ddc141433d28ae27b5_3708\u0026search_date=28102026\u0026expected_price_uuid=01a183a0-8437-8030-a216-4b3f66cd711e\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=DbJcGbbxqe6ula-E7Z40vg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=35"
                   },
                   {
                       "origin":  "LTN",
@@ -129,7 +135,8 @@
                       "airline":  "U2",
                       "flightOut":  "629",
                       "minsOut":  80,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/LTN2011BFS20111?t=U217951580001795162800000080LTNBFS17952087001795212900000070BFSLTN_10143e681708117fb0903a76c8770217_4986\u0026search_date=29102026\u0026expected_price_uuid=01a1889c-2d55-8031-65a4-e34c63603963\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=2mxKyBTQSvT1AUiRv4GF9A\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=46"
                   },
                   {
                       "origin":  "LGW",
@@ -144,7 +151,8 @@
                       "airline":  "U2",
                       "flightOut":  "853",
                       "minsOut":  90,
-                      "minsBack":  90
+                      "minsBack":  90,
+                      "link":  "/search/LGW1911EDI19111?t=U217950695001795074900000090LGWEDI17951211001795126500000090EDILGW_eec89fd81f73f47d64d8469eee38e924_7501\u0026search_date=27102026\u0026expected_price_uuid=01a17f69-ceb9-8030-24e9-e23e2aa20dec\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=RHzPQC3-ExzqOGlC7WQoxw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=70"
                   },
                   {
                       "origin":  "LGW",
@@ -159,7 +167,8 @@
                       "airline":  "U2",
                       "flightOut":  "853",
                       "minsOut":  90,
-                      "minsBack":  90
+                      "minsBack":  90,
+                      "link":  "/search/LGW2611EDI26111?t=U217956743001795679700000090LGWEDI17957259001795731300000090EDILGW_43ef323bb6498fec86611da6db3859fe_7995\u0026search_date=02112026\u0026expected_price_uuid=01a19ce8-4657-8031-2330-def609065bee\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=RHzPQC3-ExzqOGlC7WQoxw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=74"
                   },
                   {
                       "origin":  "LGW",
@@ -174,7 +183,8 @@
                       "airline":  "U2",
                       "flightOut":  "823",
                       "minsOut":  90,
-                      "minsBack":  85
+                      "minsBack":  85,
+                      "link":  "/search/LGW2011BFS20111?t=U217951589001795164300000090LGWBFS17952090001795214100000085BFSLGW_e152f634bc2502b00a69c47b3cc2bb99_6206\u0026search_date=29102026\u0026expected_price_uuid=01a1889c-2d55-8031-65a4-e34c63603963\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=Dh6OCRkpJMcMm5BimizY-w\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=57"
                   },
                   {
                       "origin":  "LTN",
@@ -189,7 +199,8 @@
                       "airline":  "U2",
                       "flightOut":  "2435",
                       "minsOut":  90,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN1111PAR11111?t=U217943804001794389400000090LTNCDG17944335001794434400000075CDGLTN_d88f4e1e2fba71bdc14d37f60af0a050_7257\u0026search_date=29102026\u0026expected_price_uuid=01a188cc-e272-8030-adcd-632a7e165117\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=BzDPHeiiyvh9GgkFpN-ecw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=67"
                   },
                   {
                       "origin":  "LTN",
@@ -204,7 +215,8 @@
                       "airline":  "U2",
                       "flightOut":  "2435",
                       "minsOut":  90,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN1811PAR18111?t=U217949852001794994200000090LTNCDG17950383001795039200000075CDGLTN_194768b60ab45ce58c75a9617128ffa5_7652\u0026search_date=01112026\u0026expected_price_uuid=01a198ed-3ae0-8030-2890-6d3dcc4f63c4\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=BzDPHeiiyvh9GgkFpN-ecw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=71"
                   },
                   {
                       "origin":  "LTN",
@@ -219,7 +231,8 @@
                       "airline":  "U2",
                       "flightOut":  "651",
                       "minsOut":  80,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/LTN1411GLA14111?t=U217946399001794644700000080LTNGLA17946882001794692400000070GLALTN_9c0d1268b62ee8347cbe7e2e90794476_5977\u0026search_date=31102026\u0026expected_price_uuid=01a1942a-03bd-8030-a2b2-6ed7f7b5efea\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=2joQ6LRn_0oecIYwUWVnIg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=56"
                   },
                   {
                       "origin":  "GLA",
@@ -234,7 +247,8 @@
                       "airline":  "U2",
                       "flightOut":  "411",
                       "minsOut":  80,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/GLA0611LON06111?t=U217939490001793953800000080GLASTN17939973001794001800000075STNGLA_577cb02f248fc45b787ec30675cb9a8b_15419\u0026search_date=02112026\u0026expected_price_uuid=01a199c5-d872-8030-aad1-e5979eca9063\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=BOdLypVhlqpWcmb9kRfCGA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=143"
                   },
                   {
                       "origin":  "STN",
@@ -249,7 +263,8 @@
                       "airline":  "FR",
                       "flightOut":  "203",
                       "minsOut":  80,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/STN2511DUB25111?t=FR17955909001795595700000080STNDUB17956386001795643400000080DUBSTN_a4a73e98d1629a50fe2a34651dda8f08_3415\u0026search_date=28102026\u0026expected_price_uuid=01a1830a-05c9-8031-2920-bc6e81455ed6\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=2qhwoyRYqyAqCU2bT1lnoQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=32"
                   },
                   {
                       "origin":  "BHX",
@@ -264,7 +279,8 @@
                       "airline":  "U2",
                       "flightOut":  "905",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/BHX1911GLA19111?t=U217950692001795073100000065BHXGLA17951157001795119900000070GLABHX_466f9d1e2676023d8e34444925002dcb_3710\u0026search_date=30102026\u0026expected_price_uuid=01a18cd6-6310-8030-20fc-582509024567\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=mKx-a9PKfIOFynqD_3W67w\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=34"
                   },
                   {
                       "origin":  "STN",
@@ -279,7 +295,8 @@
                       "airline":  "FR",
                       "flightOut":  "8101",
                       "minsOut":  175,
-                      "minsBack":  185
+                      "minsBack":  185,
+                      "link":  "/search/STN1412TIA14121?t=RK17972280001797242100000175STNTIA17972844001797291900000185TIASTN_ee74ca5540e6dc66b0febcea87c0bc00_3948\u0026search_date=28102026\u0026expected_price_uuid=01a182f0-0317-8031-20f9-e2046f06ae39\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=KBEZb_TLdWeRtpi-N4uMSw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=37"
                   },
                   {
                       "origin":  "BHX",
@@ -294,7 +311,8 @@
                       "airline":  "U2",
                       "flightOut":  "905",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/BHX2611GLA26111?t=U217956740001795677900000065BHXGLA17957205001795724700000070GLABHX_6cf54ac0a46084a7666cd0de9a759107_4540\u0026search_date=30102026\u0026expected_price_uuid=01a18d1c-b7f3-8040-66fe-367de34d3d12\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=mKx-a9PKfIOFynqD_3W67w\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=42"
                   },
                   {
                       "origin":  "LTN",
@@ -309,7 +327,8 @@
                       "airline":  "W9",
                       "flightOut":  "5361",
                       "minsOut":  125,
-                      "minsBack":  150
+                      "minsBack":  150,
+                      "link":  "/search/LTN0702BCN07021?t=U218019800001801991100000125LTNBCN18020337001802039100000150BCNLTN_0ef4cf65ebd361b02a47fe8e7dc5f7f7_6292\u0026search_date=28102026\u0026expected_price_uuid=01a18173-82f9-8030-ac96-9244f1db143f\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=mIfEBI_lSAdRJV3yfgmeAg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=59"
                   },
                   {
                       "origin":  "BHX",
@@ -324,7 +343,8 @@
                       "airline":  "U2",
                       "flightOut":  "905",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/BHX0511GLA05111?t=U217938596001793863500000065BHXGLA17939061001793910300000070GLABHX_8d3ae2067a452b0f77ae84ce27551955_10165\u0026search_date=30102026\u0026expected_price_uuid=01a18d1e-2b32-8040-6a2e-0009dfc9e0bc\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=mKx-a9PKfIOFynqD_3W67w\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=94"
                   },
                   {
                       "origin":  "BHX",
@@ -339,7 +359,8 @@
                       "airline":  "U2",
                       "flightOut":  "905",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/BHX1211GLA12111?t=U217944644001794468300000065BHXGLA17945109001794515100000070GLABHX_3ff24c5f267182171e1801f50021e20c_10314\u0026search_date=29102026\u0026expected_price_uuid=01a18952-7591-8040-252d-854df090a2be\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=mKx-a9PKfIOFynqD_3W67w\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=95"
                   },
                   {
                       "origin":  "LGW",
@@ -354,7 +375,8 @@
                       "airline":  "U2",
                       "flightOut":  "8637",
                       "minsOut":  110,
-                      "minsBack":  125
+                      "minsBack":  125,
+                      "link":  "/search/LGW1412MUC14121?t=U217972289001797239100000110LGWMUC17972814001797285300000125MUCLGW_a1908255de674a5c9f064cf2bd9628e9_14511\u0026search_date=28102026\u0026expected_price_uuid=01a182ef-36ef-8031-624f-55444e407c88\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=-p05itb-CTC3FqKvdsbCGg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=136"
                   },
                   {
                       "origin":  "LGW",
@@ -369,7 +391,8 @@
                       "airline":  "U2",
                       "flightOut":  "863",
                       "minsOut":  90,
-                      "minsBack":  85
+                      "minsBack":  85,
+                      "link":  "/search/LGW1411GLA14111?t=U217946414001794646800000090LGWGLA17946888001794693900000085GLALGW_847f218529ae5d6b979a423a1a2f3db5_7506\u0026search_date=31102026\u0026expected_price_uuid=01a1942a-03bd-8030-a2b2-6ed7f7b5efea\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=3pyxH48fM-BJAY-uNsZEYA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=70"
                   },
                   {
                       "origin":  "LGW",
@@ -384,7 +407,8 @@
                       "airline":  "U2",
                       "flightOut":  "8687",
                       "minsOut":  85,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LGW0411AMS04111?t=U217937771001793785800000085LGWAMS17938275001793828400000075AMSLGW_0390b8297a0aa1fcee424165b23a6a64_22108\u0026search_date=28102026\u0026expected_price_uuid=01a182fc-7ad9-8030-aee3-a823e217120d\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=Ug4rvh9_rsRAb_YUsABlag\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=207"
                   },
                   {
                       "origin":  "STN",
@@ -399,7 +423,8 @@
                       "airline":  "FR",
                       "flightOut":  "2738",
                       "minsOut":  115,
-                      "minsBack":  125
+                      "minsBack":  125,
+                      "link":  "/search/STN1011MIL10111?t=FR17942967001794307200000115STNBGY17943486001794352500000125BGYSTN_4bded527ee47305d4aa6894e38ed3024_4546\u0026search_date=31102026\u0026expected_price_uuid=01a1935d-a664-8030-e5a2-e2bed864cb15\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=enGPGOvXZIlSsQ_uSAjNdg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=42"
                   },
                   {
                       "origin":  "MAN",
@@ -414,7 +439,8 @@
                       "airline":  "FR",
                       "flightOut":  "4027",
                       "minsOut":  165,
-                      "minsBack":  170
+                      "minsBack":  170,
+                      "link":  "/search/MAN2012ALC20121?t=FR17977500001797763500000165MANALC17978049001797811500000170ALCMAN_8c998be4d5e960141229a87991d8b187_8612\u0026search_date=29102026\u0026expected_price_uuid=01a188f1-f2ea-8030-a89b-8facf12e8984\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=HBwkbr7IPX2opG6IN_Vz6Q\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=79"
                   },
                   {
                       "origin":  "NCL",
@@ -429,7 +455,8 @@
                       "airline":  "FR",
                       "flightOut":  "17",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/NCL1811DUB18111?t=FR17949888001794992700000065NCLDUB17950338001795038000000070DUBNCL_cfe87b1f74b4a68e7c314e4b10bead32_4469\u0026search_date=30102026\u0026expected_price_uuid=01a18a8b-566b-8030-a909-ef28a869af7e\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=8Dxd2fQOMAnZT29egClZKQ\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=41"
                   },
                   {
                       "origin":  "NCL",
@@ -444,7 +471,8 @@
                       "airline":  "FR",
                       "flightOut":  "17",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/NCL1111DUB11111?t=FR17943840001794387900000065NCLDUB17944290001794433200000070DUBNCL_7aab31864ff9ac68f2ea3fc44c9491a8_5282\u0026search_date=30102026\u0026expected_price_uuid=01a18a89-687f-8030-6e5e-94b80486d8a4\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=8Dxd2fQOMAnZT29egClZKQ\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=49"
                   },
                   {
                       "origin":  "BRS",
@@ -459,7 +487,8 @@
                       "airline":  "U2",
                       "flightOut":  "2771",
                       "minsOut":  85,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/BRS1011PAR10111?t=U217942943001794303000000085BRSCDG17943441001794345300000080CDGBRS_48cf48a56a268c1575107c056ec85125_13936\u0026search_date=01112026\u0026expected_price_uuid=01a19712-10f5-8031-6238-9b8ce17c0e4a\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=_Cx28azj1EwrbyBv6rvusA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=130"
                   },
                   {
                       "origin":  "STN",
@@ -474,7 +503,8 @@
                       "airline":  "FR",
                       "flightOut":  "2738",
                       "minsOut":  115,
-                      "minsBack":  125
+                      "minsBack":  125,
+                      "link":  "/search/STN1201MIL12011?t=FR17997399001799750400000115STNBGY17997900001799793900000125MXPSTN_de5c09dd6186186040970533a89e3268_4183\u0026search_date=02112026\u0026expected_price_uuid=01a19bfb-6af3-8030-61f9-c6a22b5de420\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=IUV5xWM_VaFwPX0NUMzerw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=39"
                   },
                   {
                       "origin":  "LTN",
@@ -489,7 +519,8 @@
                       "airline":  "FR",
                       "flightOut":  "9768",
                       "minsOut":  125,
-                      "minsBack":  140
+                      "minsBack":  140,
+                      "link":  "/search/LTN3011WRO30111?t=W617960181001796029200000125LTNWRO17960679001796072700000140WROLTN_f0d744be33c9416a13ce63ce7355850e_5541\u0026search_date=01112026\u0026expected_price_uuid=01a19768-d8a5-8031-28f3-dce4e2934c25\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=rLotMKWatGC_YANsn-OVKw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=52"
                   },
                   {
                       "origin":  "NCL",
@@ -504,7 +535,8 @@
                       "airline":  "FR",
                       "flightOut":  "17",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/NCL1911DUB19111?t=FR17950734001795077300000065NCLDUB17951157001795119900000070DUBNCL_3a852b5121e4a34862d724e8d8c091bf_7150\u0026search_date=30102026\u0026expected_price_uuid=01a18a8b-acf1-8030-2420-b851ba3cc173\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=6bGatwWii7SlD4cUzGIfrg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=66"
                   },
                   {
                       "origin":  "NCL",
@@ -519,7 +551,8 @@
                       "airline":  "FR",
                       "flightOut":  "17",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/NCL1211DUB12111?t=FR17944686001794472500000065NCLDUB17945109001794515100000070DUBNCL_de9f574a0986633f0da57bc7ba9798d8_7638\u0026search_date=30102026\u0026expected_price_uuid=01a18a89-b848-8031-2d60-69f46bd83383\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=6bGatwWii7SlD4cUzGIfrg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=70"
                   },
                   {
                       "origin":  "LGW",
@@ -534,7 +567,8 @@
                       "airline":  "U2",
                       "flightOut":  "8303",
                       "minsOut":  120,
-                      "minsBack":  120
+                      "minsBack":  120,
+                      "link":  "/search/LGW0811MIL08111?t=U217941257001794136500000120LGWMXP17941749001794178500000120MXPLGW_10f7090a8006954ae2a5aaed4d744e11_11839\u0026search_date=29102026\u0026expected_price_uuid=01a18915-78d2-8030-e5dc-081e585c2ca6\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=CTvfgh6OzBG-ePt1j3b4fQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=109"
                   },
                   {
                       "origin":  "LGW",
@@ -549,7 +583,8 @@
                       "airline":  "U2",
                       "flightOut":  "8411",
                       "minsOut":  80,
-                      "minsBack":  65
+                      "minsBack":  65,
+                      "link":  "/search/LGW3012PAR30121?t=U217986125001798620900000080LGWCDG17986593001798659600000065CDGLGW_bb47db2ab5b17ac6d5b93b8bd24eeaca_18585\u0026search_date=27102026\u0026expected_price_uuid=01a17c55-f428-8030-af2f-e097cccefde3\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=wOW-_HO8OvzBRU4J3nfqQw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=173"
                   },
                   {
                       "origin":  "STN",
@@ -564,7 +599,8 @@
                       "airline":  "FR",
                       "flightOut":  "2738",
                       "minsOut":  115,
-                      "minsBack":  125
+                      "minsBack":  125,
+                      "link":  "/search/STN1111MIL11111?t=FR17943831001794393600000115STNBGY17944317001794435600000125MXPSTN_2aa91bd177b1ef9eb042433b910dbce9_3398\u0026search_date=29102026\u0026expected_price_uuid=01a18914-db8d-8030-e42b-4e4067626ef6\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=-oqcawHWAscmZ2BtHTjVOA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=31"
                   },
                   {
                       "origin":  "EDI",
@@ -579,7 +615,8 @@
                       "airline":  "RK",
                       "flightOut":  "8604",
                       "minsOut":  85,
-                      "minsBack":  90
+                      "minsBack":  90,
+                      "link":  "/search/EDI2611LON26111?t=U217956770001795682100000085EDISTN17957202001795725600000090SENEDI_7ad39119f84e8e124016284fe2352d52_5555\u0026search_date=28102026\u0026expected_price_uuid=01a18454-592b-8031-2571-caf11452a3d9\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=Qt0umIw1_EXK48oP_uTk_A\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=52"
                   },
                   {
                       "origin":  "LGW",
@@ -594,7 +631,8 @@
                       "airline":  "U2",
                       "flightOut":  "865",
                       "minsOut":  90,
-                      "minsBack":  85
+                      "minsBack":  85,
+                      "link":  "/search/LGW0301GLA03011?t=U217989668001798972200000090LGWGLA17990097001799014800000085GLALGW_0783adf258885e98d0269372464fdc28_6435\u0026search_date=29102026\u0026expected_price_uuid=01a186b1-901c-8030-af97-ecd5b9f4135b\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=9LV8SLXDJIanoeK8wdxSAw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=60"
                   },
                   {
                       "origin":  "EDI",
@@ -609,7 +647,8 @@
                       "airline":  "U2",
                       "flightOut":  "3321",
                       "minsOut":  195,
-                      "minsBack":  190
+                      "minsBack":  190,
+                      "link":  "/search/EDI2912LIS29121?t=U217985279001798539600000195EDILIS17985771001798588500000190LISEDI_a440bfeb32c2c8caaa7cfe1787874c56_15922\u0026search_date=31102026\u0026expected_price_uuid=01a1927c-1ff9-8030-2619-1f44c1ed16bc\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=fcuD5BRgns4ihJTqbUtLYA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=148"
                   },
                   {
                       "origin":  "EDI",
@@ -624,7 +663,8 @@
                       "airline":  "RK",
                       "flightOut":  "597",
                       "minsOut":  85,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/EDI1411LON14111?t=RK17946399001794645000000085EDISTN17946822001794687000000080STNEDI_c8965f04958192ce9c04d1837bcff26e_5057\u0026search_date=01112026\u0026expected_price_uuid=01a198a9-15ca-8030-ee0b-a22aa0bb731e\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=HVQUKyt9gu2uCkGfEeez2A\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=47"
                   },
                   {
                       "origin":  "LTN",
@@ -639,7 +679,8 @@
                       "airline":  "U2",
                       "flightOut":  "302",
                       "minsOut":  80,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN0511EDI05111?t=U217938692001793874000000080LTNEDI17939112001793915700000075EDILTN_3df15b45a895feb5222c3a4a44ff5749_11992\u0026search_date=31102026\u0026expected_price_uuid=01a193ba-764f-8030-65cf-17d9e7371474\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=ntCDFc5vlxw90qJ-UgjZRA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=111"
                   },
                   {
                       "origin":  "EDI",
@@ -654,7 +695,8 @@
                       "airline":  "FR",
                       "flightOut":  "411",
                       "minsOut":  85,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/EDI2612LON26121?t=RK17982690001798274100000085EDISTN17983110001798315800000080STNEDI_e3f067243a246ca743a88d29869f1ff8_4253\u0026search_date=31102026\u0026expected_price_uuid=01a1936c-561c-8040-2000-ae1fc69e705f\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=RDjPXz1v6GdYP6QXd6h7YA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=40"
                   },
                   {
                       "origin":  "LTN",
@@ -669,7 +711,8 @@
                       "airline":  "W6",
                       "flightOut":  "2102",
                       "minsOut":  165,
-                      "minsBack":  175
+                      "minsBack":  175,
+                      "link":  "/search/LTN0804VNO08041?t=FR18071715001807188600000165LTNVNO18072252001807228500000175VNOLTN_3a0c8188411d7039fcceaae2a09d1012_13243\u0026search_date=28102026\u0026expected_price_uuid=01a18383-e129-8031-2a41-2cf69365e245\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=ABQSt41-I9bAGpifQf-4TA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=123"
                   },
                   {
                       "origin":  "EDI",
@@ -684,7 +727,8 @@
                       "airline":  "U2",
                       "flightOut":  "3323",
                       "minsOut":  115,
-                      "minsBack":  119
+                      "minsBack":  119,
+                      "link":  "/search/EDI1311CPH13111?t=FR17945634001794573900000115EDICPH17946108001794614340000119CPHEDI_72712ba1571b5ff45a4d0060cedac5cc_17781\u0026search_date=01112026\u0026expected_price_uuid=01a198ea-eb92-8030-2d4f-2ea5a2694776\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=JpPDgWHyuO04SDoi8P0ZwA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=165"
                   },
                   {
                       "origin":  "ORK",
@@ -699,7 +743,8 @@
                       "airline":  "FR",
                       "flightOut":  "908",
                       "minsOut":  85,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/ORK0802LON08021?t=FR18020733001802078400000085ORKSTN18021147001802119500000080LTNORK_008ff1b5a1abc46b4eff9f3adc759791_4047\u0026search_date=01112026\u0026expected_price_uuid=01a197c6-8faf-8030-2481-9c2184790021\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=bjV7veHoRXQkXmoZwSq4zg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=38"
                   },
                   {
                       "origin":  "LTN",
@@ -714,7 +759,8 @@
                       "airline":  "FR",
                       "flightOut":  "331",
                       "minsOut":  80,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN2511DUB25111?t=FR17955918001795596600000080LTNDUB17956323001795636800000075DUBLTN_bf62e6a742b1f060897939c94cd97eae_4802\u0026search_date=28102026\u0026expected_price_uuid=01a1830a-05c9-8031-2920-bc6e81455ed6\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=71WLUyH8Sntw_pm47jTnkg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=45"
                   },
                   {
                       "origin":  "LTN",
@@ -729,7 +775,8 @@
                       "airline":  "U2",
                       "flightOut":  "2459",
                       "minsOut":  180,
-                      "minsBack":  165
+                      "minsBack":  165,
+                      "link":  "/search/LTN2812LIS28121?t=U217984421001798452900000180LTNLIS17984880001798497900000165LISLTN_91a1a7b0022270585d4700c16bc5c625_18976\u0026search_date=01112026\u0026expected_price_uuid=01a198cd-7cb5-8030-2124-1e3b6e306299\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=hXUWGhHYo_blSqflKml5JQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=176"
                   },
                   {
                       "origin":  "LGW",
@@ -744,7 +791,8 @@
                       "airline":  "U2",
                       "flightOut":  "807",
                       "minsOut":  90,
-                      "minsBack":  90
+                      "minsBack":  90,
+                      "link":  "/search/LGW2911EDI29111?t=U217959395001795944900000090LGWEDI17959803001795985700000090EDILGW_0a499ccd457405824be64e3d7df88b54_22020\u0026search_date=02112026\u0026expected_price_uuid=01a19cc9-6cfb-8031-68fe-15a684740c69\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=IJwA7qWPtO_3PJklzXBtVQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=202"
                   },
                   {
                       "origin":  "LTN",
@@ -759,7 +807,8 @@
                       "airline":  "W9",
                       "flightOut":  "5004",
                       "minsOut":  185,
-                      "minsBack":  205
+                      "minsBack":  205,
+                      "link":  "/search/LTN1412TIA14121?t=W917972310001797245700000185LTNTIA17972805001797289200000205TIALTN_e9ff49400cc587b784b43e4eb8e1909f_5442\u0026search_date=28102026\u0026expected_price_uuid=01a182f0-0317-8031-20f9-e2046f06ae39\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=SAL09si-Mn_uar2z7M7Akw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=51"
                   },
                   {
                       "origin":  "STN",
@@ -774,7 +823,8 @@
                       "airline":  "FR",
                       "flightOut":  "1005",
                       "minsOut":  190,
-                      "minsBack":  200
+                      "minsBack":  200,
+                      "link":  "/search/STN1311BUH13111?t=FR17945535001794572100000190STNOTP17946069001794611700000200OTPSTN_ef5f16b4e8ddd08e654f5123f848c202_21194\u0026search_date=31102026\u0026expected_price_uuid=01a192a4-6982-8031-21de-28a62eb95f74\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=ZUQ8Vmq0pxSRt5jGCzw2gw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=197"
                   },
                   {
                       "origin":  "DUB",
@@ -789,7 +839,8 @@
                       "airline":  "FR",
                       "flightOut":  "1925",
                       "minsOut":  165,
-                      "minsBack":  185
+                      "minsBack":  185,
+                      "link":  "/search/DUB2811WAW28111?t=FR17958573001795870800000165DUBWMI17959053001795912800000185WMIDUB_8fd8fe4e3406c29b8c4ad2d009ab9a41_9315\u0026search_date=31102026\u0026expected_price_uuid=01a1922c-26ce-8030-e942-02706847ec14\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=QaFZ0w5Po_g_BwdKWdXNhg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=87"
                   },
                   {
                       "origin":  "LTN",
@@ -804,7 +855,8 @@
                       "airline":  "U2",
                       "flightOut":  "651",
                       "minsOut":  80,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/LTN0301GLA03011?t=U217989614001798966200000080LTNGLA17990007001799004900000070GLALTN_f41d99b4271ef65039110a1aec128cc0_9466\u0026search_date=29102026\u0026expected_price_uuid=01a186b1-901c-8030-af97-ecd5b9f4135b\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=WmCP5uY09HuLnPMuQh3f6Q\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=88"
                   },
                   {
                       "origin":  "LTN",
@@ -819,7 +871,8 @@
                       "airline":  "U2",
                       "flightOut":  "302",
                       "minsOut":  80,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN1011EDI10111?t=U217943009001794305700000080LTNEDI17943396001794344100000075EDILTN_2f4713d7197787e30a3bb8b006a4f702_8482\u0026search_date=01112026\u0026expected_price_uuid=01a19944-943c-8031-2802-d58fee1bb971\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=z1D2MTPXhZye3kzuPW71cw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=78"
                   },
                   {
                       "origin":  "LGW",
@@ -834,7 +887,8 @@
                       "airline":  "U2",
                       "flightOut":  "819",
                       "minsOut":  90,
-                      "minsBack":  85
+                      "minsBack":  85,
+                      "link":  "/search/LGW2502BFS25021?t=U218035445001803549900000090LGWBFS18035838001803588900000085BHDLGW_1a017e7770695c2b90c0ae56cc15db19_8949\u0026search_date=01112026\u0026expected_price_uuid=01a196de-da15-8030-6ddc-cbf457465bbc\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=nTc0M9cB-4XKCXB04fcGBQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=83"
                   },
                   {
                       "origin":  "LGW",
@@ -849,7 +903,8 @@
                       "airline":  "U2",
                       "flightOut":  "8425",
                       "minsOut":  125,
-                      "minsBack":  120
+                      "minsBack":  120,
+                      "link":  "/search/LGW0611NCE06111?t=EC17939544001793965500000125LGWNCE17939994001794003000000120NCELGW_ad5d08f3fbf6b4fe3a12b3f3195113ad_13128\u0026search_date=02112026\u0026expected_price_uuid=01a19d50-396b-8030-620b-54152d76b706\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=28XNHPimFyEIw3hKW9ocug\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=120"
                   },
                   {
                       "origin":  "NCL",
@@ -864,7 +919,8 @@
                       "airline":  "FR",
                       "flightOut":  "17",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/NCL1311DUB13111?t=FR17945496001794553500000065NCLDUB17945871001794591300000070DUBNCL_2de870f13668660cc7ec5fbaa6afc686_14544\u0026search_date=30102026\u0026expected_price_uuid=01a18a89-e88b-8031-618b-562d461cd335\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=v4H9rbk8ywp4vmRN8WyWEg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=134"
                   },
                   {
                       "origin":  "NCL",
@@ -879,7 +935,8 @@
                       "airline":  "FR",
                       "flightOut":  "17",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/NCL2011DUB20111?t=FR17951544001795158300000065NCLDUB17951919001795196100000070DUBNCL_388ab3853ed70f6178c35f0844ece5bd_14625\u0026search_date=30102026\u0026expected_price_uuid=01a18a8b-f825-8030-6d97-16d563c53b96\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=v4H9rbk8ywp4vmRN8WyWEg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=134"
                   },
                   {
                       "origin":  "STN",
@@ -894,7 +951,8 @@
                       "airline":  "FR",
                       "flightOut":  "109",
                       "minsOut":  90,
-                      "minsBack":  90
+                      "minsBack":  90,
+                      "link":  "/search/STN1611SNN16111?t=FR17948220001794827400000090STNSNN17948598001794865200000090SNNSTN_200eb1728903a83d36704347464ed470_7316\u0026search_date=01112026\u0026expected_price_uuid=01a1950e-1e00-8030-219b-8d1fa6eee54e\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=C8yxDZkCl7ujW0SgfDTvng\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=68"
                   },
                   {
                       "origin":  "STN",
@@ -909,7 +967,8 @@
                       "airline":  "FR",
                       "flightOut":  "715",
                       "minsOut":  170,
-                      "minsBack":  170
+                      "minsBack":  170,
+                      "link":  "/search/STN2812LIS28121?t=FR17984490001798459200000170STNLIS17984916001798501800000170LISSTN_e1829fff0c497c3b8a2f7bf7eff5e529_16278\u0026search_date=01112026\u0026expected_price_uuid=01a198cd-7cb5-8030-2124-1e3b6e306299\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=jvCEqURRBHqT7nD8wR6tdw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=151"
                   },
                   {
                       "origin":  "BRS",
@@ -924,7 +983,8 @@
                       "airline":  "U2",
                       "flightOut":  "2773",
                       "minsOut":  80,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/BRS2111PAR21111?t=U217952564001795264800000080BRSCDG17952957001795296900000080CDGBRS_bc0da8f27526c2c01739789120a58aa2_21249\u0026search_date=29102026\u0026expected_price_uuid=01a18796-b78b-8040-6f9c-22488ab29a17\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=_KL4n918GRBJVdfUxk6xeA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=197"
                   },
                   {
                       "origin":  "LTN",
@@ -935,11 +995,12 @@
                       "out":  "06:15",
                       "back":  "16:05",
                       "ground":  8.5,
-                      "price":  41,
+                      "price":  42,
                       "airline":  "FR",
                       "flightOut":  "338",
                       "minsOut":  80,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN1211DUB12111?t=FR17944641001794468900000080LTNDUB17944995001794504000000075DUBLTN_9196365987330dccfdbc0edb02d94f94_4577\u0026search_date=02112026\u0026expected_price_uuid=01a19e3d-5dd2-8031-2b6d-93f732d62483\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=a3afvqiyJ1G37FdwZaNcww\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=42"
                   },
                   {
                       "origin":  "STN",
@@ -954,7 +1015,8 @@
                       "airline":  "FR",
                       "flightOut":  "2455",
                       "minsOut":  145,
-                      "minsBack":  160
+                      "minsBack":  160,
+                      "link":  "/search/STN0512ROM05121?t=FR17964591001796471400000145STNCIA17965017001796507700000160CIASTN_16dc30307a5087d871f764b21a8232c3_7208\u0026search_date=31102026\u0026expected_price_uuid=01a191af-a081-8030-eccb-7acd436fa12e\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=ZD5bJLKFgD4MkH0L43LrfA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=67"
                   },
                   {
                       "origin":  "LGW",
@@ -969,7 +1031,8 @@
                       "airline":  "U2",
                       "flightOut":  "8425",
                       "minsOut":  125,
-                      "minsBack":  125
+                      "minsBack":  125,
+                      "link":  "/search/LGW0511NCE05111?t=EC17938680001793879100000125LGWNCE17939094001793913300000125NCELGW_509561ccc15b36229ee1c5cb45c28e8d_11459\u0026search_date=02112026\u0026expected_price_uuid=01a19d4e-7f60-8030-a562-0977f8ded3ed\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=TbWx_ZEJgkSEpbIf29PWVA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=105"
                   },
                   {
                       "origin":  "STN",
@@ -984,7 +1047,8 @@
                       "airline":  "FR",
                       "flightOut":  "805",
                       "minsOut":  90,
-                      "minsBack":  85
+                      "minsBack":  85,
+                      "link":  "/search/STN1411NOC14111?t=FR17946399001794645300000090STNNOC17946750001794680100000085NOCSTN_902232c3f5b327078f3100b3a1a80305_3195\u0026search_date=01112026\u0026expected_price_uuid=01a19890-f954-8030-25b9-f036b1e79743\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=v3e5WOf5_QdhySooP5c1bg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=30"
                   },
                   {
                       "origin":  "STN",
@@ -999,7 +1063,8 @@
                       "airline":  "FR",
                       "flightOut":  "159",
                       "minsOut":  80,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/STN2502BFS25021?t=RK18035433001803548100000080STNBFS18035772001803582000000080BFSSTN_42fb997e934d98d091fb9dc64aa12910_7453\u0026search_date=01112026\u0026expected_price_uuid=01a196de-da15-8030-6ddc-cbf457465bbc\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=BkIXqVjCYqFrjETqGDWUoQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=69"
                   },
                   {
                       "origin":  "LTN",
@@ -1014,7 +1079,8 @@
                       "airline":  "W6",
                       "flightOut":  "1602",
                       "minsOut":  130,
-                      "minsBack":  150
+                      "minsBack":  150,
+                      "link":  "/search/LTN0512GDN05121?t=W617964588001796470200000130LTNGDN17964993001796504700000150GDNLTN_9bec82ec48230bd10c9ce30292d7e513_8484\u0026search_date=29102026\u0026expected_price_uuid=01a187e9-b3e7-8031-675e-4247b26202ec\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=hVFRRRcQrj-0STIxbLHX6Q\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=79"
                   },
                   {
                       "origin":  "STN",
@@ -1029,7 +1095,8 @@
                       "airline":  "FR",
                       "flightOut":  "1013",
                       "minsOut":  115,
-                      "minsBack":  120
+                      "minsBack":  120,
+                      "link":  "/search/STN1012PRG10121?t=FR17968917001796902200000115STNPRG17969313001796934900000120PRGSTN_82865b84df3cfdbbebe58a5c36147cd0_13227\u0026search_date=31102026\u0026expected_price_uuid=01a18f7e-028c-8030-663c-178fd4a9713a\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=u23BohtEN-NrpFl_gikQLg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=123"
                   },
                   {
                       "origin":  "LTN",
@@ -1044,7 +1111,8 @@
                       "airline":  "U2",
                       "flightOut":  "2435",
                       "minsOut":  90,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/LTN1611PAR16111?t=U217948136001794822600000090LTNCDG17948511001794852300000080CDGLTN_907831df2fdf89887e7f530d56d40dd4_10025\u0026search_date=02112026\u0026expected_price_uuid=01a19a1e-73c3-8031-6d08-d39ac65c6996\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=MSLl5GeghHDec17eiemBiQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=93"
                   },
                   {
                       "origin":  "MAN",
@@ -1059,7 +1127,8 @@
                       "airline":  "U2",
                       "flightOut":  "2265",
                       "minsOut":  230,
-                      "minsBack":  230
+                      "minsBack":  230,
+                      "link":  "/search/MAN1211RAK12111?t=U217944683001794482100000230MANRAK17945139001794527700000230RAKMAN_e47356f456e3985fce444a6627433704_9188\u0026search_date=28102026\u0026expected_price_uuid=01a1825b-0e69-8030-af12-97f4ed054728\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=Y4Ys-yF5RkuWezo3BrCVzg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=86"
                   },
                   {
                       "origin":  "LTN",
@@ -1074,7 +1143,8 @@
                       "airline":  "U2",
                       "flightOut":  "2437",
                       "minsOut":  80,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN1512PAR15121?t=U217973321001797340500000080LTNCDG17973675001797368400000075CDGLTN_96c7b201db657ac09ff5006e8fd277f0_5707\u0026search_date=31102026\u0026expected_price_uuid=01a191d7-5cd1-8040-224e-4ab2162ce677\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=OnWBpjD4IHqa8rQahIVULg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=53"
                   },
                   {
                       "origin":  "LGW",
@@ -1089,7 +1159,8 @@
                       "airline":  "U2",
                       "flightOut":  "8519",
                       "minsOut":  235,
-                      "minsBack":  225
+                      "minsBack":  225,
+                      "link":  "/search/LGW1812FNC18121?t=U217975775001797591600000235LGWFNC17976186001797632100000225FNCLGW_e9faec7eeef37c4e337fde283d8b49a9_23237\u0026search_date=29102026\u0026expected_price_uuid=01a18901-ba89-8030-e86c-74ccacde9cb6\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=u8WMchRrVmSkeVWumetUKA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=214"
                   },
                   {
                       "origin":  "STN",
@@ -1104,7 +1175,8 @@
                       "airline":  "U2",
                       "flightOut":  "310",
                       "minsOut":  80,
-                      "minsBack":  85
+                      "minsBack":  85,
+                      "link":  "/search/STN0311EDI03111?t=RK17936964001793701200000080STNEDI17937276001793732700000085EDISTN_5622c4a4b8eb4d4fad7f0370825846c6_10285\u0026search_date=01112026\u0026expected_price_uuid=01a19974-766b-8030-274e-b234c7d65c85\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=RWi-3fLfA6hEGM4lDigD7w\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=95"
                   },
                   {
                       "origin":  "LTN",
@@ -1119,7 +1191,8 @@
                       "airline":  "U2",
                       "flightOut":  "302",
                       "minsOut":  80,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN2911EDI29111?t=U217959386001795943400000080LTNEDI17959692001795973700000075EDILTN_7d4c055848afaf0a8f4c64567fae0dfc_17301\u0026search_date=02112026\u0026expected_price_uuid=01a19cc9-6cfb-8031-68fe-15a684740c69\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=ftS3d8HJaiPDEzoAQuZTIw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=159"
                   },
                   {
                       "origin":  "EDI",
@@ -1134,7 +1207,8 @@
                       "airline":  "FR",
                       "flightOut":  "7322",
                       "minsOut":  105,
-                      "minsBack":  100
+                      "minsBack":  100,
+                      "link":  "/search/EDI1812BRU18121?t=FR17975751001797585000000105EDICRL17976105001797612900000100CRLEDI_ab1eccf95a982878845ffc828556561c_6057\u0026search_date=28102026\u0026expected_price_uuid=01a18365-4e09-8031-2f92-83e4d04fb772\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=3AvCZnjaKTDAGdLFtYDZ8Q\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=56"
                   },
                   {
                       "origin":  "DUB",
@@ -1149,7 +1223,8 @@
                       "airline":  "FR",
                       "flightOut":  "814",
                       "minsOut":  65,
-                      "minsBack":  65
+                      "minsBack":  65,
+                      "link":  "/search/DUB2412EDI24121?t=FR17980917001798095600000065DUBEDI17981211001798125000000065EDIDUB_e3c8535007e431f9060bdfa05b566f7c_9003\u0026search_date=01112026\u0026expected_price_uuid=01a1997f-757c-8030-eb96-486938d10512\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=gA60ND1cGwQAnktubMEkuA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=83"
                   },
                   {
                       "origin":  "LGW",
@@ -1164,7 +1239,8 @@
                       "airline":  "U2",
                       "flightOut":  "807",
                       "minsOut":  90,
-                      "minsBack":  90
+                      "minsBack":  90,
+                      "link":  "/search/LGW0311EDI03111?t=U217936946001793700000000090LGWEDI17937252001793730600000090EDILGW_4175c67a8f20261e465d032c0ba24f3b_16197\u0026search_date=01112026\u0026expected_price_uuid=01a19974-766b-8030-274e-b234c7d65c85\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=GJIDitWj7izy-I6KLo9TdA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=150"
                   },
                   {
                       "origin":  "LGW",
@@ -1179,7 +1255,8 @@
                       "airline":  "U2",
                       "flightOut":  "8515",
                       "minsOut":  175,
-                      "minsBack":  165
+                      "minsBack":  165,
+                      "link":  "/search/LGW2812LIS28121?t=EC17984517001798462200000175LGWLIS17984874001798497300000165LISLGW_db1b3164593e59decda7a3986e31c87e_24372\u0026search_date=01112026\u0026expected_price_uuid=01a198cd-7cb5-8030-2124-1e3b6e306299\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=e2yMT2FNh-iCIZUEpv_4Ew\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=227"
                   },
                   {
                       "origin":  "BHX",
@@ -1194,7 +1271,8 @@
                       "airline":  "U2",
                       "flightOut":  "905",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/BHX1811GLA18111?t=U217949999001795003800000065BHXGLA17950284001795032600000070GLABHX_b1723c63c433fb7b375a6522bbd77d8a_4666\u0026search_date=29102026\u0026expected_price_uuid=01a18953-2c4d-8040-af78-a3d25e174e8c\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=eYlXXmoE9mNT99hBZLgWZA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=43"
                   },
                   {
                       "origin":  "BHX",
@@ -1209,7 +1287,8 @@
                       "airline":  "U2",
                       "flightOut":  "905",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/BHX1111GLA11111?t=U217943951001794399000000065BHXGLA17944236001794427800000070GLABHX_7b39d26003d781fa592785befdb7001c_5884\u0026search_date=29102026\u0026expected_price_uuid=01a1894f-c8fc-8040-af54-1a6cb747ded1\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=eYlXXmoE9mNT99hBZLgWZA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=54"
                   },
                   {
                       "origin":  "LTN",
@@ -1224,7 +1303,8 @@
                       "airline":  "U2",
                       "flightOut":  "304",
                       "minsOut":  75,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN1911EDI19111?t=U217950920001795096500000075LTNEDI17951208001795125300000075EDILTN_45f201f4e10400173e5454ee8b78504e_6858\u0026search_date=27102026\u0026expected_price_uuid=01a17f69-ceb9-8030-24e9-e23e2aa20dec\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=Y_CLGlbPbiJCOJdbnqeiqA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=64"
                   },
                   {
                       "origin":  "BHX",
@@ -1239,7 +1319,8 @@
                       "airline":  "U2",
                       "flightOut":  "905",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/BHX2511GLA25111?t=U217956047001795608600000065BHXGLA17956332001795637400000070GLABHX_e920983c91ce1f2545cf7f1e51354164_7137\u0026search_date=30102026\u0026expected_price_uuid=01a18d1e-c522-8040-627f-273ecab75702\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=eYlXXmoE9mNT99hBZLgWZA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=66"
                   },
                   {
                       "origin":  "LTN",
@@ -1254,7 +1335,8 @@
                       "airline":  "U2",
                       "flightOut":  "304",
                       "minsOut":  75,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN2611EDI26111?t=U217956968001795701300000075LTNEDI17957256001795730100000075EDILTN_5003a3fd6a385e15c8fcad553df4fd05_8217\u0026search_date=02112026\u0026expected_price_uuid=01a19ce8-4657-8031-2330-def609065bee\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=Y_CLGlbPbiJCOJdbnqeiqA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=76"
                   },
                   {
                       "origin":  "BHX",
@@ -1269,7 +1351,8 @@
                       "airline":  "U2",
                       "flightOut":  "905",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/BHX0411GLA04111?t=U217937903001793794200000065BHXGLA17938188001793823000000070GLABHX_b8af90274f63c68ff6178303a5924843_18815\u0026search_date=30102026\u0026expected_price_uuid=01a18d1d-b0ce-8040-634a-81215cbb958a\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=eYlXXmoE9mNT99hBZLgWZA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=174"
                   },
                   {
                       "origin":  "BRS",
@@ -1284,7 +1367,8 @@
                       "airline":  "FR",
                       "flightOut":  "4121",
                       "minsOut":  165,
-                      "minsBack":  165
+                      "minsBack":  165,
+                      "link":  "/search/BRS2904AGP29041?t=FR18089790001808992500000165BRSAGP18090165001809022800000165AGPBRS_ac597d60195ca6fb1944d15458da1a9b_19887\u0026search_date=29102026\u0026expected_price_uuid=01a18845-b214-8030-656d-83e9fb7a1fe2\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=3wewFpxELVtaJosAdQb3Xg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=184"
                   },
                   {
                       "origin":  "LTN",
@@ -1299,7 +1383,8 @@
                       "airline":  "U2",
                       "flightOut":  "629",
                       "minsOut":  80,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/LTN2502BFS25021?t=U218035388001803543600000080LTNBFS18035673001803571500000070BHDLTN_9f10229c8667bcf679b91c6bba68f696_8719\u0026search_date=01112026\u0026expected_price_uuid=01a196de-da15-8030-6ddc-cbf457465bbc\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=cKhmMe_KE2rYo4pH4zV8PQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=81"
                   },
                   {
                       "origin":  "LGW",
@@ -1314,7 +1399,8 @@
                       "airline":  "U2",
                       "flightOut":  "8069",
                       "minsOut":  180,
-                      "minsBack":  170
+                      "minsBack":  170,
+                      "link":  "/search/LGW1711AGP17111?t=U217948964001794910800000180LGWAGP17949345001794941100000170AGPLGW_29fb0bd093ea6e36391a07868415d5b7_17676\u0026search_date=02112026\u0026expected_price_uuid=01a19b1a-3867-8030-2f46-ab56b38165e8\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=A3ABCllEuH31vvsMXKETdQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=163"
                   },
                   {
                       "origin":  "NCL",
@@ -1329,7 +1415,8 @@
                       "airline":  "FR",
                       "flightOut":  "017",
                       "minsOut":  65,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/NCL1411DUB14111?t=EI17946369001794640800000065NCLDUB17946642001794669000000080DUBNCL_e0a3ee7664cd5c1ed6a2c615e62e6054_12594\u0026search_date=30102026\u0026expected_price_uuid=01a18a8a-1731-8031-25b7-1ac222546143\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=btY0BixlWPL_grOfR7t8fw\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=116"
                   },
                   {
                       "origin":  "EDI",
@@ -1344,7 +1431,8 @@
                       "airline":  "FR",
                       "flightOut":  "2376",
                       "minsOut":  125,
-                      "minsBack":  140
+                      "minsBack":  140,
+                      "link":  "/search/EDI1412BER14121?t=U217972316001797242700000125EDIBER17972661001797270900000140BEREDI_da300a795414e283409dd616a924c4f8_14697\u0026search_date=28102026\u0026expected_price_uuid=01a18361-3154-8031-2856-643d3200b945\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=Lz_RG9MUUzjfWuDHYDeU1Q\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=137"
                   },
                   {
                       "origin":  "LTN",
@@ -1359,7 +1447,8 @@
                       "airline":  "U2",
                       "flightOut":  "2511",
                       "minsOut":  85,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/LTN0411AMS04111?t=U217937753001793784000000085LTNAMS17938071001793807700000070AMSLTN_4338a280cf8b264810ab70b56ab9c8d1_17801\u0026search_date=28102026\u0026expected_price_uuid=01a182fc-7ad9-8030-aee3-a823e217120d\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=vQNSOba7XJELrkXVBF8T9w\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=166"
                   },
                   {
                       "origin":  "STN",
@@ -1374,7 +1463,8 @@
                       "airline":  "FR",
                       "flightOut":  "5536",
                       "minsOut":  135,
-                      "minsBack":  145
+                      "minsBack":  145,
+                      "link":  "/search/STN0411KTW04111?t=FR17937873001793799000000135STNKTW17938221001793827200000145KTWSTN_3330978015a53ac71b5abae895433ee3_20512\u0026search_date=02112026\u0026expected_price_uuid=01a19b7f-0f43-8031-664a-79896969c92c\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=C7kbvAHzVO5YgjKEZQuQxg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=189"
                   },
                   {
                       "origin":  "LGW",
@@ -1389,7 +1479,8 @@
                       "airline":  "U2",
                       "flightOut":  "8051",
                       "minsOut":  120,
-                      "minsBack":  115
+                      "minsBack":  115,
+                      "link":  "/search/LGW1201MIL12011?t=EC17997441001799754900000120LGWMXP17997777001799781000000115MXPLGW_302c12476500b29e39cec3e2892ec721_6002\u0026search_date=02112026\u0026expected_price_uuid=01a19bfb-6af3-8030-61f9-c6a22b5de420\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=3fpoY5JAY3ubmZNlLvD6tw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=55"
                   },
                   {
                       "origin":  "LGW",
@@ -1404,7 +1495,8 @@
                       "airline":  "U2",
                       "flightOut":  "8403",
                       "minsOut":  80,
-                      "minsBack":  65
+                      "minsBack":  65,
+                      "link":  "/search/LGW1611PAR16111?t=U217948157001794824100000080LGWCDG17948469001794847200000065CDGLGW_d03fff2f4e7c9f57f5ab55f244f0262c_9645\u0026search_date=02112026\u0026expected_price_uuid=01a19a1e-73c3-8031-6d08-d39ac65c6996\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=Ru5onH8F44pNVoAURawiDA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=89"
                   },
                   {
                       "origin":  "LGW",
@@ -1419,7 +1511,8 @@
                       "airline":  "LS",
                       "flightOut":  "3111",
                       "minsOut":  260,
-                      "minsBack":  280
+                      "minsBack":  280,
+                      "link":  "/search/LGW2901AYT29011?t=U218012078001801234200000260LGWAYT18012570001801263000000280AYTLGW_6fb3d50ebb4be69c0eb6c1c59ebe8202_9748\u0026search_date=02112026\u0026expected_price_uuid=01a19d04-9faf-8030-678d-03e2f557a886\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=ErjTzbRVePrGqc0wHTVqwg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=90"
                   },
                   {
                       "origin":  "LTN",
@@ -1434,7 +1527,8 @@
                       "airline":  "U2",
                       "flightOut":  "2661",
                       "minsOut":  120,
-                      "minsBack":  130
+                      "minsBack":  130,
+                      "link":  "/search/LTN1012PRG10121?t=W917968884001796899200000120LTNPRG17969220001796926200000130PRGLTN_42e383c2447b8114e77e7b5723a5e2c4_14036\u0026search_date=31102026\u0026expected_price_uuid=01a18f7e-028c-8030-663c-178fd4a9713a\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=hf7hiF4dcxW4H-G4ig63gg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=130"
                   },
                   {
                       "origin":  "NCL",
@@ -1449,7 +1543,8 @@
                       "airline":  "FR",
                       "flightOut":  "21",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/NCL0811DUB08111?t=FR17941413001794145200000065NCLDUB17941674001794171600000070DUBNCL_15094abb999f5a0ca61b1f84a9fba1a9_16656\u0026search_date=30102026\u0026expected_price_uuid=01a18a88-b4d9-8030-26e8-64de5f8146b5\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=FU15dqsh-0eB8gWbODa4kw\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=153"
                   },
                   {
                       "origin":  "MAN",
@@ -1464,7 +1559,8 @@
                       "airline":  "FR",
                       "flightOut":  "6879",
                       "minsOut":  115,
-                      "minsBack":  125
+                      "minsBack":  125,
+                      "link":  "/search/MAN0411CPH04111?t=SK17937807001793791200000115MANCPH17938134001793817300000125CPHMAN_9f4f5ceca98411186580d6dc6e03676e_17211\u0026search_date=28102026\u0026expected_price_uuid=01a1832e-f31b-8031-263d-b452064bf315\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=ADUaoc5KZFJMqxl4_oDxXA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=160"
                   },
                   {
                       "origin":  "NCL",
@@ -1479,7 +1575,8 @@
                       "airline":  "FR",
                       "flightOut":  "21",
                       "minsOut":  65,
-                      "minsBack":  70
+                      "minsBack":  70,
+                      "link":  "/search/NCL1511DUB15111?t=FR17947461001794750000000065NCLDUB17947722001794776400000070DUBNCL_d647573409f87cc6eddb4399ebfb16cc_22750\u0026search_date=30102026\u0026expected_price_uuid=01a18a8a-549b-8030-2ba7-0e5b74246399\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=FU15dqsh-0eB8gWbODa4kw\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=209"
                   },
                   {
                       "origin":  "LGW",
@@ -1494,22 +1591,8 @@
                       "airline":  "U2",
                       "flightOut":  "8375",
                       "minsOut":  120,
-                      "minsBack":  120
-                  },
-                  {
-                      "origin":  "LGW",
-                      "destination":  "DUB",
-                      "city":  "Dublin",
-                      "country":  "Ireland",
-                      "date":  "2026-11-12",
-                      "out":  "10:25",
-                      "back":  "17:30",
-                      "ground":  5.8,
-                      "price":  62,
-                      "airline":  "FR",
-                      "flightOut":  "121",
-                      "minsOut":  80,
-                      "minsBack":  85
+                      "minsBack":  120,
+                      "link":  "/search/LGW1111MIL11111?t=EC17943888001794399600000120LGWMXP17944203001794423900000120MXPLGW_2fadc39e35e0d5e3e3c46540c9ebbb1c_6409\u0026search_date=29102026\u0026expected_price_uuid=01a18914-db8d-8030-e42b-4e4067626ef6\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=uT_gEaMvdDISVEhTbjb4YQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=59"
                   },
                   {
                       "origin":  "LTN",
@@ -1524,7 +1607,24 @@
                       "airline":  "U2",
                       "flightOut":  "603",
                       "minsOut":  75,
-                      "minsBack":  75
+                      "minsBack":  75,
+                      "link":  "/search/LTN1612EDI16121?t=U217974272001797431700000075LTNEDI17974521001797456600000075EDILTN_5f1f79532cd49da6eac20e1f90a9355a_5507\u0026search_date=27102026\u0026expected_price_uuid=01a17d59-11d3-8030-2003-a5c246e35da0\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=nBO6fdsYDrbEezdiBmkQiA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=51"
+                  },
+                  {
+                      "origin":  "LGW",
+                      "destination":  "DUB",
+                      "city":  "Dublin",
+                      "country":  "Ireland",
+                      "date":  "2026-11-12",
+                      "out":  "08:50",
+                      "back":  "15:50",
+                      "ground":  5.7,
+                      "price":  63,
+                      "airline":  "FR",
+                      "flightOut":  "115",
+                      "minsOut":  80,
+                      "minsBack":  85,
+                      "link":  "/search/LGW1211DUB12111?t=FR17944734001794478200000080LGWDUB17944986001794503700000085DUBLGW_e0c657c33ee9be0528156ae96fda11ca_6865\u0026search_date=02112026\u0026expected_price_uuid=01a19e3d-5dd2-8031-2b6d-93f732d62483\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=pvfpb2AegNrKOHIJ51SjxA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=63"
                   },
                   {
                       "origin":  "EDI",
@@ -1539,7 +1639,8 @@
                       "airline":  "FR",
                       "flightOut":  "8604",
                       "minsOut":  85,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/EDI1211LON12111?t=RK17944674001794472500000085EDISTN17944911001794495900000080STNEDI_00c75a4fd75a4b6f326c19b9a13a6cd2_4342\u0026search_date=27102026\u0026expected_price_uuid=01a17ed0-0a11-8030-a050-84439859afaf\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=PH4eLiFXf8by-UTFrsVZBQ\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=41"
                   },
                   {
                       "origin":  "STN",
@@ -1554,7 +1655,8 @@
                       "airline":  "RK",
                       "flightOut":  "1273",
                       "minsOut":  80,
-                      "minsBack":  85
+                      "minsBack":  85,
+                      "link":  "/search/STN1911EDI19111?t=RK17950959001795100700000080STNEDI17951193001795124400000085EDISTN_bd3f083a13cd8fcfe08a183cebd7c01a_4717\u0026search_date=27102026\u0026expected_price_uuid=01a17f69-ceb9-8030-24e9-e23e2aa20dec\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=DAFOuwJxA3IImiye1Tqm_w\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=44"
                   },
                   {
                       "origin":  "STN",
@@ -1569,7 +1671,8 @@
                       "airline":  "RK",
                       "flightOut":  "1273",
                       "minsOut":  80,
-                      "minsBack":  85
+                      "minsBack":  85,
+                      "link":  "/search/STN2611EDI26111?t=RK17957007001795705500000080STNEDI17957241001795729200000085EDISTN_24ef68ca98f1dd4b02439ffc8a2d7259_4971\u0026search_date=02112026\u0026expected_price_uuid=01a19ce8-4657-8031-2330-def609065bee\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=DAFOuwJxA3IImiye1Tqm_w\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=46"
                   },
                   {
                       "origin":  "LGW",
@@ -1584,7 +1687,8 @@
                       "airline":  "U2",
                       "flightOut":  "8405",
                       "minsOut":  80,
-                      "minsBack":  65
+                      "minsBack":  65,
+                      "link":  "/search/LGW0512PAR05121?t=U217964720001796480400000080LGWCDG17964987001796499000000065CDGLGW_4ebfba5e08fec6e3737030929115215c_9287\u0026search_date=29102026\u0026expected_price_uuid=01a18805-90d5-8031-2964-ac3d985108e0\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=rLk2nutbJEo4DvILj2bB_Q\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=86"
                   },
                   {
                       "origin":  "BFS",
@@ -1599,7 +1703,8 @@
                       "airline":  "U2",
                       "flightOut":  "986",
                       "minsOut":  75,
-                      "minsBack":  80
+                      "minsBack":  80,
+                      "link":  "/search/BFS1611LON16111?t=RK17948214001794825900000075BHDSEN17948439001794848700000080STNBFS_725040bf211e69b7e7baf343596485c6_5272\u0026search_date=01112026\u0026expected_price_uuid=01a1964e-4c5c-8030-65cd-8a0345a2cc32\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=oA3cZtr4pESz-FIzmt45zw\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=49"
                   },
                   {
                       "origin":  "STN",
@@ -1614,7 +1719,8 @@
                       "airline":  "U2",
                       "flightOut":  "316",
                       "minsOut":  80,
-                      "minsBack":  85
+                      "minsBack":  85,
+                      "link":  "/search/STN1612EDI16121?t=RK17974296001797434400000080STNEDI17974524001797457500000085EDISTN_47b7c7a89f8a93b6dfcb87fa15e39557_5995\u0026search_date=27102026\u0026expected_price_uuid=01a17d59-11d3-8030-2003-a5c246e35da0\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=S5oD6RQydjLM1ME0SwjWMw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=56"
                   },
                   {
                       "origin":  "STN",
@@ -1629,7 +1735,8 @@
                       "airline":  "PC",
                       "flightOut":  "1164",
                       "minsOut":  225,
-                      "minsBack":  240
+                      "minsBack":  240,
+                      "link":  "/search/STN0712IST07121?t=PC17966358001796660100000225STNSAW17966781001796681700000240SAWSTN_7f7c5f095ff1b7a5277a55a14cd46b77_16684\u0026search_date=28102026\u0026expected_price_uuid=01a18280-32ee-8030-20ee-1b8c402c16a0\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=Z12dSrNSXCUal4wvtUkJzw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=155"
                   },
                   {
                       "origin":  "STN",
@@ -1644,7 +1751,8 @@
                       "airline":  "PC",
                       "flightOut":  "1164",
                       "minsOut":  225,
-                      "minsBack":  240
+                      "minsBack":  240,
+                      "link":  "/search/STN2301IST23011?t=PC18006966001800720900000225STNSAW18007389001800742500000240SAWSTN_0f1fbf5ff08aea457bd7c13887e45f57_17818\u0026search_date=30102026\u0026expected_price_uuid=01a18b11-ed40-8030-28e3-c34083cb8b9c\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=Z12dSrNSXCUal4wvtUkJzw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=164"
                   }
               ]
 }

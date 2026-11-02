@@ -29,10 +29,17 @@
   // a booking from a tile is credited like one from search.
   var MARKER = "764584";
 
-  // Aviasales search for the day trip: out and back on the same day, one passenger.
+  // Aviasales' link to this exact itinerary, from the feed. It opens the
+  // flight with the price it had when we checked. Only if the feed has no
+  // link for a trip does it fall back to a same-day search.
   function bookUrl(t) {
-    var d = String(t.date).slice(8, 10) + String(t.date).slice(5, 7);
-    var url = "https://www.aviasales.com/search/" + t.origin + d + t.destination + d + "1?currency=gbp";
+    var url;
+    if (t.link) {
+      url = "https://www.aviasales.com" + t.link;
+    } else {
+      var d = String(t.date).slice(8, 10) + String(t.date).slice(5, 7);
+      url = "https://www.aviasales.com/search/" + t.origin + d + t.destination + d + "1?currency=gbp";
+    }
     return "https://tp.media/r?marker=" + MARKER + "&trs=562291&p=4114&u=" + encodeURIComponent(url);
   }
 
