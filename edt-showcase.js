@@ -220,7 +220,7 @@
       '<p class="ch-sq-top"><span>' + esc(AIRPORTS[t.origin] || t.origin) + "</span><span>" + esc(pretty(t.date)) + "</span></p>" +
       '<h3 class="ch-sq-city">' + esc(t.city || t.destination) + "</h3>" +
       '<p class="ch-sq-country">' + esc(t.country || AIRPORTS[t.origin] || "") + "</p>" +
-      '<p class="ch-sq-hours"><b>' + Math.floor(t.ground) + "</b><span>hrs in country</span></p>" +
+      '<p class="ch-sq-hours"><b>' + Math.floor(t.ground) + "</b><span>hours in " + esc(t.city || t.destination) + "</span></p>" +
       '<div class="ch-sq-legs">' +
         "<p><i>Out</i><b>" + esc(t.out) + "</b><small>" + duration(t.minsOut) + "</small></p>" +
         "<p><i>Back</i><b>" + esc(t.back) + "</b><small>" + duration(t.minsBack) + "</small></p>" +
