@@ -13,7 +13,9 @@
 (function () {
   "use strict";
 
-  var DATA = "https://cdn.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/daytrips.json";
+  // Read from GitHub directly rather than jsDelivr: jsDelivr keeps a branch copy
+  // for hours, so a fresh build (and its Book links) could sit unseen.
+  var DATA = "https://raw.githubusercontent.com/henryoscarmoores/cloudhenry/main/daytrips.json";
   var MOUNT = "chEdtShow";
   var MIN_GROUND = 5;     // the build's own floor: below this you have flown somewhere to look at an airport
   var MAX_PRICE = 250;    // the build's own ceiling
