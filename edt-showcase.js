@@ -132,11 +132,13 @@
 
   // Each sort has a value per trip. The readers flip the direction with a
   // second tap on the same button.
+  // high and low say which end comes first in each direction. A departure is
+  // a time of day, so it reads latest or earliest rather than high or low.
   var SORTS = [
-    { k: "hours",  label: "Hours in country", value: function (t) { return t.ground; } },
-    { k: "price",  label: "Price",            value: function (t) { return t.price; } },
-    { k: "flight", label: "Flight time",      value: function (t) { return (+t.minsOut || 0) + (+t.minsBack || 0); } },
-    { k: "depart", label: "Departure",        value: function (t) { return clock(t.out); } }
+    { k: "hours",  label: "Hours in country", high: "most first",   low: "fewest first",  value: function (t) { return t.ground; } },
+    { k: "price",  label: "Price",            high: "highest first", low: "lowest first",  value: function (t) { return t.price; } },
+    { k: "flight", label: "Flight time",      high: "longest first", low: "shortest first", value: function (t) { return (+t.minsOut || 0) + (+t.minsBack || 0); } },
+    { k: "depart", label: "Departure",        high: "latest first",  low: "earliest first", value: function (t) { return clock(t.out); } }
   ];
 
   function group(code) {
@@ -227,7 +229,7 @@
       bar.innerHTML = SORTS.map(function (s) {
         var on = view.k === s.k;
         return '<button type="button" class="ch-sq-btn" data-k="' + s.k + '" aria-pressed="' + (on ? "true" : "false") + '">' +
-          s.label + (on ? "<small>" + (view.desc ? "high to low" : "low to high") + "</small>" : "") +
+          s.label + (on ? "<small>" + (view.desc ? s.high : s.low) + "</small>" : "") +
         "</button>";
       }).join("");
       grid.innerHTML = ordered().map(tile).join("");
