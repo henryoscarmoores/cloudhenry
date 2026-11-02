@@ -32,27 +32,42 @@
 
   var CSS =
     ".ch-sq-wrap{font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#0E3550;}" +
-    ".ch-sq-lede{font-size:15px;line-height:1.5;color:#E8F3FB;margin:0 0 16px;max-width:44em;}" +
+    /* Text never sits on the sky: the lede and the note share one ink panel. */
+    ".ch-sq-plate{background:#0E3550;border-radius:16px;padding:16px 18px;margin:0 0 16px;box-shadow:0 2px 4px rgba(14,53,80,.07),0 12px 28px rgba(14,53,80,.14);}" +
+    ".ch-sq-lede{font-size:14.5px;line-height:1.5;color:#E8F3FB;margin:0;max-width:44em;}" +
     ".ch-sq-lede b{color:#fff;font-weight:800;}" +
-    ".ch-sq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;}" +
+    ".ch-sq-note{font-size:12px;line-height:1.5;color:#9DB6C9;margin:10px 0 0;}" +
+    ".ch-sq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:12px;}" +
     ".ch-sq{aspect-ratio:1/1;display:flex;flex-direction:column;min-width:0;overflow:hidden;background:#fff;border:1px solid rgba(14,53,80,.12);border-radius:16px;padding:12px 12px 11px;box-shadow:0 2px 4px rgba(14,53,80,.07),0 12px 28px rgba(14,53,80,.14);font-variant-numeric:tabular-nums;}" +
+    /* Flex would otherwise squeeze the lines to zero height to fit the square. */
+    ".ch-sq>*{flex-shrink:0;}" +
     ".ch-sq-top{display:flex;justify-content:space-between;gap:6px;margin:0;font-size:9.5px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:#46607A;white-space:nowrap;}" +
-    ".ch-sq-city{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1;margin:7px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}" +
-    ".ch-sq-country{font-size:11px;font-weight:600;color:#46607A;margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}" +
-    ".ch-sq-hours{display:flex;align-items:baseline;gap:6px;margin:9px 0 0;}" +
-    ".ch-sq-hours b{font-size:30px;font-weight:900;line-height:1;letter-spacing:-1.2px;color:#0E6FB6;}" +
+    ".ch-sq-city{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.15;margin:6px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}" +
+    ".ch-sq-country{font-size:11px;font-weight:600;color:#46607A;margin:1px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}" +
+    ".ch-sq-hours{display:flex;align-items:baseline;gap:6px;margin:8px 0 0;}" +
+    ".ch-sq-hours b{font-size:26px;font-weight:900;line-height:1;letter-spacing:-1px;color:#0E6FB6;}" +
     ".ch-sq-hours span{font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#46607A;}" +
-    ".ch-sq-legs{margin:auto 0 0;padding-top:9px;border-top:1px solid rgba(14,53,80,.1);}" +
+    ".ch-sq-legs{margin:auto 0 0;padding-top:8px;border-top:1px solid rgba(14,53,80,.1);}" +
     ".ch-sq-legs p{display:flex;align-items:baseline;gap:6px;margin:0;font-size:12.5px;line-height:1.35;}" +
-    ".ch-sq-legs i{font-style:normal;width:34px;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#46607A;}" +
+    ".ch-sq-legs i{font-style:normal;width:32px;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#46607A;}" +
     ".ch-sq-legs b{font-weight:800;}" +
     ".ch-sq-legs small{margin-left:auto;font-size:10.5px;font-weight:700;color:#46607A;white-space:nowrap;}" +
-    ".ch-sq-foot{display:flex;align-items:baseline;gap:6px;margin:8px 0 0;}" +
+    ".ch-sq-foot{display:flex;align-items:baseline;gap:6px;margin:6px 0 0;}" +
     ".ch-sq-foot b{font-size:16px;font-weight:900;letter-spacing:-.4px;}" +
     ".ch-sq-foot small{font-size:10px;font-weight:700;color:#46607A;}" +
-    ".ch-sq-note{font-size:12px;line-height:1.5;color:#E8F3FB;margin:16px 0 0;}" +
     ".ch-sq-empty{padding:24px 16px;text-align:center;font-weight:600;color:#46607A;background:#fff;border-radius:14px;}" +
-    "@media(max-width:560px){.ch-sq-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}.ch-sq-hours b{font-size:26px;}}";
+    /* Phones: two across, so the tile is about 166px. Drop the country line and step the type down. */
+    "@media(max-width:560px){" +
+      ".ch-sq-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}" +
+      ".ch-sq{padding:10px;}" +
+      ".ch-sq-country{display:none;}" +
+      ".ch-sq-city{font-size:15px;}" +
+      ".ch-sq-hours b{font-size:22px;}" +
+      ".ch-sq-legs p{font-size:11.5px;}" +
+      ".ch-sq-legs i{width:28px;}" +
+      ".ch-sq-legs small{font-size:9.5px;}" +
+      ".ch-sq-foot b{font-size:14px;}" +
+    "}";
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
@@ -130,10 +145,12 @@
     }
     root.innerHTML =
       '<div class="ch-sq-wrap">' +
-        '<p class="ch-sq-lede">Fly out in the morning, home the same night. <b>' + picks.length +
-          " trips</b> from Manchester, Birmingham and London, plus a couple more. Longest day first.</p>" +
+        '<div class="ch-sq-plate">' +
+          '<p class="ch-sq-lede">Fly out in the morning, home the same night. <b>' + picks.length +
+            " trips</b> from Manchester, Birmingham and London, plus a couple more. Longest day first.</p>" +
+          '<p class="ch-sq-note">Anything with less than five hours on the ground is left out, because below that you have flown somewhere to look at an airport. Prices are for the return and move constantly.</p>' +
+        "</div>" +
         '<div class="ch-sq-grid">' + picks.map(tile).join("") + "</div>" +
-        '<p class="ch-sq-note">Anything with less than five hours on the ground is left out, because below that you have flown somewhere to look at an airport. Prices are for the return and move constantly.</p>' +
       "</div>";
   }
 
