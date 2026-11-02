@@ -30,6 +30,13 @@
            ("0" + d.getUTCDate()).slice(-2) + (d.getUTCHours() < 12 ? "-am" : "-pm");
   }
 
+  // One airport's own file, with the same daily stamp. It holds every route
+  // the cache knows for that airport. The slim fares.json holds fewer: nine
+  // of Gatwick's twenty-one routes, 39 of Stansted's 158.
+  function airportUrl(code) {
+    return dataUrl().replace(DATA, CDN + "fares-" + code + ".json");
+  }
+
   // Short enough for the homepage teaser, which is one line at 12px.
   // The three London airports are named individually: "London" three
   // times over would tell a Gatwick reader nothing.
@@ -642,15 +649,16 @@
 
   function start(fares) {
     var busy = false, runs = 0;
+    var current = fares;
 
     function paint() {
       if (busy || runs > 40) return;      // a runaway repaint would hang the tab
       busy = true;
       runs++;
       try {
-        if (isHome) paintHomepage(fares);
-        else if (origin) paintJoin(fares, origin);
-        paintBlocks(fares);
+        if (isHome) paintHomepage(current);
+        else if (origin) paintJoin(current, origin);
+        paintBlocks(current);
       } catch (e) { /* never take the page down over a teaser */ }
       busy = false;
     }
@@ -659,6 +667,9 @@
     // The airport picker needs a way to ask for a repaint. Allow it a
     // fresh run count so choosing airports never hits the cap.
     window.__chHomeRepaint = function () { runs = 0; paint(); };
+    // A fuller file for one airport arrives after the slim copy has painted.
+    // Swapping the data and repainting keeps the one set of observers.
+    window.__chSwapFares = function (next) { current = next; window.__chHomeRepaint(); };
 
     // Ghost's own script rebuilds the homepage rows at 400ms, 1200ms and
     // 2500ms after load, which would put the old prices back. Repaint
@@ -681,12 +692,27 @@
     setTimeout(function () { if (mo) mo.disconnect(); }, 15000);
   }
 
+  // Join and pricing pages know their airport, so once the slim copy is up
+  // the page swaps in that airport's full file. Home and the teaser keep
+  // the slim copy: they show the cheapest across every airport, not one.
+  // Stansted's file is about 2.4 MB, and it loads after the first paint.
+  function fuller() {
+    if (isHome || !origin) return;
+    fetch(airportUrl(origin), { cache: "default" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (a) {
+        if (!a || !a.fares || !a.fares.length) return;
+        if (window.__chSwapFares) window.__chSwapFares(a.fares);
+      })
+      .catch(function () { /* the slim copy stays on screen */ });
+  }
+
   fetch(dataUrl(), { cache: "default" })
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (j) {
       if (!j || !j.fares || !j.fares.length) return;
       GENERATED = j.generated || "";
-      needPlaces(function () { start(j.fares); });
+      needPlaces(function () { start(j.fares); fuller(); });
     })
     .catch(function () { /* leave whatever Ghost rendered */ });
 })();
