@@ -45,7 +45,7 @@
     ".ch-sq-city{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.15;margin:6px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}" +
     ".ch-sq-country{font-size:11px;font-weight:600;color:#46607A;margin:1px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}" +
     ".ch-sq-hours{display:flex;align-items:baseline;gap:6px;margin:8px 0 0;}" +
-    ".ch-sq-hours b{font-size:26px;font-weight:900;line-height:1;letter-spacing:-1px;color:#0E6FB6;}" +
+    ".ch-sq-hours b{font-size:26px;font-weight:900;line-height:1;letter-spacing:-1px;color:#0E6FB6;white-space:nowrap;}" +
     ".ch-sq-hours span{font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#46607A;}" +
     ".ch-sq-legs{margin:auto 0 0;padding-top:8px;border-top:1px solid rgba(14,53,80,.1);}" +
     ".ch-sq-legs p{display:flex;align-items:baseline;gap:6px;margin:0;font-size:12.5px;line-height:1.35;}" +
