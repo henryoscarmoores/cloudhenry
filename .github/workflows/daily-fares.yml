@@ -76,6 +76,27 @@ jobs:
           GHOST_ADMIN_KEY: ${{ secrets.GHOST_ADMIN_KEY }}
         run: .\label-airports.ps1
 
+      # Extreme day trips, from the same cache, in the same run. Its own
+      # step, so a failure here never stops the fares being published.
+      - name: Build day trips
+        shell: powershell
+        continue-on-error: true
+        run: .\build-daytrips.ps1
+
+      # Keep the new day trips only if the build found a real list.
+      # Otherwise put the last good file back from git, so the page keeps it.
+      - name: Check the day trips before publishing
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          if (-not (Test-Path "daytrips.json")) { Write-Host "::warning::daytrips.json is missing"; exit 0 }
+          $count = @((Get-Content "daytrips.json" -Raw | ConvertFrom-Json).trips).Count
+          Write-Host "day trips: $count"
+          if ($count -lt 30) {
+            Write-Host "::warning::Only $count day trips. Keeping the last good file."
+            git checkout -- daytrips.json
+          }
+
       - name: Check the result before publishing
         shell: pwsh
         run: |
@@ -105,8 +126,8 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add fares.json fares-*.json places.js stats.json
-          if (-not (git status --porcelain fares.json fares-*.json places.js stats.json)) {
+          git add fares.json fares-*.json places.js stats.json daytrips.json
+          if (-not (git status --porcelain fares.json fares-*.json places.js stats.json daytrips.json)) {
             Write-Host "no change since the last run"
             exit 0
           }
@@ -120,7 +141,7 @@ jobs:
         shell: pwsh
         continue-on-error: true
         run: |
-          foreach ($f in @("fares.json", "places.js") + @(Get-ChildItem "fares-*.json" | ForEach-Object { $_.Name })) {
+          foreach ($f in @("fares.json", "daytrips.json", "places.js") + @(Get-ChildItem "fares-*.json" | ForEach-Object { $_.Name })) {
             Invoke-WebRequest -Uri "https://purge.jsdelivr.net/gh/henryoscarmoores/cloudhenry@main/$f" -UseBasicParsing -TimeoutSec 60 | Out-Null
           }
           Write-Host "purged"
