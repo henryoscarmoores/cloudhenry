@@ -25,6 +25,17 @@
   var CAP = { MAN: 5, BHX: 5, LON: 8, OTHER: 3 };
   var OTHER_AIRPORTS = 2;
 
+  // The same affiliate marker and tracking wrapper the search page uses, so
+  // a booking from a tile is credited like one from search.
+  var MARKER = "764584";
+
+  // Aviasales search for the day trip: out and back on the same day, one passenger.
+  function bookUrl(t) {
+    var d = String(t.date).slice(8, 10) + String(t.date).slice(5, 7);
+    var url = "https://www.aviasales.com/search/" + t.origin + d + t.destination + d + "1?currency=gbp";
+    return "https://tp.media/r?marker=" + MARKER + "&trs=562291&p=4114&u=" + encodeURIComponent(url);
+  }
+
   var AIRPORTS = {
     MAN: "Manchester", BHX: "Birmingham", STN: "Stansted", LTN: "Luton", LGW: "Gatwick",
     NCL: "Newcastle", EDI: "Edinburgh", GLA: "Glasgow", LBA: "Leeds Bradford", BRS: "Bristol",
@@ -76,6 +87,11 @@
     ".ch-sq-foot{display:flex;align-items:baseline;gap:6px;margin:6px 0 0;}" +
     ".ch-sq-foot b{font-size:16px;font-weight:900;letter-spacing:-.4px;}" +
     ".ch-sq-foot small{font-size:10px;font-weight:700;color:#46607A;}" +
+    ".ch-sq-access{margin:12px 0 0;font-size:12.5px;font-weight:800;color:#F5C242;}" +
+    ".ch-sq-book{margin-left:auto;display:inline-block;background:#0E6FB6;color:#fff !important;font-size:11px;font-weight:800;line-height:1;padding:5px 9px;border-radius:999px;text-decoration:none;white-space:nowrap;}" +
+    ".ch-sq-book:hover{background:#0B5A94;}" +
+    ".ch-sq-lock{background:#E8F3FB;color:#0E3550 !important;}" +
+    ".ch-sq-lock:hover{background:#D7EDFA;}" +
     ".ch-sq-empty{padding:24px 16px;text-align:center;font-weight:600;color:#46607A;background:#fff;border-radius:14px;}" +
     /* Phones: two across, so the tile is about 166px. Drop the country line and step the type down. */
     "@media(max-width:560px){" +
@@ -176,7 +192,30 @@
     return out;
   }
 
-  function tile(t) {
+  function routeKey(t) {
+    return t.origin + "-" + t.destination;
+  }
+
+  // Same test the site uses in live-fares.js: a paying or comped member, or an
+  // active or trialing subscription. Anyone who is not signed in is a visitor.
+  function isPaidMember() {
+    return fetch("/members/api/member/", { credentials: "include" })
+      .then(function (r) { return r.status === 200 ? r.json() : null; })
+      .then(function (m) {
+        if (!m) return false;
+        return m.status === "paid" || m.status === "comped" ||
+          !!(m.subscriptions && m.subscriptions.some(function (s) {
+            return s.status === "active" || s.status === "trialing";
+          }));
+      })
+      .catch(function () { return false; });
+  }
+
+  // open: the reader can book this trip. Everything else asks them to join.
+  function tile(t, open) {
+    var book = open
+      ? '<a class="ch-sq-book" href="' + esc(bookUrl(t)) + '" target="_blank" rel="sponsored noopener">Book</a>'
+      : '<a class="ch-sq-book ch-sq-lock" href="#/portal/signup">Join to book</a>';
     return '<article class="ch-sq ch-sq-' + group(t.origin) + '">' +
       '<p class="ch-sq-top"><span>' + esc(AIRPORTS[t.origin] || t.origin) + "</span><span>" + esc(pretty(t.date)) + "</span></p>" +
       '<h3 class="ch-sq-city">' + esc(t.city || t.destination) + "</h3>" +
@@ -186,9 +225,12 @@
         "<p><i>Out</i><b>" + esc(t.out) + "</b><small>" + duration(t.minsOut) + "</small></p>" +
         "<p><i>Back</i><b>" + esc(t.back) + "</b><small>" + duration(t.minsBack) + "</small></p>" +
       "</div>" +
-      '<p class="ch-sq-foot"><b>&pound;' + esc(t.price) + "</b><small>both ways</small></p>" +
+      '<p class="ch-sq-foot"><b>&pound;' + esc(t.price) + "</b><small>both ways</small>" + book + "</p>" +
       "</article>";
   }
+
+  // How many trips a visitor can book without joining. Members can book all of them.
+  var FREE_TO_BOOK = 2;
 
   function boot(root, data) {
     var picks = pick((data && data.trips) || []);
@@ -198,12 +240,16 @@
     }
     var when = stamp(data.generated);
     var view = { k: "hours", desc: true };
+    // The first trips in the list are the ones open to visitors, so the same two stay open whatever the sort.
+    var free = {};
+    picks.slice(0, FREE_TO_BOOK).forEach(function (t) { free[routeKey(t)] = true; });
 
     root.innerHTML =
       '<div class="ch-sq-wrap">' +
         '<div class="ch-sq-plate">' +
           '<p class="ch-sq-lede">Fly out in the morning, home the same night. <b>' + picks.length +
             " trips</b> from Manchester, Birmingham and London, plus a couple more.</p>" +
+          '<p class="ch-sq-access" id="chSqAccess"></p>' +
           '<div class="ch-sq-sort" id="chSqSort" role="group" aria-label="Sort the trips"></div>' +
           '<div class="ch-sq-key">' + KEY.map(function (k) {
             return '<span class="ch-sq-' + k.g + '">' + k.label + "</span>";
@@ -216,6 +262,8 @@
 
     var bar = root.querySelector("#chSqSort");
     var grid = root.querySelector("#chSqGrid");
+    var access = root.querySelector("#chSqAccess");
+    var paid = false;
 
     // Highest first by default. Ties fall back to the longest day.
     function ordered() {
@@ -234,7 +282,9 @@
           s.label + (on ? "<small>" + (view.desc ? s.high : s.low) + "</small>" : "") +
         "</button>";
       }).join("");
-      grid.innerHTML = ordered().map(tile).join("");
+      grid.innerHTML = ordered().map(function (t) {
+        return tile(t, paid || !!free[routeKey(t)]);
+      }).join("");
     }
 
     bar.addEventListener("click", function (ev) {
@@ -246,7 +296,14 @@
       draw();
     });
 
-    draw();
+    // Ask who is reading before drawing, so members never see the join links.
+    isPaidMember().then(function (p) {
+      paid = p;
+      access.textContent = paid
+        ? "You are a member, so every trip is open to book."
+        : "Two trips are open to book. Members can book all of them.";
+      draw();
+    });
   }
 
   function start() {
