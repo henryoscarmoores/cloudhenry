@@ -28,7 +28,7 @@
   var AIRPORTS = {
     MAN: "Manchester", BHX: "Birmingham", STN: "Stansted", LTN: "Luton", LGW: "Gatwick",
     NCL: "Newcastle", EDI: "Edinburgh", GLA: "Glasgow", LBA: "Leeds Bradford", BRS: "Bristol",
-    LPL: "Liverpool", BFS: "Belfast", DUB: "Dublin"
+    LPL: "Liverpool", BFS: "Belfast", DUB: "Dublin", ORK: "Cork"
   };
 
   var CSS =
@@ -61,6 +61,8 @@
     ".ch-sq-OTHER{--band:#B8432F;}" +
     ".ch-sq-top{display:flex;justify-content:space-between;gap:6px;margin:-12px -12px 0;padding:9px 12px;background:var(--band);color:#fff;font-size:9.5px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;white-space:nowrap;}" +
     ".ch-sq-LON .ch-sq-top{color:#0E3550;}" +
+    ".ch-sq-top span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;}" +
+    ".ch-sq-top span:last-child{flex-shrink:0;}" +
     ".ch-sq-city{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.15;margin:6px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}" +
     ".ch-sq-country{font-size:11px;font-weight:600;color:#46607A;margin:1px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}" +
     ".ch-sq-hours{display:flex;align-items:baseline;gap:6px;margin:8px 0 0;padding:6px 8px;border-radius:10px;background:color-mix(in srgb,var(--band,#0E6FB6) 16%,#fff);}" +
@@ -176,7 +178,7 @@
 
   function tile(t) {
     return '<article class="ch-sq ch-sq-' + group(t.origin) + '">' +
-      '<p class="ch-sq-top"><span>' + esc(t.origin) + "</span><span>" + esc(pretty(t.date)) + "</span></p>" +
+      '<p class="ch-sq-top"><span>' + esc(AIRPORTS[t.origin] || t.origin) + "</span><span>" + esc(pretty(t.date)) + "</span></p>" +
       '<h3 class="ch-sq-city">' + esc(t.city || t.destination) + "</h3>" +
       '<p class="ch-sq-country">' + esc(t.country || AIRPORTS[t.origin] || "") + "</p>" +
       '<p class="ch-sq-hours"><b>' + Math.floor(t.ground) + "</b><span>hrs in country</span></p>" +
