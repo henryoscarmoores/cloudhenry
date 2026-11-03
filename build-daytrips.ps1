@@ -150,6 +150,12 @@ foreach ($origin in $ORIGINS) {
 # on hours there, not on being two pounds less than the next one.
 $sorted = @($trips | Sort-Object -Property @{Expression="ground";Descending=$true}, @{Expression="price";Descending=$false})
 
+# Only fares an airline is actually selling, the same rule as confirmed-only.ps1:
+# Ryanair, Wizz Air and Norwegian. Other airlines here come from the cache alone.
+$CONFIRMED = @("FR", "W6", "DY")
+$sorted = @($sorted | Where-Object { $CONFIRMED -contains $_.airline })
+Log ("Kept {0} trips on airline-confirmed carriers" -f $sorted.Count)
+
 $out = [pscustomobject]@{
   generated = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
   currency  = "GBP"
