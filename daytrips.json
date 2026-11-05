@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-11-05T01:56:27Z",
+    "generated":  "2026-11-05T16:17:27Z",
     "currency":  "GBP",
     "minGround":  5,
     "origins":  [
@@ -24,7 +24,7 @@
                     "SNN",
                     "NOC"
                 ],
-    "count":  45,
+    "count":  44,
     "trips":  [
                   {
                       "origin":  "LPL",
@@ -521,22 +521,6 @@
                       "minsOut":  80,
                       "minsBack":  80,
                       "link":  "/search/STN2502BFS25021?t=RK18035433001803548100000080STNBFS18035772001803582000000080BFSSTN_42fb997e934d98d091fb9dc64aa12910_7453\u0026search_date=01112026\u0026expected_price_uuid=01a196de-da15-8030-6ddc-cbf457465bbc\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=BkIXqVjCYqFrjETqGDWUoQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=69"
-                  },
-                  {
-                      "origin":  "LTN",
-                      "destination":  "GDN",
-                      "city":  "Gdańsk",
-                      "country":  "Poland",
-                      "date":  "2026-12-05",
-                      "out":  "08:20",
-                      "back":  "18:35",
-                      "ground":  8.1,
-                      "price":  79,
-                      "airline":  "W6",
-                      "flightOut":  "1602",
-                      "minsOut":  130,
-                      "minsBack":  150,
-                      "link":  "/search/LTN0512GDN05121?t=W617964588001796470200000130LTNGDN17964993001796504700000150GDNLTN_9bec82ec48230bd10c9ce30292d7e513_8484\u0026search_date=29102026\u0026expected_price_uuid=01a187e9-b3e7-8031-675e-4247b26202ec\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=hVFRRRcQrj-0STIxbLHX6Q\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=79"
                   },
                   {
                       "origin":  "STN",
