@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-11-08T00:34:17Z",
+    "generated":  "2026-11-08T14:27:43Z",
     "currency":  "GBP",
     "minGround":  5,
     "origins":  [
@@ -24,24 +24,8 @@
                     "SNN",
                     "NOC"
                 ],
-    "count":  34,
+    "count":  32,
     "trips":  [
-                  {
-                      "origin":  "LPL",
-                      "destination":  "DUB",
-                      "city":  "Dublin",
-                      "country":  "Ireland",
-                      "date":  "2026-11-08",
-                      "out":  "06:20",
-                      "back":  "22:55",
-                      "ground":  15.7,
-                      "price":  101,
-                      "airline":  "FR",
-                      "flightOut":  "447",
-                      "minsOut":  55,
-                      "minsBack":  55,
-                      "link":  "/search/LPL0811DUB08111?t=FR17941188001794122100000055LPLDUB17941785001794181800000055DUBLPL_d6d9b2aea15391b8978aa00714e76b7d_11006\u0026search_date=02112026\u0026expected_price_uuid=01a19e47-8594-8030-e9f2-43a7ec7c5c6c\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=cRxJ9K9XI9aYr1XIWtqr2A\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=101"
-                  },
                   {
                       "origin":  "STN",
                       "destination":  "DUB",
@@ -73,22 +57,6 @@
                       "minsOut":  80,
                       "minsBack":  85,
                       "link":  "/search/STN1912FRA19121?t=FR17976597001797668100000080STNHHN17977176001797719100000085HHNSTN_9630bfca24914a7490ce33ee53d02a46_7362\u0026search_date=05112026\u0026expected_price_uuid=01a1a93d-36f7-8031-2fcd-a89f51d4b093\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=VB2A09k9_jKA_Fs6Wmx09Q\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=67"
-                  },
-                  {
-                      "origin":  "LBA",
-                      "destination":  "DUB",
-                      "city":  "Dublin",
-                      "country":  "Ireland",
-                      "date":  "2026-11-08",
-                      "out":  "07:30",
-                      "back":  "22:00",
-                      "ground":  13.5,
-                      "price":  152,
-                      "airline":  "FR",
-                      "flightOut":  "456",
-                      "minsOut":  60,
-                      "minsBack":  60,
-                      "link":  "/search/LBA0811DUB08111?t=FR17941230001794126600000060LBADUB17941752001794178800000060DUBLBA_9eb706517f473715805ee333496b5d61_16670\u0026search_date=06112026\u0026expected_price_uuid=01a1b126-3326-8030-2a8f-34bfaa270010\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=NY15rmcWdRSSjz8Ishf0Sg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=152"
                   },
                   {
                       "origin":  "STN",
@@ -443,22 +411,6 @@
                       "link":  "/search/STN1012BFS10121?t=RK17968905001796895300000080STNBFS17969244001796929200000080BFSSTN_0bbcb961e07c3a1750d50af81bfeb70a_4479\u0026search_date=06112026\u0026expected_price_uuid=01a1b125-90cf-8031-6291-cd98e37c463e\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=BkIXqVjCYqFrjETqGDWUoQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=41"
                   },
                   {
-                      "origin":  "STN",
-                      "destination":  "BFS",
-                      "city":  "Belfast",
-                      "country":  "N. Ireland",
-                      "date":  "2027-02-25",
-                      "out":  "08:15",
-                      "back":  "17:40",
-                      "ground":  8.1,
-                      "price":  69,
-                      "airline":  "FR",
-                      "flightOut":  "159",
-                      "minsOut":  80,
-                      "minsBack":  80,
-                      "link":  "/search/STN2502BFS25021?t=RK18035433001803548100000080STNBFS18035772001803582000000080BFSSTN_42fb997e934d98d091fb9dc64aa12910_7453\u0026search_date=01112026\u0026expected_price_uuid=01a196de-da15-8030-6ddc-cbf457465bbc\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=BkIXqVjCYqFrjETqGDWUoQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=69"
-                  },
-                  {
                       "origin":  "DUB",
                       "destination":  "BCN",
                       "city":  "Barcelona",
@@ -473,6 +425,22 @@
                       "minsOut":  150,
                       "minsBack":  165,
                       "link":  "/search/DUB1711BCN17111?t=FR17949054001794918000000150DUBBCN17949438001794950100000165BCNDUB_8899b9fe7a19f36638e9709cfb75b163_15239\u0026search_date=07112026\u0026expected_price_uuid=01a1b6d5-5691-8030-ef41-8423a302f6bc\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=R_bZziN3z7ECnMlvKdniww\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=139"
+                  },
+                  {
+                      "origin":  "EDI",
+                      "destination":  "DUB",
+                      "city":  "Dublin",
+                      "country":  "Ireland",
+                      "date":  "2026-11-16",
+                      "out":  "12:10",
+                      "back":  "20:30",
+                      "ground":  7.2,
+                      "price":  141,
+                      "airline":  "FR",
+                      "flightOut":  "817",
+                      "minsOut":  65,
+                      "minsBack":  65,
+                      "link":  "/search/EDI1611DUB16111?t=FR17948310001794834900000065EDIDUB17948610001794864900000065DUBEDI_3350f3476ba9e1d487754b7397caa365_15438\u0026search_date=08112026\u0026expected_price_uuid=01a1bb0e-06e8-8030-2331-938e35eba4f0\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=21kUwW4-gdj6puLhpRNpvw\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=141"
                   },
                   {
                       "origin":  "DUB",
