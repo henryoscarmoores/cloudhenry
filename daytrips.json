@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-11-19T17:06:30Z",
+    "generated":  "2026-11-20T02:55:29Z",
     "currency":  "GBP",
     "minGround":  5,
     "origins":  [
@@ -24,8 +24,24 @@
                     "SNN",
                     "NOC"
                 ],
-    "count":  36,
+    "count":  41,
     "trips":  [
+                  {
+                      "origin":  "MAN",
+                      "destination":  "AGP",
+                      "city":  "Málaga",
+                      "country":  "Spain",
+                      "date":  "2026-12-21",
+                      "out":  "05:55",
+                      "back":  "21:30",
+                      "ground":  12.6,
+                      "price":  57,
+                      "airline":  "FR",
+                      "flightOut":  "3232",
+                      "minsOut":  180,
+                      "minsBack":  190,
+                      "link":  "/search/MAN2112AGP21121?t=U217978325001797846900000180MANAGP17978922001797900000000190AGPMAN_1a8b6c98651f12d4152d7da09a16beb2_6164\u0026search_date=19112026\u0026expected_price_uuid=01a1f547-2ef2-8030-a4e6-f5ef7b31e361\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=fIk7DY4Q8XHX_zgVa4DUOg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=57"
+                  },
                   {
                       "origin":  "DUB",
                       "destination":  "MAD",
@@ -41,6 +57,22 @@
                       "minsOut":  155,
                       "minsBack":  165,
                       "link":  "/search/DUB2112MAD21121?t=FR17978319001797844800000155DUBMAD17978898001797896100000165MADDUB_ac6bb1691974561acf221bd02df46204_14910\u0026search_date=13112026\u0026expected_price_uuid=01a1d6a1-51c8-8031-2fb8-ee4082e5f1d8\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=BZYwJ-0HY_7lj-Ge5ovi6w\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=136"
+                  },
+                  {
+                      "origin":  "STN",
+                      "destination":  "VIE",
+                      "city":  "Vienna",
+                      "country":  "Austria",
+                      "date":  "2026-12-17",
+                      "out":  "06:05",
+                      "back":  "20:15",
+                      "ground":  12,
+                      "price":  164,
+                      "airline":  "FR",
+                      "flightOut":  "732",
+                      "minsOut":  130,
+                      "minsBack":  140,
+                      "link":  "/search/STN1712VIE17121?t=FR17974875001797498900000130STNVIE17975421001797546900000140VIESTN_adb06de060970b64b21bb2a9c9e886cd_17630\u0026search_date=19112026\u0026expected_price_uuid=01a1f590-6685-8030-e97b-a378052351c4\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=idFkZSyGQ626jSxSeKgKwA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=164"
                   },
                   {
                       "origin":  "STN",
@@ -139,22 +171,6 @@
                       "link":  "/search/ORK2511LON25111?t=FR17955921001795597200000085ORKSTN17956362001795641300000085STNORK_b324035a4a2e940942522f2ca164b932_7466\u0026search_date=13112026\u0026expected_price_uuid=01a1d4a9-c0ea-8030-e5c3-a29213e53787\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=ohdCI0Mz5KBw-8l2hlDb1A\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=69"
                   },
                   {
-                      "origin":  "MAN",
-                      "destination":  "AGP",
-                      "city":  "Málaga",
-                      "country":  "Spain",
-                      "date":  "2026-12-21",
-                      "out":  "05:55",
-                      "back":  "19:40",
-                      "ground":  10.8,
-                      "price":  77,
-                      "airline":  "FR",
-                      "flightOut":  "3232",
-                      "minsOut":  180,
-                      "minsBack":  185,
-                      "link":  "/search/MAN2112AGP21121?t=FR17978325001797846900000180MANAGP17978856001797893100000185AGPMAN_6de62c431d0154f79e6b5722a0444935_8440\u0026search_date=12112026\u0026expected_price_uuid=01a1d17e-d9c3-8031-6095-3c5d1a70bd38\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=eFGaA-aYfAA_uFJfyIkgOw\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=77"
-                  },
-                  {
                       "origin":  "STN",
                       "destination":  "CGN",
                       "city":  "Cologne",
@@ -188,6 +204,22 @@
                   },
                   {
                       "origin":  "STN",
+                      "destination":  "VLC",
+                      "city":  "Valencia",
+                      "country":  "Spain",
+                      "date":  "2026-12-31",
+                      "out":  "07:00",
+                      "back":  "19:45",
+                      "ground":  10.3,
+                      "price":  79,
+                      "airline":  "FR",
+                      "flightOut":  "643",
+                      "minsOut":  145,
+                      "minsBack":  150,
+                      "link":  "/search/STN3112VLC31121?t=FR17987004001798712700000145STNVLC17987499001798755300000150VLCSTN_b9fd0f3bf1204c58d5e27d678ba240c3_8550\u0026search_date=19112026\u0026expected_price_uuid=01a1f576-b2dd-8040-619f-a2bfae9d532b\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=U6h2vLfPzG-yf9s_z2SpJw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=79"
+                  },
+                  {
+                      "origin":  "STN",
                       "destination":  "KRK",
                       "city":  "Kraków",
                       "country":  "Poland",
@@ -195,12 +227,12 @@
                       "out":  "08:10",
                       "back":  "20:40",
                       "ground":  10.2,
-                      "price":  190,
+                      "price":  191,
                       "airline":  "FR",
                       "flightOut":  "2499",
                       "minsOut":  140,
                       "minsBack":  150,
-                      "link":  "/search/STN2012KRK20121?t=FR17977542001797766200000140STNKRK17978028001797808200000150KRKSTN_0db7b982d2d0ecd2040543331b0e0004_20522\u0026search_date=19112026\u0026expected_price_uuid=01a1f3aa-c97f-8030-eb3f-131f7ffd46c3\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=SstlNvad0sXo2i5OmXAITw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=190"
+                      "link":  "/search/STN2012KRK20121?t=FR17977542001797766200000140STNKRK17978028001797808200000150KRKSTN_0db7b982d2d0ecd2040543331b0e0004_20522\u0026search_date=19112026\u0026expected_price_uuid=01a1f3aa-c97f-8030-eb3f-131f7ffd46c3\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=SstlNvad0sXo2i5OmXAITw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=191"
                   },
                   {
                       "origin":  "STN",
@@ -476,6 +508,38 @@
                   },
                   {
                       "origin":  "STN",
+                      "destination":  "STO",
+                      "city":  "Stockholm",
+                      "country":  "Sweden",
+                      "date":  "2026-12-22",
+                      "out":  "06:45",
+                      "back":  "15:30",
+                      "ground":  6.5,
+                      "price":  153,
+                      "airline":  "FR",
+                      "flightOut":  "682",
+                      "minsOut":  135,
+                      "minsBack":  150,
+                      "link":  "/search/STN2212STO22121?t=FR17979219001797933600000135STNVST17979570001797962400000150ARNSTN_b55021becf72f444b48e460ba1508c18_16421\u0026search_date=19112026\u0026expected_price_uuid=01a1f5aa-d3e7-8040-6421-9e7abfd44e26\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=xep6wejbM9FcgCMTmoT0Pg\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=153"
+                  },
+                  {
+                      "origin":  "DUB",
+                      "destination":  "PAR",
+                      "city":  "Paris",
+                      "country":  "France",
+                      "date":  "2027-01-20",
+                      "out":  "07:45",
+                      "back":  "15:45",
+                      "ground":  6.4,
+                      "price":  108,
+                      "airline":  "FR",
+                      "flightOut":  "22",
+                      "minsOut":  95,
+                      "minsBack":  110,
+                      "link":  "/search/DUB2001PAR20011?t=EI18004311001800440400000095DUBBVA18004635001800466500000110CDGDUB_799049b03e1185299e83b2965170d4ac_11602\u0026search_date=19112026\u0026expected_price_uuid=01a1f5a1-e6a2-8030-68af-36680153bd84\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=EL2ZJ3jCZVF-_a11I9nFsw\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=108"
+                  },
+                  {
+                      "origin":  "STN",
                       "destination":  "ROM",
                       "city":  "Rome",
                       "country":  "Italy",
@@ -521,6 +585,22 @@
                       "minsOut":  130,
                       "minsBack":  145,
                       "link":  "/search/STN1101BCN11011?t=FR17996592001799670600000130STNBCN17996907001799695800000145BCNSTN_f93ac3ce67d4341e7f7f665f6bd285b2_5674\u0026search_date=19112026\u0026expected_price_uuid=01a1f486-dee0-8030-e339-ea2c7426238e\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=DdXHxlOQ-f3emC5AGKGdMw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=53"
+                  },
+                  {
+                      "origin":  "LTN",
+                      "destination":  "BUD",
+                      "city":  "Budapest",
+                      "country":  "Hungary",
+                      "date":  "2026-12-09",
+                      "out":  "08:30",
+                      "back":  "16:30",
+                      "ground":  5.5,
+                      "price":  68,
+                      "airline":  "W6",
+                      "flightOut":  "2202",
+                      "minsOut":  150,
+                      "minsBack":  165,
+                      "link":  "/search/LTN0912BUD09121?t=W617968050001796817600000150LTNBUD17968374001796843700000165BUDLTN_9e56fe279fb6b75ba7ddbe789b29b070_7435\u0026search_date=14112026\u0026expected_price_uuid=01a1d977-120a-8031-28bf-43074e0ac828\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=og6EwFJWWx5J4UivNlnBEQ\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=68"
                   },
                   {
                       "origin":  "LTN",
