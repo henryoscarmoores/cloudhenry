@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-11-23T02:23:53Z",
+    "generated":  "2026-11-23T18:25:02Z",
     "currency":  "GBP",
     "minGround":  5,
     "origins":  [
@@ -24,7 +24,7 @@
                     "SNN",
                     "NOC"
                 ],
-    "count":  35,
+    "count":  37,
     "trips":  [
                   {
                       "origin":  "STN",
@@ -217,6 +217,22 @@
                       "minsOut":  85,
                       "minsBack":  80,
                       "link":  "/search/ORK0802LON08021?t=FR18020733001802078400000085ORKSTN18021147001802119500000080LTNORK_008ff1b5a1abc46b4eff9f3adc759791_5042\u0026search_date=21112026\u0026expected_price_uuid=01a20078-0d32-8031-664c-83ee4b833867\u0026static_fare_key=TY%7CP0%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=bjV7veHoRXQkXmoZwSq4zg\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=47"
+                  },
+                  {
+                      "origin":  "EDI",
+                      "destination":  "DUB",
+                      "city":  "Dublin",
+                      "country":  "Ireland",
+                      "date":  "2026-11-27",
+                      "out":  "06:05",
+                      "back":  "16:50",
+                      "ground":  9.7,
+                      "price":  157,
+                      "airline":  "FR",
+                      "flightOut":  "819",
+                      "minsOut":  65,
+                      "minsBack":  65,
+                      "link":  "/search/EDI2711DUB27111?t=FR17957595001795763400000065EDIDUB17957982001795802100000065DUBEDI_3d084b6916ca2c1171d61d7e86fe680d_16804\u0026search_date=23112026\u0026expected_price_uuid=01a20778-bb8b-8030-e8b1-3c26cb0e0285\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=xcKX8CmfKbiYQky0yWuopA\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=157"
                   },
                   {
                       "origin":  "EDI",
@@ -553,6 +569,22 @@
                       "minsOut":  80,
                       "minsBack":  85,
                       "link":  "/search/LGW0112DUB01121?t=FR17961150001796119800000080LGWDUB17961405001796145600000085DUBLGW_e38138cfa0c09b928d13e08b54dc10dc_6782\u0026search_date=22112026\u0026expected_price_uuid=01a20181-5289-8030-e44a-3d44be7ec10a\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=sQ3RUKEdjoMJL7UmAWzRlA\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=63"
+                  },
+                  {
+                      "origin":  "STN",
+                      "destination":  "EDI",
+                      "city":  "Edinburgh",
+                      "country":  "Scotland",
+                      "date":  "2026-12-06",
+                      "out":  "07:40",
+                      "back":  "14:40",
+                      "ground":  5.7,
+                      "price":  87,
+                      "airline":  "FR",
+                      "flightOut":  "1888",
+                      "minsOut":  80,
+                      "minsBack":  80,
+                      "link":  "/search/STN0612EDI06121?t=FR17965428001796547600000080STNEDI17965680001796572800000080EDISTN_2adc36384dce58213945cc818381a6cd_9254\u0026search_date=23112026\u0026expected_price_uuid=01a2096a-1a54-8030-e723-1130169d58c4\u0026static_fare_key=TY%7CP1%7CH0%7CL0%7CCH0%7CR0%7CTBC0\u0026itinerary_key=EmvhgcKOYhB5Ah1Az543uw\u0026origin_airports=0\u0026destination_airports=1\u0026expected_price_source=share\u0026expected_price_currency=gbp\u0026expected_price=87"
                   },
                   {
                       "origin":  "STN",
