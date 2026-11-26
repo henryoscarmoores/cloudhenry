@@ -1061,5 +1061,6 @@ SEN:["London Southend","United Kingdom","🇬🇧"],
     HUU:["Huanuco","Peru","🇵🇪"],
     OSY:["Namsos","Norway","🇳🇴"],
     RAJ:["Rajkot","India","🇮🇳"],
-    SAT:["San Antonio","USA","🇺🇸"]
+    SAT:["San Antonio","USA","🇺🇸"],
+    RDZ:["Rodez","France","🇫🇷"]
 };
